@@ -94,8 +94,8 @@ const ProductDetail = () => {
     const shareProduct = async (product) => { 
         const shareData = {
             text: product.name,
-            title: "e-ARISTAYA",
-            url: `https://e-ARISTAYA.vercel.app/Detail/type/${cat}/${id}`
+            title: "ARISTAYA",
+            url: `${window.location.origin}/Detail/type/${cat}/${id}`
         };
 
         if (navigator.canShare && navigator.canShare(shareData)) {
