@@ -1,4 +1,4 @@
-import './Desktop.css'; // Import the new CSS
+import './Desktop.css'; 
 import React, { useContext, useEffect, useState } from 'react';
 import { AiOutlineHeart, AiOutlineShoppingCart, AiFillCloseCircle } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
@@ -7,13 +7,13 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Badge, Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import { ContextFunction } from '../Context/Context';
 import { toast } from 'react-toastify';
-import { getCart, getWishList, handleClickOpen, handleClose, Transition } from '../Constants/Constant'; // Ensure these are correctly imported
+import { getCart, getWishList, handleClickOpen, handleClose, Transition } from '../Constants/Constant'; 
 
 const DesktopNavigation = () => {
   const { cart, setCart, wishlistData, setWishlistData, setLoginUser } = useContext(ContextFunction);
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // To check active path
+  const location = useLocation(); 
 
   let authToken = localStorage.getItem('Authorization');
   let setProceed = authToken !== null ? true : false;
@@ -21,16 +21,16 @@ const DesktopNavigation = () => {
   useEffect(() => {
     getCart(setProceed, setCart, authToken);
     getWishList(setProceed, setWishlistData, authToken);
-  }, [setProceed, setCart, setWishlistData, authToken]); // Add dependencies
+  }, [setProceed, setCart, setWishlistData, authToken]); 
 
-  const logoutUser = () => { // Renamed to avoid conflict with imported handleLogOut
+  const logoutUser = () => { 
     localStorage.clear();
     setLoginUser({});
     setCart([]);
     setWishlistData([]);
     toast.success("Logout Successfully", { autoClose: 500, theme: 'colored' });
-    setOpenAlert(false); // Close the dialog after logout
-    navigate('/'); // Navigate to home after logout
+    setOpenAlert(false); 
+    navigate('/'); 
   };
 
   return (
@@ -81,7 +81,7 @@ const DesktopNavigation = () => {
                   <li style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Button
                       variant='contained'
-                      className='logout-btn' // Use the specific logout button class
+                      className='logout-btn' 
                       onClick={() => handleClickOpen(setOpenAlert)}
                       endIcon={<FiLogOut />}
                     >
@@ -102,17 +102,17 @@ const DesktopNavigation = () => {
         </div>
       </nav>
 
-      {/* Logout Confirmation Dialog */}
+      {}
       <Dialog
         open={openAlert}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => handleClose(setOpenAlert)} // Use handleClose from Constants
+        onClose={() => handleClose(setOpenAlert)} 
         aria-describedby="alert-dialog-slide-description"
-        PaperProps={{ // Apply styles directly to Paper component for dialog
+        PaperProps={{ 
           sx: {
-            backgroundColor: '#1e1e1e', // Dark background
-            color: '#ffffff', // White text
+            backgroundColor: '#1e1e1e', 
+            color: '#ffffff', 
             borderRadius: '12px',
             boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
             border: '1px solid #333333',
@@ -135,7 +135,7 @@ const DesktopNavigation = () => {
               '&:hover': { backgroundColor: '#444444 !important' },
               fontFamily: 'Cooper Black, serif !important'
             }}
-            onClick={logoutUser} // Call the local logoutUser function
+            onClick={logoutUser} 
           >
             Logout
           </Button>

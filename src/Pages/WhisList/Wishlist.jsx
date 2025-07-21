@@ -75,7 +75,7 @@ const Wishlist = () => {
         <>
             <Typography variant='h3' sx={{ textAlign: 'center', margin: "10px 0 ", color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>Wishlist</Typography>
             {setProceed && Array.isArray(wishlistData) && wishlistData.length <= 0 ? (
-                // Display for empty wishlist when logged in
+                
                 <Box sx={{ 
                     width: '100%', 
                     display: 'flex', 
@@ -85,19 +85,19 @@ const Wishlist = () => {
                 }}>
                     <div className="main-card" style={{ 
                         display: 'flex', 
-                        flexDirection: 'column', // Ensures children stack vertically
-                        alignItems: 'center',    // Centers children horizontally
-                        padding: '30px',         // Increased padding for more space
-                        maxWidth: '450px',       // Increased max-width for a larger card
+                        flexDirection: 'column', 
+                        alignItems: 'center',    
+                        padding: '30px',         
+                        maxWidth: '450px',       
                         margin: '40px auto',
-                        backgroundColor: '#1e1e1e', // Ensure dark background
+                        backgroundColor: '#1e1e1e', 
                         borderRadius: '15px',
                         boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
                         border: '1px solid #333333'
                     }}>
                         <img src={EmptyCart} alt="Empty_wishlist" className="empty-cart-img" style={{ display: 'block', marginBottom: '25px', maxWidth: '80%', height: 'auto' }} /> 
                         
-                        <Typography variant='h6' sx={{ textAlign: 'center', color: '#ffffff', fontWeight: 'bold', mb: 3, fontFamily: 'Cooper Black, serif !important' }}> {/* Increased mb */}
+                        <Typography variant='h6' sx={{ textAlign: 'center', color: '#ffffff', fontWeight: 'bold', mb: 3, fontFamily: 'Cooper Black, serif !important' }}> {}
                             No products in wishlist
                         </Typography>
                         <Link to="/" style={{ textDecoration: 'none' }}>
@@ -109,7 +109,7 @@ const Wishlist = () => {
                                     border: '1px solid #444444',
                                     '&:hover': { backgroundColor: '#444444 !important' },
                                     fontFamily: 'Cooper Black, serif !important',
-                                    padding: '12px 30px' // Larger button padding
+                                    padding: '12px 30px' 
                                 }}>
                                 Continue Shopping
                             </Button>
@@ -117,7 +117,7 @@ const Wishlist = () => {
                     </div>
                 </Box>
             ) : (
-                // Display wishlist items when logged in and items exist
+                
                 setProceed && Array.isArray(wishlistData) && wishlistData.length > 0 && (
                     <Container maxWidth='xl' style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap", paddingBottom: 20 }}>
                         {Array.isArray(wishlistData) && wishlistData.map(product => (
@@ -127,17 +127,17 @@ const Wishlist = () => {
                 )
             )}
 
-            {/* Dialog for not logged in */}
+            {}
             {!setProceed && (
                 <Dialog open={openAlert}
                     TransitionComponent={Transition}
                     keepMounted
                     onClose={handleClose}
                     aria-describedby="alert-dialog-slide-description"
-                    PaperProps={{ // Apply styles directly to Paper component for dialog
+                    PaperProps={{ 
                         sx: {
-                          backgroundColor: '#1e1e1e', // Dark background
-                          color: '#ffffff', // White text
+                          backgroundColor: '#1e1e1e', 
+                          color: '#ffffff', 
                           borderRadius: '12px',
                           boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
                           border: '1px solid #333333',

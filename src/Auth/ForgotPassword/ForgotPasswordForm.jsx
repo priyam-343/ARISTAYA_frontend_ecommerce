@@ -27,30 +27,30 @@ const ForgotPasswordForm = () => {
         }
     }
 
-    // Common TextField styling for ARISTAYA theme
+    
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
-                borderColor: '#444444', // Default border color
+                borderColor: '#444444', 
             },
             '&:hover fieldset': {
-                borderColor: '#666666', // Hover border color
+                borderColor: '#666666', 
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#FFD700', // Focused border color (gold)
+                borderColor: '#FFD700', 
             },
-            backgroundColor: '#1e1e1e', // Input field background
+            backgroundColor: '#1e1e1e', 
             borderRadius: '8px',
         },
         '& .MuiInputLabel-outlined': {
-            color: '#cccccc', // Label color
+            color: '#cccccc', 
         },
         '& .MuiInputLabel-outlined.Mui-focused': {
-            color: '#FFD700', // Focused label color (gold)
+            color: '#FFD700', 
         },
         '& .MuiInputBase-input': {
-            fontFamily: 'Cooper Black, serif !important', // Apply Cooper Black to input text
-            color: '#ffffff !important', // Force input text color to white
+            fontFamily: 'Cooper Black, serif !important', 
+            color: '#ffffff !important', 
         },
     };
 
@@ -137,19 +137,19 @@ const ForgotPasswordForm = () => {
                     </Box>
                 </Container >
                 :
-                // This entire block is now wrapped in a Container for centering
+                
                 <Container component="main" maxWidth="xs" sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: 'calc(100vh - 180px)', // Ensure it takes full height to center content
-                    backgroundColor: '#000000', // Consistent background
+                    minHeight: 'calc(100vh - 180px)', 
+                    backgroundColor: '#000000', 
                     padding: '20px'
                 }}>
                     <Box
                         sx={{
-                            marginTop: 8, // Adjust as needed, but 8 is consistent with the form above
+                            marginTop: 8, 
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -190,7 +190,7 @@ const ForgotPasswordForm = () => {
                     </Box>
                     <Box sx={{ mt: 10 }}>
                         <CopyRight />
-                    </Box> {/* Consistent spacing for CopyRight */}
+                    </Box> {}
                 </Container>
             }
         </>

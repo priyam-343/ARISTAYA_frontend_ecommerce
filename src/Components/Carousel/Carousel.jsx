@@ -1,6 +1,6 @@
 import React from 'react';
 import AliceCarousel from 'react-alice-carousel';
-import BannerData from '../../Helpers/HomePageBanner'; // Ensure this is the updated BannerData
+import BannerData from '../../Helpers/HomePageBanner'; 
 import 'react-alice-carousel/lib/alice-carousel.css';
 import { Link } from 'react-router-dom';
 
@@ -12,8 +12,8 @@ const Carousel = () => {
     };
 
     const items = BannerData.map((item) => (
-        // CORRECTED: Use item.path for the URL to match backend and CategoryCard expectations
-        <Link to={`product/type/${item.path}`} key={item.path} > {/* Use item.path for key as well for uniqueness */}
+        
+        <Link to={`product/type/${item.path}`} key={item.path} > {}
             <div className="item" style={{ marginTop: 10 }} >
                 <img src={item.img} loading='lazy' alt={item.name} style={{ height: '100%', width: '100%', objectFit: 'contain' }} />
             </div>

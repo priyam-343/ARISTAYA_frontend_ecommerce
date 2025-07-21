@@ -1,9 +1,9 @@
-import '../Login/login.css' // Assuming this CSS provides general login/register styling
+import '../Login/login.css' 
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
-import { Avatar, Button, Checkbox, CssBaseline, FormControlLabel, Grid, InputAdornment, TextField, Typography, CircularProgress } from '@mui/material' // Added CircularProgress
-import { Box, Container } from '@mui/material' // FIXED: Box, Container from @mui/system to @mui/material
+import { Avatar, Button, Checkbox, CssBaseline, FormControlLabel, Grid, InputAdornment, TextField, Typography, CircularProgress } from '@mui/material' 
+import { Box, Container } from '@mui/material' 
 import { toast } from 'react-toastify'
 import CopyRight from '../../Components/CopyRight/CopyRight'
 import { MdLockOutline } from 'react-icons/md'
@@ -42,17 +42,17 @@ const Register = () => {
       else if (credentials.firstName.length < 1 || credentials.lastName.length < 1) {
         toast.error("Please enter valid name", { autoClose: 500, theme: 'colored' })
       }
-      else if (emailRegex.test(credentials.email) === false) { // Strict comparison
+      else if (emailRegex.test(credentials.email) === false) { 
         toast.error("Please enter valid email", { autoClose: 500, theme: 'colored' })
       }
-      else if (phoneRegex.test(credentials.phoneNumber) === false) { // Strict comparison
+      else if (phoneRegex.test(credentials.phoneNumber) === false) { 
         toast.error("Please enter a valid phone number", { autoClose: 500, theme: 'colored' })
         console.log(1);
       }
       else if (credentials.password.length < 5) {
         toast.error("Please enter password with more than 5 characters", { autoClose: 500, theme: 'colored' })
       }
-      else { // Proceed with API call only if all validations pass
+      else { 
         const sendAuth = await axios.post(`${process.env.REACT_APP_REGISTER}`,
           {
             firstName: credentials.firstName,
@@ -69,49 +69,49 @@ const Register = () => {
           console.log(receive);
         }
         else {
-          toast.error(receive.message || "Something went wrong, Please try again", { autoClose: 500, theme: 'colored' }) // Use backend message if available
-          // navigate('/') // Avoid navigating on error unless specifically desired
+          toast.error(receive.message || "Something went wrong, Please try again", { autoClose: 500, theme: 'colored' }) 
+          
         }
       }
     } catch (error) {
-      console.error("Registration Error:", error.response?.data?.error || error.message); // Log full error
-      // Improved error handling for backend messages
+      console.error("Registration Error:", error.response?.data?.error || error.message); 
+      
       error.response?.data?.error?.length === 1 ?
         toast.error(error.response.data.error[0].msg, { autoClose: 500, theme: 'colored' })
         : toast.error(error.response?.data?.error || "Registration failed, please try again", { autoClose: 500, theme: 'colored' })
     } finally {
-      setLoading(false); // End loading
+      setLoading(false); 
     }
   }
 
-  // Common TextField styling for ARISTAYA theme
+  
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
         '& fieldset': {
-            borderColor: '#444444', // Default border color
+            borderColor: '#444444', 
         },
         '&:hover fieldset': {
-            borderColor: '#666666', // Hover border color
+            borderColor: '#666666', 
         },
         '&.Mui-focused fieldset': {
-            borderColor: '#FFD700', // Focused border color (gold)
+            borderColor: '#FFD700', 
         },
-        backgroundColor: '#1e1e1e', // Input field background
+        backgroundColor: '#1e1e1e', 
         borderRadius: '8px',
     },
     '& .MuiInputLabel-outlined': {
-        color: '#cccccc', // Label color
+        color: '#cccccc', 
     },
     '& .MuiInputLabel-outlined.Mui-focused': {
-        color: '#FFD700', // Focused label color (gold)
+        color: '#FFD700', 
     },
     '& .MuiInputBase-input': {
-        fontFamily: 'Cooper Black, serif !important', // Apply Cooper Black to input text
-        color: '#ffffff !important', // Force input text color to white
+        fontFamily: 'Cooper Black, serif !important', 
+        color: '#ffffff !important', 
     },
-    // Style for eye icon
+    
     '& .MuiInputAdornment-root': {
-      color: '#cccccc !important', // Eye icon color
+      color: '#cccccc !important', 
     }
   };
 
@@ -123,8 +123,8 @@ const Register = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: 'calc(100vh - 180px)', // Adjust height to push footer down
-        backgroundColor: '#000000', // Dark background for the page
+        minHeight: 'calc(100vh - 180px)', 
+        backgroundColor: '#000000', 
         padding: '20px'
       }}>
         <CssBaseline />
@@ -134,20 +134,20 @@ const Register = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            p: 4, // Padding around the box content
-            bgcolor: '#1e1e1e', // Dark card background
+            p: 4, 
+            bgcolor: '#1e1e1e', 
             borderRadius: '12px',
             boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
             border: '1px solid #333333',
             width: '100%',
-            maxWidth: '400px', // Max width for the form box
-            boxSizing: 'border-box', // Include padding in width calculation
+            maxWidth: '400px', 
+            boxSizing: 'border-box', 
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: '#FFD700' }}> {/* Themed Avatar background to gold */}
-            <MdLockOutline sx={{ color: '#000000' }} /> {/* Lock icon color black */}
+          <Avatar sx={{ m: 1, bgcolor: '#FFD700' }}> {}
+            <MdLockOutline sx={{ color: '#000000' }} /> {}
           </Avatar>
-          <Typography component="h1" variant="h5" sx={{ mb: 3, fontFamily: 'Cooper Black, serif !important', color: '#ffffff' }}> {/* Themed typography */}
+          <Typography component="h1" variant="h5" sx={{ mb: 3, fontFamily: 'Cooper Black, serif !important', color: '#ffffff' }}> {}
             Sign up
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
@@ -163,7 +163,7 @@ const Register = () => {
                   id="firstName"
                   label="First Name"
                   autoFocus
-                  sx={textFieldSx} // Apply themed styling
+                  sx={textFieldSx} 
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -176,7 +176,7 @@ const Register = () => {
                   value={credentials.lastName}
                   onChange={handleOnChange}
                   autoComplete="family-name"
-                  sx={textFieldSx} // Apply themed styling
+                  sx={textFieldSx} 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -189,7 +189,7 @@ const Register = () => {
                   value={credentials.email}
                   onChange={handleOnChange}
                   autoComplete="email"
-                  sx={textFieldSx} // Apply themed styling
+                  sx={textFieldSx} 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -202,7 +202,7 @@ const Register = () => {
                   value={credentials.phoneNumber}
                   onChange={handleOnChange}
                   inputMode='numeric'
-                  sx={textFieldSx} // Apply themed styling
+                  sx={textFieldSx} 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -223,7 +223,7 @@ const Register = () => {
                   value={credentials.password}
                   onChange={handleOnChange}
                   autoComplete="new-password"
-                  sx={textFieldSx} // Apply themed styling
+                  sx={textFieldSx} 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -237,34 +237,34 @@ const Register = () => {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loading} // Disable button during loading
+              disabled={loading} 
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#FFD700 !important', // Gold button for primary action
-                color: '#000000 !important', // Black text
+                backgroundColor: '#FFD700 !important', 
+                color: '#000000 !important', 
                 borderRadius: '8px',
                 padding: '12px 30px',
                 fontFamily: 'Cooper Black, serif !important',
                 '&:hover': {
-                  backgroundColor: '#e6b800 !important', // Darker gold on hover
+                  backgroundColor: '#e6b800 !important', 
                   boxShadow: '0 6px 15px rgba(0, 0, 0, 0.4)',
                 },
-                '&.Mui-disabled': { // Style for disabled state
+                '&.Mui-disabled': { 
                   backgroundColor: '#555555 !important',
                   color: '#aaaaaa !important',
                   cursor: 'not-allowed',
                 }
               }}
             >
-              {loading ? <CircularProgress size={24} sx={{ color: '#000000' }} /> : 'Sign Up'} {/* Loading spinner */}
+              {loading ? <CircularProgress size={24} sx={{ color: '#000000' }} /> : 'Sign Up'} {}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}> {/* Themed text */}
+                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}> {}
                   Already have an account?
                   <Link to='/login' style={{ textDecoration: 'none' }}>
-                    <span style={{ color: '#FFD700', marginLeft: 3, '&:hover': { textDecoration: 'underline' } }}> {/* Themed link */}
+                    <span style={{ color: '#FFD700', marginLeft: 3, '&:hover': { textDecoration: 'underline' } }}> {}
                       Sign in
                     </span>
                   </Link>
@@ -273,7 +273,7 @@ const Register = () => {
             </Grid>
           </Box>
         </Box>
-        <Box sx={{ mt: 10 }}> {/* Maintaining your current spacing for CopyRight */}
+        <Box sx={{ mt: 10 }}> {}
           <CopyRight />
         </Box>
       </Container>

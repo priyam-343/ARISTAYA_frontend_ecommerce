@@ -47,7 +47,7 @@ const SingleCategory = () => {
 
     const productFilter = []
 
-    // Updated filter logic for strictly separated categories
+    
     if (cat === 'men-wear') {
         productFilter.push('All', 'T-Shirts', 'Jeans', 'Formal Wear', 'Accessories', 'Price Low To High', 'Price High To Low', 'High Rated', 'Low Rated');
     } else if (cat === 'women-wear') {
@@ -63,7 +63,7 @@ const SingleCategory = () => {
     } else if (cat === 'jewelry') {
         productFilter.push('All', 'Necklace', 'Earrings', 'Rings', 'Bracelet', 'Watches', 'Price Low To High', 'Price High To Low', 'High Rated', 'Low Rated');
     } else {
-        // Fallback for any other category not explicitly defined
+        
         productFilter.push('All', 'Price Low To High', 'Price High To Low', 'High Rated', 'Low Rated');
     }
 

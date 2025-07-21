@@ -1,35 +1,20 @@
-/* src/Components/Card/CartCard/CartCard.module.css */
 
-.main_card { /* Renamed from .main_cart for consistency and clarity */
-    width: 300px; /* Consistent width with product cards */
-    min-height: 480px; /* Increased min-height significantly for vertical rectangle */
-    margin: 20px;
+.main_card {     width: 300px;     min-height: 480px;     margin: 20px;
     display: flex;
-    flex-direction: column; /* Stack content vertically */
-    justify-content: space-between; /* Distribute space between elements */
-    box-sizing: border-box; /* Include padding in dimensions */
-    /* Other styling like background, border, shadow will come from sx in CartCard.jsx */
-}
+    flex-direction: column;     justify-content: space-between;     box-sizing: border-box;     }
 
 .img_box {
     width: 100%;
-    height: 300px; /* Increased height for the image container to be a vertical rectangle */
-    display: flex;
+    height: 300px;     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Ensures image doesn't overflow if it's too big */
-    margin-bottom: 10px; /* Space below image */
-    padding-top: 15px; /* Padding at the top of the image box */
-}
+    overflow: hidden;     margin-bottom: 10px;     padding-top: 15px; }
 
 .img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* Ensures the entire image fits within the box */
-    border-radius: 8px; /* Slight rounded corners for the image itself */
-}
+    object-fit: contain;     border-radius: 8px; }
 
-/* Responsive adjustments */
 @media screen and (max-width: 960px) {
     .main_card {
         width: 280px;

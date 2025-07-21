@@ -72,29 +72,29 @@ const Login = () => {
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
         '& fieldset': {
-            borderColor: '#444444', // Default border color
+            borderColor: '#444444', 
         },
         '&:hover fieldset': {
-            borderColor: '#666666', // Hover border color
+            borderColor: '#666666', 
         },
         '&.Mui-focused fieldset': {
-            borderColor: '#FFD700', // Focused border color (gold)
+            borderColor: '#FFD700', 
         },
-        backgroundColor: '#1e1e1e', // Input field background
+        backgroundColor: '#1e1e1e', 
         borderRadius: '8px',
     },
     '& .MuiInputLabel-outlined': {
-        color: '#cccccc', // Label color
+        color: '#cccccc', 
     },
     '& .MuiInputLabel-outlined.Mui-focused': {
-        color: '#FFD700', // Focused label color (gold)
+        color: '#FFD700', 
     },
     '& .MuiInputBase-input': {
-        fontFamily: 'Cooper Black, serif !important', // Apply Cooper Black to input text
-        color: '#ffffff !important', // Force input text color to white
+        fontFamily: 'Cooper Black, serif !important', 
+        color: '#ffffff !important', 
     },
     '& .MuiInputAdornment-root': {
-      color: '#cccccc !important', // Eye icon color
+      color: '#cccccc !important', 
     }
   };
 
@@ -178,16 +178,16 @@ const Login = () => {
             sx={{
               mt: 3,
               mb: 2,
-              backgroundColor: '#FFD700 !important', // Changed to Gold
-              color: '#000000 !important', // Changed to Black
+              backgroundColor: '#FFD700 !important', 
+              color: '#000000 !important', 
               borderRadius: '8px',
               padding: '12px 30px',
               fontFamily: 'Cooper Black, serif !important',
               '&:hover': {
-                  backgroundColor: '#e6b800 !important', // Darker gold on hover
+                  backgroundColor: '#e6b800 !important', 
                   boxShadow: '0 6px 15px rgba(0, 0, 0, 0.4)',
               },
-              '&.Mui-disabled': { // Style for disabled state
+              '&.Mui-disabled': { 
                   backgroundColor: '#555555 !important',
                   color: '#aaaaaa !important',
                   cursor: 'not-allowed',
@@ -205,9 +205,9 @@ const Login = () => {
               </Link>
             </Grid>
             <Grid item>
-              {/* FIXED: Re-structured for inline alignment and proper spacing */}
+              {}
               <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}>
-                Don't have an account?{' '} {/* Added space here */}
+                Don't have an account?{' '} {}
                 <Link to="/register" style={{ textDecoration: 'none' }}>
                   <Typography component="span" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif !important', '&:hover': { textDecoration: 'underline' } }}>
                     Sign Up

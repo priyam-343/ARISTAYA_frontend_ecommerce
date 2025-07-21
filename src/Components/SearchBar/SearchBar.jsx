@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import { Link } from "react-router-dom";
-import { getAllProducts } from "../../Constants/Constant"; // Assuming this fetches all products
+import { getAllProducts } from "../../Constants/Constant"; 
 
 const SearchBar = () => {
     const [data, setData] = useState([]);
@@ -40,48 +40,48 @@ const SearchBar = () => {
 
     const Item = styled(Paper)(({ theme }) => ({
         // Apply premium dark theme styles to search results items
-        backgroundColor: '#1e1e1e', // Dark background
+        backgroundColor: '#1e1e1e', 
         ...theme.typography.body2,
-        padding: theme.spacing(1.5), // Increased padding
-        textAlign: 'left', // Align text left
-        color: '#ffffff', // White text
-        fontFamily: 'Cooper Black, serif !important', // Cooper Black font
+        padding: theme.spacing(1.5), 
+        textAlign: 'left', 
+        color: '#ffffff', 
+        fontFamily: 'Cooper Black, serif !important', 
         transition: 'background-color 0.3s ease',
         '&:hover': {
-            backgroundColor: '#333333', // Darker on hover
+            backgroundColor: '#333333', 
         },
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottom: '1px solid #333333', // Subtle separator
+        borderBottom: '1px solid #333333', 
     }));
 
-    // Common TextField styling for search input
+    
     const searchTextFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
-                borderColor: '#444444', // Default border color
+                borderColor: '#444444', 
             },
             '&:hover fieldset': {
-                borderColor: '#666666', // Hover border color
+                borderColor: '#666666', 
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#FFD700', // Focused border color (gold)
+                borderColor: '#FFD700', 
             },
-            backgroundColor: '#1e1e1e', // Input field background
+            backgroundColor: '#1e1e1e', 
             borderRadius: '8px',
-            height: '45px', // Optimized height for search bar
+            height: '45px', 
         },
         '& .MuiInputLabel-outlined': {
-            color: '#cccccc', // Label color
+            color: '#cccccc', 
         },
         '& .MuiInputLabel-outlined.Mui-focused': {
-            color: '#FFD700', // Focused label color (gold)
+            color: '#FFD700', 
         },
         '& .MuiInputBase-input': {
-            fontFamily: 'Cooper Black, serif !important', // Apply Cooper Black to input text
-            color: '#ffffff !important', // Force input text color to white
-            padding: '10px 14px !important', // Adjust padding inside input
+            fontFamily: 'Cooper Black, serif !important', 
+            color: '#ffffff !important', 
+            padding: '10px 14px !important', 
         },
     };
 
@@ -92,8 +92,8 @@ const SearchBar = () => {
             alignItems: 'center', 
             flexDirection: 'column', 
             padding: 5, 
-            mt: 5, // Add margin top to push content down from header
-            mb: 5 // Add margin bottom for spacing
+            mt: 5, 
+            mb: 5 
         }}>
             <TextField
                 id="search"
@@ -101,11 +101,11 @@ const SearchBar = () => {
                 label="Search Products"
                 value={searchTerm}
                 onChange={handleSearch}
-                sx={{ width: { xs: 350, sm: 500, md: 800 }, ...searchTextFieldSx }} // Apply custom styles
+                sx={{ width: { xs: 350, sm: 500, md: 800 }, ...searchTextFieldSx }} 
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <AiOutlineSearch style={{ color: '#cccccc', fontSize: 22 }} /> {/* Light grey search icon */}
+                            <AiOutlineSearch style={{ color: '#cccccc', fontSize: 22 }} /> {}
                         </InputAdornment>
                     ),
                 }}
@@ -114,20 +114,18 @@ const SearchBar = () => {
                 searchTerm.length > 0 &&
                 <Box sx={{ 
                     width: { xs: 350, sm: 500, md: 800 }, 
-                    overflowY: "auto", // Changed to auto for scrollbar only when needed
-                    maxHeight: "300px", // Increased max height for more results
-                    backgroundColor: '#1e1e1e', // Dark background for the results box
+                    overflowY: "auto", 
+                    maxHeight: "300px", 
+                    backgroundColor: '#1e1e1e', 
                     borderRadius: '8px',
                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.6)',
                     border: '1px solid #333333',
-                    mt: 1, // Margin top to separate from search input
-                    // Hide scrollbar
+                    mt: 1, 
+                    
                     '&::-webkit-scrollbar': {
                         display: 'none',
                     },
-                    '-ms-overflow-style': 'none',  /* IE and Edge */
-                    'scrollbar-width': 'none',  /* Firefox */
-                }}>
+                    '-ms-overflow-style': 'none',                      'scrollbar-width': 'none',                  }}>
                     <Stack spacing={0}>
                         {filteredData.length === 0 ?
                             <Typography 
@@ -135,7 +133,7 @@ const SearchBar = () => {
                                 sx={{ 
                                     textAlign: "center", 
                                     margin: "25px 0", 
-                                    color: '#cccccc', // Light grey for "Product Not Found"
+                                    color: '#cccccc', 
                                     fontFamily: 'Cooper Black, serif !important' 
                                 }}
                             >
@@ -144,14 +142,14 @@ const SearchBar = () => {
                             : filteredData.map(products => (
                                 <Link to={`/Detail/type/${products.type}/${products._id}`} key={products._id} style={{ textDecoration: 'none' }}>
                                     <Item sx={{ borderRadius: 0, display: 'flex', justifyContent: 'space-between', padding: "8px 15px", alignItems: 'center' }}>
-                                        <Typography variant="body2" sx={{ color: '#ffffff', fontFamily: 'Cooper Black, serif !important' }}> {/* White text for product name */}
-                                            {products.name.length > 40 ? products.name.slice(0, 40) + '...' : products.name} {/* Increased slice length */}
+                                        <Typography variant="body2" sx={{ color: '#ffffff', fontFamily: 'Cooper Black, serif !important' }}> {}
+                                            {products.name.length > 40 ? products.name.slice(0, 40) + '...' : products.name} {}
                                         </Typography>
                                         <img 
                                             src={products.images && products.images.length > 0 ? products.images[0].url : 'https://placehold.co/55x65/1e1e1e/ffffff?text=No+Img'} 
                                             alt={products.name} 
-                                            style={{ width: 55, height: 65, objectFit: 'cover', borderRadius: '4px' }} // Object fit cover and rounded corners
-                                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/55x65/1e1e1e/ffffff?text=No+Img'; }} // Fallback image
+                                            style={{ width: 55, height: 65, objectFit: 'cover', borderRadius: '4px' }} 
+                                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/55x65/1e1e1e/ffffff?text=No+Img'; }} 
                                         />
                                     </Item>
                                 </Link>

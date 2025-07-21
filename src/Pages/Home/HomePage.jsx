@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import axiosInstance from '../../utils/axiosInstance'; // Import axiosInstance
+import axiosInstance from '../../utils/axiosInstance'; 
 import { Container, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useContext } from 'react';
 import { ContextFunction } from '../../Context/Context';
 import CategoryCard from '../../Components/Category_Card/CategoryCard';
-import BannerData from '../../Helpers/HomePageBanner'; // This is where your new categories are defined
+import BannerData from '../../Helpers/HomePageBanner'; 
 import Carousel from '../../Components/Carousel/Carousel';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import CopyRight from '../../Components/CopyRight/CopyRight';
@@ -17,12 +17,12 @@ const HomePage = () => {
     useEffect(() => {
         getCart();
         window.scroll(0, 0);
-    }, [authToken]); // Added authToken to dependencies for getCart
+    }, [authToken]); 
 
     const getCart = async () => {
         if (authToken !== null) {
             try {
-                // Use axiosInstance for consistency
+                
                 const { data } = await axiosInstance.get(`${process.env.REACT_APP_GET_CART}`, {
                     headers: {
                         'Authorization': authToken
@@ -31,7 +31,7 @@ const HomePage = () => {
                 setCart(data);
             } catch (error) {
                 console.error("Error fetching cart in HomePage:", error);
-                // Optionally, add a toast notification here if desired
+                
             }
         }
     };
@@ -48,7 +48,7 @@ const HomePage = () => {
                 <Typography variant='h3' sx={{ textAlign: 'center', marginTop: 10, color: '#1976d2', fontWeight: 'bold' }}>Categories</Typography>
                 <Container maxWidth='xl' style={{ marginTop: 90, display: "flex", justifyContent: 'center', flexGrow: 1, flexWrap: 'wrap', gap: 20 }}>
                     {
-                        // This maps over the BannerData to display your category cards
+                        
                         BannerData.map(data => (
                             <CategoryCard data={data} key={data.img} />
                         ))

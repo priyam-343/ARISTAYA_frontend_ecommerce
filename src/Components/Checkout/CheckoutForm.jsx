@@ -133,41 +133,41 @@ const CheckoutForm = () => {
         setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
     }
 
-    // Common TextField styling
+    
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
-                borderColor: '#444444', // Default border color
+                borderColor: '#444444', 
             },
             '&:hover fieldset': {
-                borderColor: '#666666', // Hover border color
+                borderColor: '#666666', 
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#FFD700', // Focused border color (gold)
+                borderColor: '#FFD700', 
             },
-            backgroundColor: '#1e1e1e', // Input field background
+            backgroundColor: '#1e1e1e', 
             borderRadius: '8px',
         },
         '& .MuiInputLabel-outlined': {
-            color: '#cccccc', // Label color
+            color: '#cccccc', 
         },
         '& .MuiInputLabel-outlined.Mui-focused': {
-            color: '#FFD700', // Focused label color (gold)
+            color: '#FFD700', 
         },
         '& .MuiInputBase-input': {
-            fontFamily: 'Cooper Black, serif !important', // Apply Cooper Black to input text
-            color: '#ffffff !important', // Force input text color to white for editable fields
+            fontFamily: 'Cooper Black, serif !important', 
+            color: '#ffffff !important', 
         },
-        // NEW: Specific styles for disabled input text
+        
         '& .MuiInputBase-input.Mui-disabled': {
-            WebkitTextFillColor: '#ffffff !important', // For Chrome/Safari disabled text
-            color: '#ffffff !important', // For Firefox/Edge disabled text
-            opacity: 1, // Ensure full opacity for disabled text
+            WebkitTextFillColor: '#ffffff !important', 
+            color: '#ffffff !important', 
+            opacity: 1, 
         },
-        // NEW: Also target the root of the disabled input for consistency
+        
         '& .MuiInputBase-root.Mui-disabled': {
-            backgroundColor: '#1e1e1e !important', // Ensure disabled background is also dark
-            color: '#ffffff !important', // Ensure disabled text color is white
+            backgroundColor: '#1e1e1e !important', 
+            color: '#ffffff !important', 
         },
     };
 
@@ -191,8 +191,8 @@ const CheckoutForm = () => {
                 marginBottom: 10,
                 marginTop: 10,
                 padding: '20px',
-                backgroundColor: '#000000', // Ensure container background is black
-                minHeight: 'calc(100vh - 180px)' // Ensure it fills viewport height
+                backgroundColor: '#000000', 
+                minHeight: 'calc(100vh - 180px)' 
             }}>
                 <Typography variant='h4' sx={{ margin: '20px 0', color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>Checkout</Typography>
                 <Box
@@ -201,7 +201,7 @@ const CheckoutForm = () => {
                     autoComplete="off"
                     onSubmit={checkOutHandler}
                     sx={{
-                        backgroundColor: '#1e1e1e', // Dark background for the form container
+                        backgroundColor: '#1e1e1e', 
                         padding: '40px',
                         borderRadius: '15px',
                         boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',

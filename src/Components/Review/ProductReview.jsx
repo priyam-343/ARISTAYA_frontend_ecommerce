@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import axiosInstance from '../../utils/axiosInstance'; // Use axiosInstance
+import axiosInstance from '../../utils/axiosInstance'; 
 import Rating from '@mui/material/Rating';
 import {
     MdSentimentSatisfiedAlt,
