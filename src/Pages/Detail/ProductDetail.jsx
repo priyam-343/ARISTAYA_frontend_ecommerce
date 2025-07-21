@@ -1,4 +1,4 @@
-import './Productsimilar.css' 
+import './Productsimilar.css'
 import React, { useEffect, useState, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
@@ -91,19 +91,31 @@ const ProductDetail = () => {
 
     };
 
-    const shareProduct = (product) => {
-        const data = {
+    const shareProduct = async (product) => { 
+        const shareData = {
             text: product.name,
             title: "e-ARISTAYA",
             url: `https://e-ARISTAYA.vercel.app/Detail/type/${cat}/${id}`
-        }
-        if (navigator.canShare && navigator.canShare(data)) {
-            navigator.share(data);
+        };
+
+        if (navigator.canShare && navigator.canShare(shareData)) {
+            try {
+                await navigator.share(shareData);
+                console.log('Product shared successfully!');
+            } catch (error) {
+                if (error.name === 'AbortError' || (error.message && error.message.includes('canceled'))) {
+                    console.log('User canceled share.');
+                } else {
+                    console.error('Error sharing product:', error);
+                    toast.error("Failed to share product. Please try again.", { autoClose: 2000, theme: 'colored' });
+                }
+            }
         }
         else {
-            toast.error("Browser does not support sharing API", { autoClose: 500, theme: 'colored' })
+            toast.error("Sharing not supported on this device/browser.", { autoClose: 2000, theme: 'colored' });
+            console.log('Web Share API not supported or data is invalid for sharing.');
         }
-    }
+    };
 
     const getSimilarProducts = async () => {
         try {
@@ -141,7 +153,7 @@ const ProductDetail = () => {
     return (
         <>
             <Container maxWidth='xl' >
-                {}
+                {/* Dialog for login alert */}
                 <Dialog
                     open={openAlert}
                     TransitionComponent={Transition}
@@ -185,7 +197,7 @@ const ProductDetail = () => {
                     )}
                     {loading || !product ? (
                         <section style={{ display: 'flex', flexWrap: "wrap", width: "100%", justifyContent: "space-around", alignItems: 'center' }}>
-                            {}
+                            {/* Content for loading state, if any, goes here */}
                         </section>
 
                     ) : (
@@ -218,14 +230,14 @@ const ProductDetail = () => {
                                 label={product.price > 1000 ? "Upto 9% off" : "Upto 38% off"}
                                 variant="outlined"
                                 sx={{
-                                    background: '#FFD700', 
-                                    color: '#000000', 
+                                    background: '#FFD700',
+                                    color: '#000000',
                                     width: '150px',
                                     fontWeight: 'bold',
                                     fontFamily: 'Cooper Black, serif !important',
                                     mb: 2
                                 }}
-                                avatar={<TbDiscount2 color='black' />} 
+                                avatar={<TbDiscount2 color='black' />}
                             />
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
                                 <Typography variant="h6" sx={{ color: '#888888', textDecoration: 'line-through', fontFamily: 'Cooper Black, serif !important' }}>
