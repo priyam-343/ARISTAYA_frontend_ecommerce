@@ -1,7 +1,7 @@
 import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography } from '@mui/material'
 import { Box, Container } from '@mui/system'
-import React, { useEffect, useState } from 'react' // Removed useCallback
-import axiosInstance from '../../utils/axiosInstance'; // Import axiosInstance
+import React, { useEffect, useState } from 'react' 
+import axiosInstance from '../../utils/axiosInstance'; 
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { CgProfile } from 'react-icons/cg'
@@ -15,11 +15,11 @@ import { Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/ma
 
 
 const UpdateDetails = () => {
-    const [userData, setUserData] = useState([]) // Stores the fetched user data
-    const [openAlert, setOpenAlert] = useState(false); // State for delete confirmation dialog
+    const [userData, setUserData] = useState([]) 
+    const [openAlert, setOpenAlert] = useState(false); 
     let authToken = localStorage.getItem('Authorization')
     let setProceed = authToken ? true : false
-    // Removed loading state
+    
 
     const [userDetails, setUserDetails] = useState({
         firstName: '',
@@ -69,7 +69,7 @@ const UpdateDetails = () => {
             setUserDetails({
                 firstName: data.firstName,
                 lastName: data.lastName,
-                email: data.email, // Reverted to data.email
+                email: data.email, 
                 phoneNumber: data.phoneNumber,
                 address: data.address || '',
                 zipCode: data.zipCode || '',
@@ -124,7 +124,7 @@ const UpdateDetails = () => {
                     {
                         firstName: userDetails.firstName,
                         lastName: userDetails.lastName,
-                        email: userDetails.email, // Reverted to email
+                        email: userDetails.email, 
                         phoneNumber: userDetails.phoneNumber,
                         address: userDetails.address,
                         zipCode: userDetails.zipCode,
@@ -205,7 +205,7 @@ const UpdateDetails = () => {
             toast.success("Account deleted successfully", { autoClose: 500, theme: 'colored' })
             localStorage.removeItem('Authorization');
             sessionStorage.removeItem('totalAmount');
-            // Removed setLoginUser({})
+            
             navigate("/login")
         } catch (error) {
             console.error("Error deleting account:", error);
@@ -219,7 +219,7 @@ const UpdateDetails = () => {
         }
     }
 
-    // Common TextField styling
+    
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
@@ -258,7 +258,7 @@ const UpdateDetails = () => {
         },
     };
 
-    // Removed loading conditional render
+    
 
     return (
         <>
@@ -274,7 +274,7 @@ const UpdateDetails = () => {
                 backgroundColor: '#000000',
                 minHeight: 'calc(100vh - 180px)'
             }}>
-                {/* Personal Information Section */}
+                {}
                 <Typography variant='h4' sx={{ margin: '20px 0', color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>
                     Personal Information
                 </Typography>
@@ -347,7 +347,7 @@ const UpdateDetails = () => {
                     </Container>
                 </Box>
 
-                {/* Reset Password Section */}
+                {}
                 <Typography variant='h4' sx={{ margin: '40px 0 20px', color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>
                     Reset Password
                 </Typography>
@@ -399,7 +399,7 @@ const UpdateDetails = () => {
                                 id="password"
                                 InputProps={{
                                     endAdornment: (
-                                        <InputAdornment position="end" onClick={() => setShowNewPassword(!showNewPassword)} sx={{ cursor: 'pointer' }}> {/* Reverted to original anonymous function */}
+                                        <InputAdornment position="end" onClick={() => setShowNewPassword(!showNewPassword)} sx={{ cursor: 'pointer' }}> {}
                                             {showNewPassword ? <RiEyeFill /> : <RiEyeOffFill />}
                                         </InputAdornment>
                                     )
@@ -430,7 +430,7 @@ const UpdateDetails = () => {
                     </Container>
                 </Box>
 
-                {/* Delete Account Section */}
+                {}
                 <Typography variant='h4' sx={{ margin: '40px 0 20px', color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>
                     Delete Your Account?
                 </Typography>
@@ -463,12 +463,12 @@ const UpdateDetails = () => {
                     </Button>
                 </Box>
 
-                {/* Delete Confirmation Dialog */}
+                {}
                 <Dialog
                     open={openAlert}
                     TransitionComponent={Transition}
                     keepMounted
-                    onClose={() => setOpenAlert(false)} // Reverted to original close logic
+                    onClose={() => setOpenAlert(false)} 
                     aria-describedby="delete-alert-dialog-slide-description"
                     PaperProps={{
                         sx: {
@@ -496,7 +496,7 @@ const UpdateDetails = () => {
                             }}>
                             Delete
                         </Button>
-                        <Button variant='contained' endIcon={<AiFillCloseCircle />} onClick={() => setOpenAlert(false)} // Reverted to original close logic
+                        <Button variant='contained' endIcon={<AiFillCloseCircle />} onClick={() => setOpenAlert(false)} 
                             sx={{
                                 backgroundColor: '#333333 !important',
                                 color: 'white !important',

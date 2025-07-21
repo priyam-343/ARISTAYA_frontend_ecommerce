@@ -15,13 +15,13 @@ const PaymentSuccess = () => {
     const { setCart } = useContext(ContextFunction);
 
     const [orderData, setOrderData] = useState(null);
-    const [loading, setLoading] = useState(true); // Initial loading state
+    const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null);
-    const [pdfDownloaded, setPdfDownloaded] = useState(false); // New state to track PDF download
+    const [pdfDownloaded, setPdfDownloaded] = useState(false); 
 
-    // Function to handle PDF download - wrapped in useCallback for stability
+    
     const handleDownloadReceipt = useCallback(() => {
-        if (pdfDownloaded) return; // Prevent re-download if already triggered
+        if (pdfDownloaded) return; 
 
         const element = document.getElementById('receipt-content');
         if (element) {
@@ -33,56 +33,56 @@ const PaymentSuccess = () => {
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
-            setPdfDownloaded(true); // Mark as downloaded
+            setPdfDownloaded(true); 
         } else {
             console.error("Receipt content element not found for PDF generation!");
-            // toast.error("Could not generate receipt. Please try again.", { autoClose: 2000, theme: 'colored' });
+            
         }
-    }, [paymentId, pdfDownloaded]); // pdfDownloaded is a dependency to ensure it only runs once per component lifecycle
+    }, [paymentId, pdfDownloaded]); 
 
-    // Effect for clearing cart and fetching order details (runs once on mount)
+    
     useEffect(() => {
-        setCart([]); // Clear cart immediately
-        localStorage.removeItem('cart'); // Also clear from local storage
+        setCart([]); 
+        localStorage.removeItem('cart'); 
 
         const fetchOrderDetails = async () => {
-            if (!paymentId) { // Guard against no paymentId
+            if (!paymentId) { 
                 setError("No payment ID found in URL. Cannot fetch order details.");
                 setLoading(false);
                 return;
             }
 
             try {
-                setLoading(true); // Start loading
-                setError(null); // Clear previous errors
+                setLoading(true); 
+                setError(null); 
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payment/getpaymentdetails/${paymentId}`);
-                setOrderData(response.data.paymentDetails); // Set the fetched order data
+                setOrderData(response.data.paymentDetails); 
             } catch (err) {
                 console.error("Failed to fetch order details:", err);
                 setError("Failed to load order details. Please try refreshing.");
-                setOrderData(null); // Clear order data on error
+                setOrderData(null); 
             } finally {
-                setLoading(false); // End loading regardless of success/failure
+                setLoading(false); 
             }
         };
 
-        fetchOrderDetails(); // Call fetch function on mount
+        fetchOrderDetails(); 
 
-    }, [setCart, paymentId]); // Dependencies: only re-run if setCart or paymentId changes (should be rare/once)
+    }, [setCart, paymentId]); 
 
-    // Effect for automatically triggering PDF download (runs when orderData is available)
+    
     useEffect(() => {
         if (orderData && !loading && !error && !pdfDownloaded) {
-            // Add a small delay to ensure the DOM is fully rendered with fetched data
+            
             const timer = setTimeout(() => {
                 handleDownloadReceipt();
-            }, 500); // 500ms delay after data is loaded and rendered
+            }, 500); 
 
-            return () => clearTimeout(timer); // Cleanup timer
+            return () => clearTimeout(timer); 
         }
-    }, [orderData, loading, error, pdfDownloaded, handleDownloadReceipt]); // Dependencies for this effect
+    }, [orderData, loading, error, pdfDownloaded, handleDownloadReceipt]); 
 
-    // Conditional rendering for loading, error, and success states
+    
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', flexDirection: 'column', color: '#ffffff' }}>
@@ -108,7 +108,7 @@ const PaymentSuccess = () => {
         );
     }
 
-    // Render the success content only if orderData is available and not loading/error
+    
     return (
         <>
             <div className='main-payment-box'>
@@ -126,7 +126,7 @@ const PaymentSuccess = () => {
                     Payment Successful <AiOutlineFileDone style={{ color: '#FFD700', fontSize: '1.2em', verticalAlign: 'middle' }} />
                 </Typography>
                 
-                {/* This is the content that will be included in the PDF */}
+                {}
                 <div id="receipt-content" style={{ 
                     width: '100%', 
                     maxWidth: '500px', 
@@ -163,7 +163,7 @@ const PaymentSuccess = () => {
                         We've sent you an email with all of the details of your order.
                     </Typography>
 
-                    {/* Display fetched order details */}
+                    {}
                     {orderData && (
                         <Box sx={{ mt: 2, borderTop: '1px solid #444444', pt: 2 }}>
                             <Typography variant="h6" sx={{ color: '#FFD700 !important', fontFamily: 'Cooper Black, serif !important', mb: 1 }}>
@@ -204,7 +204,7 @@ const PaymentSuccess = () => {
                                 </Typography>
                             </Box>
 
-                            {/* Shipping Address */}
+                            {}
                             {orderData.userData && (
                                 <Box sx={{ mt: 3, borderTop: '1px solid #444444', pt: 2 }}>
                                     <Typography variant="h6" sx={{ color: '#FFD700 !important', fontFamily: 'Cooper Black, serif !important', mb: 1 }}>

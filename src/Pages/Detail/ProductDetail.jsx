@@ -1,4 +1,4 @@
-import './Productsimilar.css' // Assuming this CSS is for similar products section
+import './Productsimilar.css' 
 import React, { useEffect, useState, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
@@ -141,7 +141,7 @@ const ProductDetail = () => {
     return (
         <>
             <Container maxWidth='xl' >
-                {/* Login/Proceed Dialog */}
+                {}
                 <Dialog
                     open={openAlert}
                     TransitionComponent={Transition}
@@ -185,7 +185,7 @@ const ProductDetail = () => {
                     )}
                     {loading || !product ? (
                         <section style={{ display: 'flex', flexWrap: "wrap", width: "100%", justifyContent: "space-around", alignItems: 'center' }}>
-                            {/* Skeletons for product details */}
+                            {}
                         </section>
 
                     ) : (
@@ -218,14 +218,14 @@ const ProductDetail = () => {
                                 label={product.price > 1000 ? "Upto 9% off" : "Upto 38% off"}
                                 variant="outlined"
                                 sx={{
-                                    background: '#FFD700', // Gold accent for discount
-                                    color: '#000000', // Black text on gold
+                                    background: '#FFD700', 
+                                    color: '#000000', 
                                     width: '150px',
                                     fontWeight: 'bold',
                                     fontFamily: 'Cooper Black, serif !important',
                                     mb: 2
                                 }}
-                                avatar={<TbDiscount2 color='black' />} // Black icon on gold
+                                avatar={<TbDiscount2 color='black' />} 
                             />
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
                                 <Typography variant="h6" sx={{ color: '#888888', textDecoration: 'line-through', fontFamily: 'Cooper Black, serif !important' }}>

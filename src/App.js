@@ -34,7 +34,7 @@ function App() {
         <DesktopNavigation />
         <div className='margin'>
           <Routes>
-            {/*User Routes  */}
+            {}
             <Route path='/' index element={<HomePage />} />
             <Route path="/login" element={< Login />} />
             <Route path='/register' element={<Register />} />
@@ -48,7 +48,7 @@ function App() {
             <Route path='/forgotpassword' element={<ForgotPasswordForm />} />
             <Route path='/user/reset/:id/:token' element={<AddNewPassword />} />
 
-            {/* Admin Routes */}
+            {}
             <Route path="/admin/login" element={< AdminLogin />} />
             <Route path='/admin/register' element={<AdminRegister />} />
             <Route path='/admin/home' element={<AdminHomePage />} />

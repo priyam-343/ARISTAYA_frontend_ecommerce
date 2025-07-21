@@ -1,38 +1,23 @@
-/* src/Navigation/Desktop.css */
 
 .nav {
-  background-color: #000000; /* Pure black background for the nav bar */
-  color: #ffffff; /* Default white text */
-  display: flex;
+  background-color: #000000;   color: #ffffff;   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 30px; /* Adjusted padding for a sleeker look */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); /* Stronger, premium shadow */
-  border-bottom: 1px solid #1e1e1e; /* Subtle bottom border */
-  position: fixed; /* Keep it fixed at the top */
-  width: 100%;
+  padding: 10px 30px;   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);   border-bottom: 1px solid #1e1e1e;   position: fixed;   width: 100%;
   top: 0;
   left: 0;
-  z-index: 1100; /* Ensure it's above other content */
-  height: 64px; /* Optimized height for the nav bar */
-  box-sizing: border-box; /* Include padding in height */
-}
+  z-index: 1100;   height: 64px;   box-sizing: border-box; }
 
 .logo a {
   text-decoration: none;
 }
 
 .logo span {
-  font-family: 'Cooper Black', serif; /* Cooper Black for the logo */
-  font-size: 1.8rem; /* Larger logo font size */
-  color: #ffffff; /* White logo text */
-  letter-spacing: 0.05em; /* Slight letter spacing for premium feel */
-  transition: color 0.3s ease;
+  font-family: 'Cooper Black', serif;   font-size: 1.8rem;   color: #ffffff;   letter-spacing: 0.05em;   transition: color 0.3s ease;
 }
 
 .logo span:hover {
-  color: #FFD700; /* Gold on hover for logo */
-}
+  color: #FFD700; }
 
 .nav-items {
   list-style: none;
@@ -40,95 +25,66 @@
   align-items: center;
   margin: 0;
   padding: 0;
-  gap: 25px; /* Spacing between navigation links */
-}
+  gap: 25px; }
 
 .nav-links a {
   text-decoration: none;
-  color: #ffffff; /* Default white for links */
-  font-family: 'Cooper Black', serif; /* Cooper Black for nav links */
-  font-size: 1rem;
+  color: #ffffff;   font-family: 'Cooper Black', serif;   font-size: 1rem;
   font-weight: 500;
   transition: color 0.3s ease;
-  display: flex; /* Allow icon and text to align */
-  align-items: center;
-  gap: 5px; /* Space between icon and text */
-}
+  display: flex;   align-items: center;
+  gap: 5px; }
 
 .nav-links a:hover {
-  color: #FFD700; /* Gold on hover */
-}
+  color: #FFD700; }
 
-/* Active link styling */
 .nav-links .active .nav-icon-span {
-  color: #FFD700; /* Gold for active link text */
-}
+  color: #FFD700; }
 
 .nav-icon-span {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #ffffff; /* Default icon color to white */
-  transition: color 0.3s ease;
+  color: #ffffff;   transition: color 0.3s ease;
 }
 
 .nav-icon {
-  font-size: 22px; /* Standard icon size */
-  color: #ffffff; /* Default icon color to white */
-  transition: color 0.3s ease;
+  font-size: 22px;   color: #ffffff;   transition: color 0.3s ease;
 }
 
-/* Badge styling for cart/wishlist counts */
 .MuiBadge-badge {
-  background-color: #FFD700 !important; /* Gold badge background */
-  color: #000000 !important; /* Black text on badge */
-  font-family: 'Outfit', sans-serif; /* Use Outfit for badge numbers */
-  font-weight: 600;
+  background-color: #FFD700 !important;   color: #000000 !important;   font-family: 'Outfit', sans-serif;   font-weight: 600;
 }
 
-/* Logout Button Specific Styling */
 .logout-btn {
-  background-color: #333333 !important; /* Dark grey button */
-  color: #ffffff !important; /* White text */
-  border: 1px solid #444444 !important; /* Subtle border */
-  border-radius: 8px !important;
+  background-color: #333333 !important;   color: #ffffff !important;   border: 1px solid #444444 !important;   border-radius: 8px !important;
   text-transform: capitalize !important;
   font-family: 'Cooper Black', serif !important;
   font-weight: 500 !important;
-  padding: 8px 15px !important; /* Adjusted padding */
-  transition: all 0.3s ease-in-out;
+  padding: 8px 15px !important;   transition: all 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
-  background-color: #444444 !important; /* Slightly lighter dark grey on hover */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: #444444 !important;   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Profile icon specific adjustment */
 .CgProfile-icon {
-  font-size: 29px; /* Keep original size if preferred */
-  margin-top: 7px;
+  font-size: 29px;   margin-top: 7px;
   margin-right: 10px;
-  color: #ffffff; /* White profile icon */
-  transition: color 0.3s ease;
+  color: #ffffff;   transition: color 0.3s ease;
 }
 
 .CgProfile-icon:hover {
-  color: #FFD700; /* Gold on hover */
-}
+  color: #FFD700; }
 
-/* Dialog styling (for logout confirmation) */
 .MuiDialog-paper {
-  background-color: #1e1e1e !important; /* Dark background for dialogs */
-  color: #ffffff !important; /* White text */
-  border-radius: 12px !important;
+  background-color: #1e1e1e !important;   color: #ffffff !important;   border-radius: 12px !important;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
   border: 1px solid #333333;
 }
 
 .MuiDialogContentText-root {
-  color: #ffffff !important; /* Ensure dialog content text is white */
-}
+  color: #ffffff !important; }
 
 .MuiDialogActions-root .MuiButton-root {
   background-color: #333333 !important;
@@ -140,12 +96,10 @@
   background-color: #444444 !important;
 }
 
-/* Responsive adjustments for smaller screens (if needed, this file is for Desktop) */
 @media (max-width: 960px) {
   .nav {
     padding: 10px 20px;
-    height: 56px; /* Slightly smaller height for tablets */
-  }
+    height: 56px;   }
   .logo span {
     font-size: 1.5rem;
   }

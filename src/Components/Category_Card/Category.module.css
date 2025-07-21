@@ -1,9 +1,6 @@
-/* src/Components/Category_Card/Category.module.css */
 
 .mainCard {
-    width: 300px; /* Adjusted width for a taller rectangle */
-    height: 380px; /* Significantly taller for a more impactful image */
-    display: flex;
+    width: 300px;     height: 380px;     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -11,59 +8,35 @@
     cursor: pointer;
     overflow: hidden;
     
-    /* Inherit global card styling from App.css (main-card class) */
-    /* background-color: #1e1e1e; */ 
-    /* border-radius: 12px; */
-    /* box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); */
-    /* transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; */
-}
+         
+            }
 
-/* Hover effects (already handled by .main-card in App.css) */
-/* .mainCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-} */
 
 .mainImg {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures image fills the space, cropping if necessary */
-    transition: transform 0.3s ease-in-out;
+    object-fit: cover;     transition: transform 0.3s ease-in-out;
 }
 
 .mainCard:hover .mainImg {
-    transform: scale(1.08); /* Slightly more pronounced zoom effect on hover */
-}
+    transform: scale(1.08); }
 
 .imgTitle {
     position: absolute;
-    bottom: 25px; /* Position slightly higher from the bottom */
-    left: 50%;
+    bottom: 25px;     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7); /* Reintroduced transparent dark background */
-    color: white; /* Pure white text */
-    padding: 12px 25px; /* Larger padding for a more substantial look */
-    border-radius: 10px; /* Still rounded corners */
-    font-weight: 700; /* Bolder text for impact */
-    font-size: 1.6rem; /* Larger font size for prominence */
-    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);     color: white;     padding: 12px 25px;     border-radius: 10px;     font-weight: 700;     font-size: 1.6rem;     text-align: center;
     white-space: nowrap;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Subtle shadow for the background */
-    transition: background-color 0.3s ease-in-out, font-size 0.3s ease-in-out;
-    letter-spacing: 0.08em; /* Increased letter spacing for premium feel */
-}
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);     transition: background-color 0.3s ease-in-out, font-size 0.3s ease-in-out;
+    letter-spacing: 0.08em; }
 
 .mainCard:hover .imgTitle {
-    background-color: rgba(0, 0, 0, 0.85); /* Slightly darker on hover */
-    font-size: 1.7rem; /* Slightly larger on hover */
-}
+    background-color: rgba(0, 0, 0, 0.85);     font-size: 1.7rem; }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .mainCard {
         width: 280px;
-        height: 350px; /* Adjusted height for tablets */
-    }
+        height: 350px;     }
     .imgTitle {
         font-size: 1.4rem;
         padding: 10px 20px;
@@ -73,11 +46,7 @@
 
 @media (max-width: 480px) {
     .mainCard {
-        width: 90%; /* Full width on very small screens */
-        max-width: 300px; /* Cap max width */
-        height: 300px; /* Adjusted height for mobile */
-        margin: 15px auto; /* Center cards and add more vertical spacing */
-    }
+        width: 90%;         max-width: 300px;         height: 300px;         margin: 15px auto;     }
     .imgTitle {
         font-size: 1.2rem;
         padding: 8px 15px;

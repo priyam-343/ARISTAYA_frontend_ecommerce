@@ -8,11 +8,11 @@ import { Transition } from '../../Constants/Constant';
 import { MdOutlineCancel, MdProductionQuantityLimits } from 'react-icons/md';
 
 const AddProduct = ({ getProductInfo, data }) => {
-    // const [age, setAge] = useState('');
+    
 
-    // const handleChange = (event) => {
-    //     setAge(event.target.value);
-    // };
+    
+    
+    
     const [open, setOpen] = useState(false);
 
     let authToken = localStorage.getItem("Authorization")

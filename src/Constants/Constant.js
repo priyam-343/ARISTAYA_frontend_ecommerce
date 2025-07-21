@@ -1,5 +1,5 @@
 import { Slide } from "@mui/material";
-import axiosInstance from "./../utils/axiosInstance"; // Import your axiosInstance
+import axiosInstance from "./../utils/axiosInstance"; 
 import { forwardRef } from "react";
 
 const getCart = async (setProceed, setCart, authToken) => {
@@ -11,11 +11,11 @@ const getCart = async (setProceed, setCart, authToken) => {
                         'Authorization': authToken
                     }
                 });
-            // Ensure data is an array before setting cart state
+            
             setCart(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Error in getCart (Constants):", error);
-            setCart([]); // Set cart to empty array on error
+            setCart([]); 
         }
     }
 };
@@ -29,11 +29,11 @@ const getWishList = async (setProceed, setWishlistData, authToken) => {
                         'Authorization': authToken
                     }
                 });
-            // Ensure data is an array before setting wishlistData state
+            
             setWishlistData(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Error in getWishList (Constants):", error);
-            setWishlistData([]); // Set wishlistData to empty array on error
+            setWishlistData([]); 
         }
     }
 };

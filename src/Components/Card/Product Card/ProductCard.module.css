@@ -1,65 +1,37 @@
-/* src/Components/Card/Product Card/ProductCard.module.css */
 
 .main_card {
-    width: 300px; /* Slightly reduced width to emphasize height */
-    margin: 20px; /* Spacing between cards */
-    display: flex;
-    flex-direction: column; /* Stack content vertically */
-    justify-content: space-between; /* Push content and actions to ends */
-    height: auto; /* Auto height based on content */
-    min-height: 480px; /* Increased min-height significantly for vertical rectangle */
-    box-sizing: border-box; /* Include padding in dimensions */
-    /* All other styling (background, shadow, border, border-radius) 
-       will be handled by the global .MuiPaper-root.MuiCard-root in App.css 
-       and inline sx props in ProductCard.jsx */
-}
+    width: 300px;     margin: 20px;     display: flex;
+    flex-direction: column;     justify-content: space-between;     height: auto;     min-height: 480px;     box-sizing: border-box;     }
 
 .card_action {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-top: 15px; /* Padding at the top of the card content */
-    flex-grow: 1; /* Allow action area to grow */
-}
+    padding-top: 15px;     flex-grow: 1; }
 
 .img_box {
-    width: 100%; /* Image box takes full width of card */
-    height: 300px; /* Increased height for image container to be a vertical rectangle */
-    display: flex;
+    width: 100%;     height: 300px;     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Hide overflow for rounded corners */
-    margin-bottom: 10px; /* Space below image */
-}
+    overflow: hidden;     margin-bottom: 10px; }
 
 .img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; /* Ensure entire image is visible, maintaining aspect ratio within the box */
-    border-radius: 8px; /* Slight rounded corners for the image itself */
-}
+    object-fit: contain;     border-radius: 8px; }
 
-/* Responsive adjustments */
 @media screen and (max-width: 960px) {
     .main_card {
-        width: 280px; /* Slightly smaller width for tablets */
-        margin: 15px;
-        min-height: 450px; /* Adjusted min-height for tablet vertical rectangle */
-    }
+        width: 280px;         margin: 15px;
+        min-height: 450px;     }
     .img_box {
-        height: 280px; /* Adjusted height for tablet image container */
-    }
+        height: 280px;     }
 }
 
 @media (max-width: 600px) {
     .main_card {
-        width: 90%; /* Almost full width on small mobiles */
-        max-width: 320px; /* Cap max width */
-        margin: 10px auto; /* Center and add vertical spacing */
-        min-height: 400px; /* Adjusted min-height for mobile vertical rectangle */
-    }
+        width: 90%;         max-width: 320px;         margin: 10px auto;         min-height: 400px;     }
     .img_box {
-        height: 250px; /* Adjusted height for mobile image container */
-    }
+        height: 250px;     }
 }

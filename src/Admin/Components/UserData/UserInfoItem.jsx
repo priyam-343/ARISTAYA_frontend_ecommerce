@@ -78,7 +78,7 @@ const UserInfoItem = ({ commonGetRequest, id, authToken }) => {
                 onClose={() => setOpenAlert(false)}
                 aria-describedby="alert-dialog-slide-description"
             >
-                {/* <DialogTitle>{"Use Google's location service?"}</DialogTitle> */}
+                {}
                 <DialogContent sx={{ width: { xs: 280, md: 350, xl: 400 } }}>
                     <DialogContentText style={{ textAlign: 'center' }} id="alert-dialog-slide-description">
                         <Typography variant='body1'> {userData.firstName} {userData.lastName}'s all data will be erased</Typography>
