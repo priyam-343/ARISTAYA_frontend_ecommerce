@@ -1,0 +1,385 @@
+/* src/App.css */
+
+/* Global Font: Cooper Black for all text */
+@import url('https://fonts.googleapis.com/css2?family=Cooper+Black&display=swap');
+
+body {
+  font-family: 'Cooper Black', serif; /* Primary font for all text */
+  margin: 0;
+  padding: 0;
+  background-color: #000000 !important; /* Force pure black for body background */
+  color: #ffffff !important; /* Force pure white text */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure all headings and MUI Typography variants also use Cooper Black and are white */
+h1, h2, h3, h4, h5, h6, 
+.MuiTypography-root, /* Target all Material-UI Typography components */
+.MuiInputLabel-root, /* Input labels */
+.MuiInputBase-input, /* Input text */
+.MuiInputBase-root, /* Base for input elements */
+.MuiFormLabel-root /* Form labels */
+{
+  font-family: 'Cooper Black', serif !important; /* Force Cooper Black for all text */
+  color: #ffffff !important; /* Force pure white for all text */
+}
+
+/* Override specific MUI components that might have default colors */
+.MuiButton-root {
+  color: #ffffff !important; /* Ensure button text is white */
+}
+
+.MuiSvgIcon-root {
+  color: #ffffff !important; /* Force default icon color to white */
+}
+
+/* Basic styling for the main content area to give it some padding */
+/* Further increased padding-top to ensure content is well below fixed nav */
+.margin {
+  padding-top: 100px; /* Significantly increased for more luxurious spacing */
+  padding-bottom: 80px; /* Increased bottom padding as well */
+  min-height: calc(100vh - 180px); /* Adjust min-height to push footer down */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+  background-color: #000000 !important; /* Ensure content area background is black */
+}
+
+/* Toastify custom styles */
+.toastContainerBox {
+  font-family: 'Cooper Black', serif; /* Apply Cooper Black to toasts */
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Dark background for toasts */
+  color: #ffffff; /* White text for toasts */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Stronger shadow for toasts */
+}
+
+/* General button styling (if not overridden by MUI) */
+.all-btn {
+  border-radius: 8px !important; /* Rounded corners for all buttons */
+  text-transform: capitalize !important; /* Consistent capitalization */
+  font-weight: 500 !important;
+  transition: all 0.3s ease-in-out; /* Smooth transitions for hover effects */
+  background-color: #333333 !important; /* Dark grey for buttons, subtle contrast */
+  color: #ffffff !important; /* White text on buttons */
+  border: 1px solid #444444; /* Subtle border for definition */
+}
+
+.all-btn:hover {
+  transform: translateY(-2px); /* Slight lift on hover */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* More pronounced shadow */
+  background-color: #444444 !important; /* Slightly lighter dark grey on hover */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .margin {
+    padding-top: 80px; /* Adjust for smaller header/nav on mobile */
+    padding-bottom: 70px; /* Adjust mobile bottom padding */
+  }
+}
+
+/* Hide scrollbar for elements with overflow-x: auto (e.g., similar products) */
+.similarProduct::-webkit-scrollbar {
+  display: none;
+}
+
+.similarProduct {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Remove extra space below images */
+}
+
+/* Add subtle box-shadow for cards/boxes if not already present */
+.MuiPaper-root.MuiCard-root {
+  background-color: #1e1e1e !important; /* Slightly lighter dark background for cards */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important; /* Stronger, darker shadow */
+  border-radius: 12px !important;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  color: #ffffff !important; /* White text on cards */
+  border: 1px solid #333333; /* Subtle border for definition */
+}
+
+.MuiPaper-root.MuiCard-root:hover {
+  transform: translateY(-5px); /* More pronounced lift on hover */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important; /* Even stronger shadow */
+}
+
+/* Specific styling for the empty cart/wishlist main-card */
+.main-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  max-width: 500px;
+  margin: 40px auto;
+  background-color: #1e1e1e; /* Dark background for this card */
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  color: #ffffff; /* White text for this card */
+  border: 1px solid #333333; /* Subtle border */
+}
+
+.empty-cart-img {
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 25px;
+}
+
+.main-card .MuiTypography-root {
+  color: #ffffff !important; /* White for important text in this card */
+  margin-bottom: 15px;
+  font-family: 'Cooper Black', serif !important; /* Apply Cooper Black to heading here too */
+}
+
+.main-card .MuiButton-root {
+  margin-top: 10px;
+  padding: 10px 25px;
+  font-size: 1rem;
+  border-radius: 25px;
+  background-color: #333333; /* Consistent dark grey for buttons */
+  color: white;
+  transition: background-color 0.3s ease;
+  border: 1px solid #444444;
+}
+
+.main-card .MuiButton-root:hover {
+  background-color: #444444; /* Darker grey on hover */
+}
+
+/* Adjusting link color for better visibility on dark background */
+a {
+  color: #cccccc !important; /* Light grey for links, subtle */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #eeeeee !important; /* Slightly lighter on hover */
+  text-decoration: underline;
+}
+
+/* Adjusting the active class for navigation */
+.active {
+  color: #FFD700 !important; /* Gold accent for active navigation items */
+  font-weight: 600;
+}
+
+/* Price/Rating specific styling */
+.MuiTypography-h5[color="primary"], 
+.MuiTypography-h6[color="primary"],
+.MuiTypography-body2[color="primary"] { /* Ensure all primary colored typography is gold */
+  color: #FFD700 !important; /* Gold for prices */
+}
+
+.MuiRating-root .MuiRating-iconFilled {
+  color: #FFD700 !important; /* Gold for filled rating stars */
+}
+
+/* Ensure form fields and labels are white on dark background */
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #444444 !important; /* Darker border for inputs */
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #666666 !important; /* Lighter border on hover */
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #FFD700 !important; /* Gold border on focus */
+}
+
+.MuiInputLabel-outlined {
+  color: #cccccc !important; /* Light grey for labels */
+}
+
+.MuiInputLabel-outlined.Mui-focused {
+  color: #FFD700 !important; /* Gold for focused labels */
+}
+
+.MuiSelect-icon {
+  color: #ffffff !important; /* White dropdown arrow */
+}
+
+.MuiMenuItem-root {
+  background-color: #1e1e1e !important; /* Dark background for dropdown items */
+  color: #ffffff !important; /* White text for dropdown items */
+}
+
+.MuiMenuItem-root:hover {
+  background-color: #333333 !important; /* Darker hover for dropdown items */
+}
+
+.MuiPaper-root.MuiMenu-paper {
+    background-color: #1e1e1e !important; /* Ensure dropdown menu paper is dark */
+    border: 1px solid #333333; /* Add border for definition */
+}
+
+/* Specific styling for Product Detail Page image box if needed */
+.detail-img-box {
+  background-color: #1e1e1e; /* Dark background for image container */
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  padding: 20px; /* Add some padding around the image */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensure image doesn't break layout */
+  border: 1px solid #333333; /* Subtle border */
+}
+
+.detail-img {
+  max-width: 100%; /* Ensure image fits container */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: contain; /* Ensure entire image is visible */
+  border-radius: 8px; /* Slightly rounded corners for the image itself */
+}
+
+/* Navigation Bar Styling Overrides */
+/* This targets the AppBar in DesktopNavigation */
+.MuiAppBar-root {
+  background-color: #000000 !important; /* Pure black for the navigation bar */
+  color: #ffffff !important; /* White text for navigation items */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important; /* Stronger shadow for depth */
+  border-bottom: 1px solid #1e1e1e; /* Subtle line at the bottom */
+}
+
+/* This targets the BottomNavigation in MobileNavigation */
+.MuiBottomNavigation-root {
+  background-color: #000000 !important; /* Pure black for mobile navigation */
+  border-top: 1px solid #1e1e1e; /* Subtle line at the top */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5) !important; /* Stronger shadow for depth */
+}
+
+.MuiBottomNavigationAction-root {
+  color: #cccccc !important; /* Light grey for inactive mobile nav items */
+  font-family: 'Cooper Black', serif !important; /* Apply Cooper Black to mobile nav labels */
+}
+
+.MuiBottomNavigationAction-root.Mui-selected {
+  color: #FFD700 !important; /* Gold for selected mobile nav item */
+}
+
+/* Dialog/Modal Styling */
+.MuiDialog-paper {
+  background-color: #1e1e1e !important; /* Dark background for dialogs */
+  color: #ffffff !important; /* White text for dialogs */
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid #333333;
+}
+
+.MuiDialogContentText-root {
+  color: #ffffff !important; /* Ensure DialogContentText is white */
+}
+
+.MuiDialogActions-root .MuiButton-root {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+  border: 1px solid #444444;
+}
+
+.MuiDialogActions-root .MuiButton-root:hover {
+  background-color: #444444 !important;
+}
+
+/* Specific styling for the Cart/Wishlist empty state buttons */
+.main-card .MuiButton-root {
+  background-color: #333333 !important; /* Consistent dark grey button */
+  color: white !important;
+  border: 1px solid #444444;
+}
+.main-card .MuiButton-root:hover {
+  background-color: #444444 !important;
+}
+
+/* Ensure Product Detail Page content is correctly positioned */
+.main-content {
+  display: flex;
+  flex-direction: column; /* Default to column for mobile */
+  justify-content: center;
+  align-items: center;
+  padding: 40px; /* Increased padding for main content */
+}
+
+@media (min-width: 960px) { /* For desktop view */
+  .main-content {
+    flex-direction: row; /* Row layout for desktop */
+    align-items: flex-start; /* Align items to the top */
+    gap: 60px; /* Increased space between image and details */
+    padding: 60px; /* Increased padding for desktop */
+  }
+}
+
+.product-image {
+  flex: 1; /* Allow image section to take available space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 450px; /* Increased minimum height for image container */
+  width: 100%; /* Full width on smaller screens */
+  max-width: 550px; /* Increased max width for image container on larger screens */
+}
+
+.product-details {
+  flex: 1; /* Allow details section to take available space */
+  padding: 30px; /* Increased padding for details section */
+  color: white; /* Ensure text is white */
+  width: 100%; /* Full width on smaller screens */
+  max-width: 650px; /* Increased max width for details on larger screens */
+}
+
+/* Adjust ProductReview component styling if needed */
+.review-section {
+  background-color: #1e1e1e; /* Dark background for review section */
+  border-radius: 12px;
+  padding: 30px; /* Increased padding */
+  margin-top: 50px; /* Increased margin-top */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  border: 1px solid #333333;
+}
+
+/* Ensure Typography components within ProductDetail respect global font/color */
+.product-details .MuiTypography-root {
+  font-family: 'Cooper Black', serif !important;
+  color: #ffffff !important;
+}
+
+.product-details .MuiTypography-body1 {
+  color: #cccccc !important; /* Slightly lighter white for body text */
+}
+
+.product-details .MuiChip-root {
+  background-color: #1e1e1e !important;
+  border-color: #444444 !important;
+  color: #cccccc !important;
+  font-family: 'Cooper Black', serif !important;
+}
+
+.product-details .MuiChip-root .MuiChip-avatar {
+  color: #FFD700 !important; /* Gold for chip avatars/icons */
+}
+
+.product-details .MuiRating-iconFilled {
+  color: #FFD700 !important; /* Gold for rating stars */
+}
+
+.product-details .MuiButtonGroup-root .MuiButton-root {
+  border-color: #444444 !important;
+  color: #ffffff !important;
+  background-color: #1e1e1e !important;
+}
+
+.product-details .MuiButtonGroup-root .MuiButton-root:hover {
+  background-color: #333333 !important;
+  border-color: #666666 !important;
+}
+
