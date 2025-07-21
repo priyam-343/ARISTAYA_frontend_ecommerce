@@ -1,0 +1,55 @@
+/* src/Pages/Payment/Payment.css */
+
+.main-payment-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 180px); /* Adjust height to fit content and footer */
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #000000; /* Pure black background for the page */
+    color: #ffffff; /* Default text color for this section */
+}
+
+.main-payment-card {
+    width: 100%;
+    max-width: 500px; /* Max width for the card */
+    margin: 40px auto; /* Center horizontally, add vertical margin */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    height: auto; /* Auto height based on content */
+    box-sizing: border-box; /* Include padding in dimensions */
+    
+    background-color: #1e1e1e; /* Dark background for the card */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Premium shadow */
+    border: 1px solid #333333; /* Subtle border */
+    color: #ffffff; /* Default text color inside the card */
+    text-align: center; /* Center text within the card */
+}
+
+.payment-img {
+    max-width: 90%; /* Responsive image size */
+    max-height: 300px; /* Max height for the image */
+    height: auto;
+    display: block; /* Remove extra space below image */
+    object-fit: contain; /* Ensure entire image is visible */
+    margin-bottom: 25px; /* Space below image */
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+    .main-payment-card {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 90%;
+    }
+    .payment-img {
+        max-height: 200px;
+        margin-bottom: 15px;
+    }
+}
