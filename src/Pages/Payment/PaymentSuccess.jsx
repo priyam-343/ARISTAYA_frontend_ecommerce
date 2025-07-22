@@ -234,7 +234,7 @@ const PaymentSuccess = () => {
                     )}
                 </div>
 
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Link style={{ textDecoration: 'none' }} to='/'>
                         <Button 
                             variant='contained' 
@@ -254,24 +254,6 @@ const PaymentSuccess = () => {
                             Back To Home
                         </Button>
                     </Link>
-                    <Button 
-                        variant='contained' 
-                        onClick={handleDownloadReceipt}
-                        sx={{ 
-                            borderRadius: '8px',
-                            backgroundColor: '#FFD700 !important',
-                            color: '#000000 !important',
-                            border: '1px solid #FFD700 !important',
-                            fontFamily: 'Cooper Black, serif !important',
-                            padding: '12px 30px',
-                            '&:hover': {
-                                backgroundColor: '#e6b800 !important',
-                                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)'
-                            },
-                        }} 
-                    >
-                        Download Receipt
-                    </Button>
                 </Box>
             </div >
             <CopyRight sx={{ mt: 8, mb: 10 }} />

@@ -4,8 +4,6 @@ This is the frontend application for the ARISTAYA E-commerce Platform.
 Features
 User Authentication & Authorization (JWT)
 
-Admin Dashboard (Product, Order, User management & statistics)
-
 Payment Gateway Integration
 
 Mail Service Integration

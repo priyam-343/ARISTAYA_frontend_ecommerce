@@ -10,7 +10,6 @@ const CommentCard = ({ userReview, setReviews, reviews, fetchReviews }) => {
     const [authUser, setAuthUser] = useState()
     const [editComment, setEditComment] = useState(userReview.comment)
     const [edit, setEdit] = useState(false)
-    const [isAdmin, setIsAdmin] = useState(false)
     const [value, setValue] = useState(userReview.rating);
     let authToken = localStorage.getItem('Authorization')
     useEffect(() => {
@@ -23,9 +22,7 @@ const CommentCard = ({ userReview, setReviews, reviews, fetchReviews }) => {
             }
         })
         setAuthUser(data._id);
-        if (data.isAdmin === true) {
-            setIsAdmin(true)
-        }
+       
     }
     const handleDeleteComment = async () => {
         try {
@@ -41,25 +38,7 @@ const CommentCard = ({ userReview, setReviews, reviews, fetchReviews }) => {
         }
 
     }
-    const deleteCommentByAdmin = async () => {
-        if (isAdmin) {
-            try {
-                const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_DELETE_REVIEW}/${userReview._id}`,
-                    {
-                        headers: {
-                            'Authorization': authToken
-                        }
-                    })
-                toast.success(data.msg, { autoClose: 500, theme: 'colored' })
-                setReviews(reviews.filter(r => r._id !== userReview._id))
-            } catch (error) {
-                console.log(error);
-                toast.success(error.response.data, { autoClose: 500, theme: 'colored' })
-            }
-        } else {
-            toast.success("Access denied", { autoClose: 500, theme: 'colored' })
-        }
-    }
+    
     const sendEditResponse = async () => {
         if (!editComment && !value) {
             toast.error("Please Fill the all Fields", { autoClose: 500, })
@@ -144,7 +123,8 @@ const CommentCard = ({ userReview, setReviews, reviews, fetchReviews }) => {
                     {date} {time}
                 </p>
 
-                {(authUser === userReview?.user?._id || isAdmin) &&
+                {/* Modified conditional rendering: only check if authUser is the review owner */}
+                {authUser === userReview?.user?._id &&
                     <Box sx={{ height: 20, transform: 'translateZ(0px)', flexGrow: 1 }}>
                         <SpeedDial
                             ariaLabel="SpeedDial basic example"
@@ -160,7 +140,7 @@ const CommentCard = ({ userReview, setReviews, reviews, fetchReviews }) => {
                             <SpeedDialAction
                                 icon={<AiFillDelete />}
                                 tooltipTitle={"Delete"}
-                                onClick={isAdmin ? deleteCommentByAdmin : handleDeleteComment}
+                                onClick={handleDeleteComment} 
                             />
 
                         </SpeedDial>

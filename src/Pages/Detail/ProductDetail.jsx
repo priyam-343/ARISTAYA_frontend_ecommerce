@@ -150,6 +150,16 @@ const ProductDetail = () => {
         setProductQuantity((prev) => Math.max(prev - 1, 1));
     }
 
+    
+    let discountPercentage = 0;
+    let originalPriceForCalculation = 0;
+    if (product) {
+        originalPriceForCalculation = product.price > 1000 ? (product.price + 1000) : (product.price + 300);
+        if (originalPriceForCalculation > 0) {
+            discountPercentage = ((originalPriceForCalculation - product.price) / originalPriceForCalculation) * 100;
+        }
+    }
+
     return (
         <>
             <Container maxWidth='xl' >
@@ -227,7 +237,8 @@ const ProductDetail = () => {
                                 </div>
                             </Box>
                             <Chip
-                                label={product.price > 1000 ? "Upto 9% off" : "Upto 38% off"}
+                                
+                                label={`${discountPercentage.toFixed(0)}% off`}
                                 variant="outlined"
                                 sx={{
                                     background: '#FFD700',
@@ -265,7 +276,7 @@ const ProductDetail = () => {
                                 </ButtonGroup>
                             </Box>
                             <Rating name="read-only" value={Math.round(product.rating)} readOnly precision={0.5} sx={{ color: '#FFD700', mb: 2 }} />
-                            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }} >
+                            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap'} } >
                                 <Tooltip title='Add To Cart'>
                                     <Button variant='contained' className='all-btn' startIcon={<MdAddShoppingCart />} onClick={(() => addToCart(product))}
                                         sx={{
