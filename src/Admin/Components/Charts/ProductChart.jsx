@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Box, Typography, Paper, Grid } from '@mui/material';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
-    PieChart, Pie, Cell, Area, AreaChart, Legend // Import Legend for potential future use or inspiration
+    PieChart, Pie, Cell, Area, AreaChart, Legend
 } from 'recharts';
 import PropTypes from 'prop-types';
 
@@ -123,7 +123,14 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
             const product = productId ? productMap.get(productId) : null;
             return (product && product.mainCategory === category.slug) ? acc + 1 : acc;
         }, 0);
-        return { name: category.name, value: count };
+
+        // --- CORRECTED LOGIC: Assign the color based on the original category index ---
+        const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === category.name);
+        const color = categoryIndex !== -1
+            ? CHART_COLORS[categoryIndex % CHART_COLORS.length]
+            : '#888888'; // Fallback to a neutral grey if category name is not found (for debugging)
+
+        return { name: category.name, value: count, color: color }; // Include the determined color
     }).filter(item => item.value > 0); // Filter out categories with zero items for cleaner pie chart
 
     // Data for Items in User Wishlists Bar Chart:
@@ -216,7 +223,7 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                 {/* Items in User Carts Pie Chart */}
                 <Grid item xs={12} md={6}>
                     <ChartPaper title="Items in User Carts">
-                        <ResponsiveContainer width="100%" height="80%"> {/* Adjusted height to make space for legend */}
+                        <ResponsiveContainer width="100%" height="80%">
                             <PieChart>
                                 {/* Tooltip for the pie chart */}
                                 <Tooltip content={<CustomChartTooltip />} />
@@ -230,10 +237,8 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                     dataKey="value"
                                 >
                                     {cartData.map((entry, index) => {
-                                        // Find the index of the category in CATEGORY_DEFINITIONS to get the corresponding color
-                                        const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === entry.name);
-                                        const color = CHART_COLORS[categoryIndex % CHART_COLORS.length];
-                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                        // --- CORRECTED LOGIC: Use the pre-assigned color from the entry ---
+                                        return <Cell key={`cell-${index}`} fill={entry.color} />;
                                     })}
                                 </Pie>
                             </PieChart>
@@ -250,15 +255,14 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                 p:1
                             }}>
                                 {cartData.map((entry, index) => {
-                                    const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === entry.name);
-                                    const color = CHART_COLORS[categoryIndex % CHART_COLORS.length];
+                                    // Use entry.color for the legend swatch as well
                                     return (
                                         <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Box sx={{
                                                 width: 16,
                                                 height: 16,
                                                 borderRadius: '50%',
-                                                bgcolor: color, // Use the synced color
+                                                bgcolor: entry.color, // Use the synced color from entry
                                                 mr: 1, // Margin right for spacing from text
                                             }} />
                                             <Typography variant="body2" sx={{ color: 'white', fontFamily: 'Cooper Black, serif' }}>
