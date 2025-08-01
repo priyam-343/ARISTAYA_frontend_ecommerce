@@ -69,49 +69,69 @@ const Register = () => {
     };
 
     return (
-        <>
+        <Container
+            component="main"
+            maxWidth="xs"
+            sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                paddingTop: '120px', // Added extra space at the top
+                paddingBottom: '60px',
+                boxSizing: 'border-box'
+            }}
+        >
             <CssBaseline />
-            <Container component="main" maxWidth="xs" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 180px)' }}>
-                <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-                    <Avatar sx={{ m: 'auto', bgcolor: '#FFD700' }}><MdLockOutline sx={{ color: '#1a1a1a' }} /></Avatar>
-                    <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700' }}>Sign Up</Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}><TextField name="firstName" required fullWidth id="firstName" label="First Name" value={credentials.firstName} onChange={handleOnChange} autoFocus sx={textFieldSx} /></Grid>
-                            <Grid item xs={12} sm={6}><TextField required fullWidth id="lastName" label="Last Name" name="lastName" value={credentials.lastName} onChange={handleOnChange} sx={textFieldSx} /></Grid>
-                            <Grid item xs={12}><TextField required fullWidth id="email" label="Email Address" name="email" value={credentials.email} onChange={handleOnChange} sx={textFieldSx} /></Grid>
-                            <Grid item xs={12}><TextField required fullWidth id="phoneNumber" label="Contact Number" name="phoneNumber" value={credentials.phoneNumber} onChange={handleOnChange} sx={textFieldSx} /></Grid>
-                            <Grid item xs={12}><TextField
-                                required fullWidth name="password" label="Password" type={showPassword ? "text" : "password"} id="password" value={credentials.password} onChange={handleOnChange}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end" onClick={() => setShowPassword(!showPassword)} sx={{ cursor: 'pointer' }}>
-                                            {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
-                                        </InputAdornment>
-                                    )
-                                }}
-                                sx={textFieldSx}
-                            /></Grid>
-                            <Grid item xs={12}><FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" sx={{ color: '#444', '&.Mui-checked': { color: '#FFD700' } }} />}
-                                label={<Typography sx={{ color: '#cccccc', fontSize: '0.9rem' }}>I want to receive inspiration and updates via email.</Typography>}
-                            /></Grid>
+            {/* Admin Register Button - Links to a hypothetical admin registration page */}
+            <Box sx={{ position: 'absolute', top: 100, right: 20, zIndex: 1000, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#cccccc' }}>Admin?</Typography>
+                <Link to="/admin/register" style={{ textDecoration: 'none' }}>
+                    <Button variant="contained" sx={{ borderRadius: '8px', bgcolor: '#FFD700', color: '#1a1a1a', '&:hover': { bgcolor: '#e6c200' }, fontFamily: 'Cooper Black, serif' }}>REGISTER</Button>
+                </Link>
+            </Box>
+            
+            <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                <Avatar sx={{ m: 'auto', bgcolor: '#FFD700' }}><MdLockOutline sx={{ color: '#1a1a1a' }} /></Avatar>
+                <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700' }}>Sign Up</Typography>
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}><TextField name="firstName" required fullWidth id="firstName" label="First Name" value={credentials.firstName} onChange={handleOnChange} autoFocus sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField required fullWidth id="lastName" label="Last Name" name="lastName" value={credentials.lastName} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                        <Grid item xs={12}><TextField required fullWidth id="email" label="Email Address" name="email" value={credentials.email} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                        <Grid item xs={12}><TextField required fullWidth id="phoneNumber" label="Contact Number" name="phoneNumber" value={credentials.phoneNumber} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                        <Grid item xs={12}><TextField
+                            required fullWidth name="password" label="Password" type={showPassword ? "text" : "password"} id="password" value={credentials.password} onChange={handleOnChange}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end" onClick={() => setShowPassword(!showPassword)} sx={{ cursor: 'pointer' }}>
+                                        {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
+                                    </InputAdornment>
+                                )
+                            }}
+                            sx={textFieldSx}
+                        /></Grid>
+                        <Grid item xs={12}><FormControlLabel
+                            control={<Checkbox value="allowExtraEmails" sx={{ color: '#444', '&.Mui-checked': { color: '#FFD700' } }} />}
+                            label={<Typography sx={{ color: '#cccccc', fontSize: '0.9rem' }}>I want to receive inspiration and updates via email.</Typography>}
+                        /></Grid>
+                    </Grid>
+                    <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
+                        {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
+                    </Button>
+                    <Grid container justifyContent="flex-end">
+                        <Grid item>
+                            <Typography variant="body2" sx={{ color: '#cccccc' }}>
+                                Already have an account?{' '}
+                                <Link to="/login" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Sign in</Typography></Link>
+                            </Typography>
                         </Grid>
-                        <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
-                            {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
-                        </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Typography variant="body2" sx={{ color: '#cccccc' }}>
-                                    Already have an account?{' '}
-                                    <Link to="/login" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Sign in</Typography></Link>
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Paper>
-            </Container>
-        </>
+                    </Grid>
+                </Box>
+            </Paper>
+        </Container>
     );
 };
 
