@@ -44,7 +44,7 @@ const CopyRight = () => { // Component name is kept as CopyRight
                             <AiOutlineMail size={20} />
                             Contact Us
                         </MuiLink>
-                        <MuiLink href="https://aristaya-frontend-ecommerce.vercel.app/" target="_blank" rel="noopener noreferrer" sx={linkStyles}>
+                        <MuiLink href="https://aristaya.vercel.app/" target="_blank" rel="noopener noreferrer" sx={linkStyles}>
                             <AiOutlineLink size={20} />
                             ARISTAYA Website
                         </MuiLink>
