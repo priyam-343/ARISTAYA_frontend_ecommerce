@@ -1,250 +1,70 @@
+/* === ARISTAYA GLOBAL THEME FOUNDATION === */
 
+/* 1. Font Import */
 @import url('https://fonts.googleapis.com/css2?family=Cooper+Black&display=swap');
 
-body {
-  font-family: 'Cooper Black', serif;   margin: 0;
+/* 2. Root and Body Styles */
+html, body {
+  margin: 0;
   padding: 0;
-  background-color: #000000 !important;   color: #ffffff !important;   -webkit-font-smoothing: antialiased;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Cooper Black', serif;
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, 
-.MuiTypography-root, .MuiInputLabel-root, .MuiInputBase-input, .MuiInputBase-root, .MuiFormLabel-root {
-  font-family: 'Cooper Black', serif !important;   color: #ffffff !important; }
-
-.MuiButton-root {
-  color: #ffffff !important; }
-
-.MuiSvgIcon-root {
-  color: #ffffff !important; }
-
-.margin {
-  padding-top: 100px;   padding-bottom: 80px;   min-height: calc(100vh - 180px);   box-sizing: border-box;   background-color: #000000 !important; }
-
-.toastContainerBox {
-  font-family: 'Cooper Black', serif;   font-size: 1rem;
-  border-radius: 8px;
-  background-color: #1e1e1e;   color: #ffffff;   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); }
-
-.all-btn {
-  border-radius: 8px !important;   text-transform: capitalize !important;   font-weight: 500 !important;
-  transition: all 0.3s ease-in-out;   background-color: #333333 !important;   color: #ffffff !important;   border: 1px solid #444444; }
-
-.all-btn:hover {
-  transform: translateY(-2px);   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);   background-color: #444444 !important; }
-
-@media (max-width: 768px) {
-  .margin {
-    padding-top: 80px;     padding-bottom: 70px;   }
+/* 3. Golden Scrollbar Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFD700;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e6c200;
 }
 
-.similarProduct::-webkit-scrollbar {
-  display: none;
+/* 4. Global Typography and Link Styles */
+h1, h2, h3, h4, h5, h6, p, span, div, .MuiTypography-root {
+  font-family: 'Cooper Black', serif !important;
 }
-
-.similarProduct {
-  -ms-overflow-style: none;    scrollbar-width: none;  }
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block; }
-
-.MuiPaper-root.MuiCard-root {
-  background-color: #1e1e1e !important;   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;   border-radius: 12px !important;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  color: #ffffff !important;   border: 1px solid #333333; }
-
-.MuiPaper-root.MuiCard-root:hover {
-  transform: translateY(-5px);   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important; }
-
-.main-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  max-width: 500px;
-  margin: 40px auto;
-  background-color: #1e1e1e;   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  color: #ffffff;   border: 1px solid #333333; }
-
-.empty-cart-img {
-  max-width: 80%;
-  height: auto;
-  margin-bottom: 25px;
-}
-
-.main-card .MuiTypography-root {
-  color: #ffffff !important;   margin-bottom: 15px;
-  font-family: 'Cooper Black', serif !important; }
-
-.main-card .MuiButton-root {
-  margin-top: 10px;
-  padding: 10px 25px;
-  font-size: 1rem;
-  border-radius: 25px;
-  background-color: #333333;   color: white;
-  transition: background-color 0.3s ease;
-  border: 1px solid #444444;
-}
-
-.main-card .MuiButton-root:hover {
-  background-color: #444444; }
 
 a {
-  color: #cccccc !important;   text-decoration: none;
-  transition: color 0.3s ease;
+  color: #cccccc;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
 a:hover {
-  color: #eeeeee !important;   text-decoration: underline;
+  color: #FFD700 !important;
 }
 
-.active {
-  color: #FFD700 !important;   font-weight: 600;
+/* 5. Application Layout */
+/* THEME FIX: This is the core of the sticky footer layout.
+   The 'flex-grow: 1' rule makes this main content area expand vertically,
+   pushing the footer to the bottom of the page. */
+.margin {
+  flex-grow: 1; /* This is the key change */
+  padding-top: 80px; /* Space for the desktop nav */
+  padding-bottom: 70px; /* Space for the mobile nav */
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.MuiTypography-h5[color="primary"], 
-.MuiTypography-h6[color="primary"],
-.MuiTypography-body2[color="primary"] {   color: #FFD700 !important; }
-
-.MuiRating-root .MuiRating-iconFilled {
-  color: #FFD700 !important; }
-
-.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: #444444 !important; }
-
-.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: #666666 !important; }
-
-.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: #FFD700 !important; }
-
-.MuiInputLabel-outlined {
-  color: #cccccc !important; }
-
-.MuiInputLabel-outlined.Mui-focused {
-  color: #FFD700 !important; }
-
-.MuiSelect-icon {
-  color: #ffffff !important; }
-
-.MuiMenuItem-root {
-  background-color: #1e1e1e !important;   color: #ffffff !important; }
-
-.MuiMenuItem-root:hover {
-  background-color: #333333 !important; }
-
-.MuiPaper-root.MuiMenu-paper {
-    background-color: #1e1e1e !important;     border: 1px solid #333333; }
-
-.detail-img-box {
-  background-color: #1e1e1e;   border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  padding: 20px;   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;   border: 1px solid #333333; }
-
-.detail-img {
-  max-width: 100%;   height: auto;   object-fit: contain;   border-radius: 8px; }
-
-.MuiAppBar-root {
-  background-color: #000000 !important;   color: #ffffff !important;   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;   border-bottom: 1px solid #1e1e1e; }
-
-.MuiBottomNavigation-root {
-  background-color: #000000 !important;   border-top: 1px solid #1e1e1e;   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5) !important; }
-
-.MuiBottomNavigationAction-root {
-  color: #cccccc !important;   font-family: 'Cooper Black', serif !important; }
-
-.MuiBottomNavigationAction-root.Mui-selected {
-  color: #FFD700 !important; }
-
-.MuiDialog-paper {
-  background-color: #1e1e1e !important;   color: #ffffff !important;   border-radius: 12px !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+/* 6. Toast Notification Styling */
+.toastContainerBox {
+  font-family: 'Cooper Black', serif !important;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
   border: 1px solid #333333;
 }
-
-.MuiDialogContentText-root {
-  color: #ffffff !important; }
-
-.MuiDialogActions-root .MuiButton-root {
-  background-color: #333333 !important;
-  color: #ffffff !important;
-  border: 1px solid #444444;
-}
-
-.MuiDialogActions-root .MuiButton-root:hover {
-  background-color: #444444 !important;
-}
-
-.main-card .MuiButton-root {
-  background-color: #333333 !important;   color: white !important;
-  border: 1px solid #444444;
-}
-.main-card .MuiButton-root:hover {
-  background-color: #444444 !important;
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;   justify-content: center;
-  align-items: center;
-  padding: 40px; }
-
-@media (min-width: 960px) {   .main-content {
-    flex-direction: row;     align-items: flex-start;     gap: 60px;     padding: 60px;   }
-}
-
-.product-image {
-  flex: 1;   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 450px;   width: 100%;   max-width: 550px; }
-
-.product-details {
-  flex: 1;   padding: 30px;   color: white;   width: 100%;   max-width: 650px; }
-
-.review-section {
-  background-color: #1e1e1e;   border-radius: 12px;
-  padding: 30px;   margin-top: 50px;   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  border: 1px solid #333333;
-}
-
-.product-details .MuiTypography-root {
-  font-family: 'Cooper Black', serif !important;
-  color: #ffffff !important;
-}
-
-.product-details .MuiTypography-body1 {
-  color: #cccccc !important; }
-
-.product-details .MuiChip-root {
-  background-color: #1e1e1e !important;
-  border-color: #444444 !important;
-  color: #cccccc !important;
-  font-family: 'Cooper Black', serif !important;
-}
-
-.product-details .MuiChip-root .MuiChip-avatar {
-  color: #FFD700 !important; }
-
-.product-details .MuiRating-iconFilled {
-  color: #FFD700 !important; }
-
-.product-details .MuiButtonGroup-root .MuiButton-root {
-  border-color: #444444 !important;
-  color: #ffffff !important;
-  background-color: #1e1e1e !important;
-}
-
-.product-details .MuiButtonGroup-root .MuiButton-root:hover {
-  background-color: #333333 !important;
-  border-color: #666666 !important;
-}
-

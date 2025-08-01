@@ -1,158 +1,172 @@
-import './Desktop.css'; 
 import React, { useContext, useEffect, useState } from 'react';
 import { AiOutlineHeart, AiOutlineShoppingCart, AiFillCloseCircle } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { FiLogOut } from 'react-icons/fi';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Badge, Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Badge, Button, Dialog, DialogActions, DialogContent, Typography, Box } from '@mui/material';
 import { ContextFunction } from '../Context/Context';
 import { toast } from 'react-toastify';
-import { getCart, getWishList, handleClickOpen, handleClose, Transition } from '../Constants/Constant'; 
+import axiosInstance from '../utils/axiosInstance';
+import { Transition } from '../Constants/Constant'; // Assuming this constant exists
+import { FaShippingFast } from 'react-icons/fa'; // Import Orders icon
 
 const DesktopNavigation = () => {
-  const { cart, setCart, wishlistData, setWishlistData, setLoginUser } = useContext(ContextFunction);
-  const [openAlert, setOpenAlert] = useState(false);
+  const { cart, setCart, wishlistData, setWishlistData, loginUser, setLoginUser } = useContext(ContextFunction);
+  const [openAlert, setOpenAlert] = useState(false); // State for logout confirmation dialog
   const navigate = useNavigate();
-  const location = useLocation(); 
-
-  let authToken = localStorage.getItem('Authorization');
-  let setProceed = authToken !== null ? true : false;
+  const location = useLocation();
+  const authToken = localStorage.getItem('Authorization');
+  const isLoggedIn = !!authToken; // Check if user is logged in
+  const isAdmin = loginUser?.isAdmin || false; // Check if the logged-in user is an admin
+  const onAdminPage = location.pathname.startsWith('/admin'); // Check if current path is an admin page
 
   useEffect(() => {
-    getCart(setProceed, setCart, authToken);
-    getWishList(setProceed, setWishlistData, authToken);
-  }, [setProceed, setCart, setWishlistData, authToken]); 
+    const fetchNavData = async () => {
+      if (isLoggedIn) {
+        try {
+          const [cartResponse, wishlistResponse] = await Promise.all([
+            axiosInstance.get(process.env.REACT_APP_GET_CART, { headers: { 'Authorization': authToken } }), // Fetch cart data
+            axiosInstance.get(process.env.REACT_APP_GET_WISHLIST, { headers: { 'Authorization': authToken } }) // Fetch wishlist data
+          ]);
+          // CRITICAL FIX: Access the 'cart' array from cartResponse.data
+          // Backend now returns { success: true, cart: [...] }
+          if (cartResponse.data.success) {
+            setCart(cartResponse.data.cart || []);
+          } else {
+            toast.error(cartResponse.data.message || "Failed to load cart data.", { theme: 'colored' });
+          }
 
-  const logoutUser = () => { 
-    localStorage.clear();
-    setLoginUser({});
-    setCart([]);
-    setWishlistData([]);
+          // CRITICAL FIX: Access the 'wishlistItems' array from wishlistResponse.data
+          // Backend now returns { success: true, wishlistItems: [...] }
+          if (wishlistResponse.data.success) {
+            setWishlistData(wishlistResponse.data.wishlistItems || []);
+          } else {
+            toast.error(wishlistResponse.data.message || "Failed to load wishlist data.", { theme: 'colored' });
+          }
+
+        } catch (error) {
+          // Use backend's standardized 'message' field for error toasts
+          toast.error(error.response?.data?.message || "Couldn't load navigation data.", { theme: 'colored' });
+        }
+      }
+    };
+    fetchNavData();
+  }, [isLoggedIn, setCart, setWishlistData, authToken]); // Dependencies: login status, setters, and auth token
+
+  // Handles user logout
+  const logoutUser = () => {
+    localStorage.clear(); // Clear all local storage
+    setLoginUser({}); // Clear global login user state
+    setCart([]); // Clear global cart state
+    setWishlistData([]); // Clear global wishlist state
     toast.success("Logout Successfully", { autoClose: 500, theme: 'colored' });
-    setOpenAlert(false); 
-    navigate('/'); 
+    setOpenAlert(false); // Close logout confirmation dialog
+    navigate('/'); // Navigate to home page
+  };
+
+  // Styles for NavLink components
+  const navLinkStyles = {
+    color: '#ffffff', // Default link color
+    textDecoration: 'none',
+    fontFamily: 'Cooper Black, serif',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    transition: 'color 0.2s ease-in-out', // Smooth color transition on hover
+  };
+
+  // Styles for active NavLink components
+  const activeNavLinkStyles = {
+    color: '#FFD700', // Golden color for active links
   };
 
   return (
     <>
-      <nav className='nav'>
-        <div className="logo">
-          <Link to='/'>
-            <span>ARISTAYA</span>
+      <Box component="nav" sx={{
+        display: { xs: 'none', md: 'flex' }, // Visible only on medium and larger screens
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        px: 4,
+        height: '80px',
+        bgcolor: '#000000', // Dark background
+        borderBottom: '1px solid #1e1e1e', // Subtle bottom border
+        position: 'fixed', // Fixed position at the top
+        top: 0,
+        width: '100%',
+        zIndex: 1100, // High z-index to stay on top
+        boxSizing: 'border-box' // Include padding in element's total width and height
+      }}>
+        {/* Left side: Branding and Admin Toggle Button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Link to='/' style={{ textDecoration: 'none', color: '#FFD700', fontSize: '2rem', fontFamily: 'Cooper Black, serif' }}>
+            ARISTAYA
           </Link>
-        </div>
-        <div className="nav-items">
-          <ul className="nav-items">
-            <li className="nav-links">
-              <NavLink to='/' className={location.pathname === '/' ? 'active' : ''}>
-                <span className='nav-icon-span'>Home</span>
-              </NavLink>
-            </li>
+          {isLoggedIn && isAdmin && ( // Show Admin/User toggle only if logged in and is admin
+            <Button
+              component={Link}
+              to={onAdminPage ? "/" : "/admin/home"} // Toggle between user and admin home
+              variant="contained"
+              sx={{
+                bgcolor: '#FFD700',
+                color: '#000000',
+                fontFamily: 'Cooper Black, serif',
+                borderRadius: '8px',
+                '&:hover': { bgcolor: '#e6c200' }
+              }}
+            >
+              {onAdminPage ? "User" : "Admin"}
+            </Button>
+          )}
+        </Box>
 
-            <li className="nav-links">
-              <NavLink to="/cart" className={location.pathname === '/cart' ? 'active' : ''}>
-                <span className='nav-icon-span'>Cart
-                  <Badge badgeContent={setProceed ? cart.length : 0} sx={{ '& .MuiBadge-badge': { backgroundColor: '#FFD700', color: '#000000', fontFamily: 'Outfit, sans-serif' } }}>
-                    <AiOutlineShoppingCart className='nav-icon' />
-                  </Badge>
-                </span>
-              </NavLink>
-            </li>
-            <li className="nav-links">
-              <NavLink to="/wishlist" className={location.pathname === '/wishlist' ? 'active' : ''}>
-                <span className='nav-icon-span'>Wishlist
-                  <Badge badgeContent={setProceed ? wishlistData.length : 0} sx={{ '& .MuiBadge-badge': { backgroundColor: '#FFD700', color: '#000000', fontFamily: 'Outfit, sans-serif' } }}>
-                    <AiOutlineHeart className='nav-icon' />
-                  </Badge>
-                </span>
-              </NavLink>
-            </li>
+        {/* Right side: Main Navigation Links */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+          <NavLink to='/' style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>Home</NavLink>
+          <NavLink to="/cart" style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
+            <Badge badgeContent={isLoggedIn ? cart.length : 0} sx={{ '& .MuiBadge-badge': { bgcolor: '#FFD700', color: '#000' } }}><AiOutlineShoppingCart size={24} /></Badge>
+            <span style={{ marginLeft: '8px' }}>Cart</span>
+          </NavLink>
+          <NavLink to="/wishlist" style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
+            <Badge badgeContent={isLoggedIn ? wishlistData.length : 0} sx={{ '& .MuiBadge-badge': { bgcolor: '#FFD700', color: '#000' } }}><AiOutlineHeart size={24} /></Badge>
+            <span style={{ marginLeft: '8px' }}>Wishlist</span>
+          </NavLink>
 
-            {
-              setProceed ?
-                <>
-                  <li className="nav-links">
-                    <NavLink to='/update' className={location.pathname === '/update' ? 'active' : ''}>
-                      <span className='nav-icon-span'>
-                        <CgProfile className='CgProfile-icon' />
-                      </span>
-                    </NavLink>
-                  </li>
-                  <li style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Button
-                      variant='contained'
-                      className='logout-btn' 
-                      onClick={() => handleClickOpen(setOpenAlert)}
-                      endIcon={<FiLogOut />}
-                    >
-                      <Typography variant='button' sx={{ fontFamily: 'Cooper Black, serif !important' }}>Logout</Typography>
-                    </Button>
-                  </li>
-                </>
-                :
-                <li className="nav-links">
-                  <NavLink to='/login' className={location.pathname === '/login' ? 'active' : ''}>
-                    <span className='nav-icon-span'>
-                      <CgProfile className='CgProfile-icon' />
-                    </span>
-                  </NavLink>
-                </li>
-            }
-          </ul>
-        </div>
-      </nav>
+          {/* User-Facing Orders Button (visible only when logged in) */}
+          {isLoggedIn && (
+            <NavLink to="/myorders" style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
+              <FaShippingFast size={24} />
+              <span style={{ marginLeft: '8px' }}>Orders</span>
+            </NavLink>
+          )}
 
-      {}
-      <Dialog
-        open={openAlert}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={() => handleClose(setOpenAlert)} 
-        aria-describedby="alert-dialog-slide-description"
-        PaperProps={{ 
-          sx: {
-            backgroundColor: '#1e1e1e', 
-            color: '#ffffff', 
-            borderRadius: '12px',
-            boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
-            border: '1px solid #333333',
-          }
-        }}
-      >
-        <DialogContent sx={{ width: { xs: 280, md: 350, xl: 400 }, display: 'flex', justifyContent: 'center', padding: '30px' }}>
-          <Typography variant='h6' sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif !important', color: '#ffffff' }}>
-            Do You Want To Logout?
-          </Typography>
+          {/* Conditional Login/Logout/Profile Button */}
+          {isLoggedIn ? (
+            <>
+              <NavLink to='/update' style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
+                <CgProfile size={24} />
+                <span style={{ marginLeft: '8px' }}>Profile</span>
+              </NavLink>
+              <Button onClick={() => setOpenAlert(true)} endIcon={<FiLogOut />} sx={{ bgcolor: '#1e1e1e', color: '#FFD700', fontFamily: 'Cooper Black, serif', border: '1px solid #333', borderRadius: '8px', textTransform: 'none', '&:hover': { bgcolor: '#2a2a2a', borderColor: '#FFD700' } }}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <NavLink to='/login' style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
+              <CgProfile size={24} />
+              <span style={{ marginLeft: '8px' }}>Login</span>
+            </NavLink>
+          )}
+        </Box>
+      </Box>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={openAlert} TransitionComponent={Transition} keepMounted onClose={() => setOpenAlert(false)} PaperProps={{ sx: { bgcolor: '#1e1e1e', color: 'white', borderRadius: '12px', border: '1px solid #333' } }}>
+        <DialogContent sx={{ p: 4 }}>
+          <Typography variant='h6' sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif' }}>Do You Want To Logout?</Typography>
         </DialogContent>
-        <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', paddingBottom: '20px' }}>
-          <Button
-            variant='contained'
-            endIcon={<FiLogOut />}
-            sx={{
-              backgroundColor: '#333333 !important',
-              color: 'white !important',
-              border: '1px solid #444444',
-              '&:hover': { backgroundColor: '#444444 !important' },
-              fontFamily: 'Cooper Black, serif !important'
-            }}
-            onClick={logoutUser} 
-          >
-            Logout
-          </Button>
-          <Button
-            variant='contained'
-            sx={{
-              backgroundColor: '#333333 !important',
-              color: 'white !important',
-              border: '1px solid #444444',
-              '&:hover': { backgroundColor: '#444444 !important' },
-              fontFamily: 'Cooper Black, serif !important'
-            }}
-            endIcon={<AiFillCloseCircle />}
-            onClick={() => handleClose(setOpenAlert)}
-          >
-            Close
-          </Button>
+        <DialogActions sx={{ justifyContent: 'space-evenly', pb: 3 }}>
+          <Button variant='contained' endIcon={<FiLogOut />} onClick={logoutUser} sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' } }}>Logout</Button>
+          <Button variant='contained' endIcon={<AiFillCloseCircle />} onClick={() => setOpenAlert(false)} sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' } }}>Close</Button>
         </DialogActions>
       </Dialog>
     </>
