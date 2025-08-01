@@ -1,13 +1,11 @@
-import React, { useContext, useState } from 'react'; // Removed useEffect as it was empty
+import React, { useContext, useState } from 'react';
 import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography, Box, Container, Paper, CircularProgress } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../../utils/axiosInstance'; // Assumes axiosInstance is correctly configured for your backend URL
+import axiosInstance from '../../../utils/axiosInstance';
 import { MdLockOutline } from 'react-icons/md';
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
-// Removed CopyRight import as it's handled globally
 import { ContextFunction } from '../../../Context/Context';
-// Removed PropTypes import as component does not receive props
 
 const AdminRegister = () => {
     const { setLoginUser } = useContext(ContextFunction);
@@ -24,23 +22,20 @@ const AdminRegister = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Ensure process.env.REACT_APP_ADMIN_REGISTER points to your correct backend admin register endpoint
             const { data } = await axiosInstance.post(process.env.REACT_APP_ADMIN_REGISTER, credentials);
             if (data.success) {
                 toast.success("Admin Registered Successfully!", { autoClose: 1500, theme: 'colored' });
                 localStorage.setItem('Authorization', data.authToken);
                 setLoginUser(data.user);
-                navigate('/admin/home'); // Navigate to admin dashboard on successful registration
+                navigate('/admin/home');
             }
         } catch (error) {
-            // Display error message from the backend, or a generic one if unavailable
             toast.error(error.response?.data?.message || "Registration failed. Please check your details and admin key.", { theme: 'colored' });
         } finally {
             setLoading(false);
         }
     };
 
-    // Consistent styling for TextFields
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': { borderColor: '#444' },
@@ -56,10 +51,18 @@ const AdminRegister = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#000000' }}>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            bgcolor: '#000000',
+            // CRITICAL FIX: Added padding to push content down and allow scrolling
+            paddingTop: '120px',
+            paddingBottom: '60px'
+        }}>
             <CssBaseline />
-            {/* "Not an Admin?" button positioned at the top right for easy access to user registration. */}
-            <Box sx={{ position: 'absolute', top: { xs: 20, md: 30 }, right: { xs: 20, md: 30 }, zIndex: 1000, display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* "Not an Admin?" button with adjusted top position */}
+            <Box sx={{ position: 'absolute', top: 100, right: 30, zIndex: 1000, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#cccccc' }}>Not an Admin?</Typography>
                 <Link to="/register" style={{ textDecoration: 'none' }}>
                     <Button variant="contained" sx={{ borderRadius: '8px', bgcolor: '#FFD700', color: '#1a1a1a', '&:hover': { bgcolor: '#e6c200' }, fontFamily: 'Cooper Black, serif' }}>Register</Button>
