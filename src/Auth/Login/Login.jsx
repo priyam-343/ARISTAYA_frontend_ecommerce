@@ -1,228 +1,144 @@
-import './login.css'
-import { Avatar, Button, Checkbox, CssBaseline, FormControlLabel, Grid, InputAdornment, TextField, Typography, CircularProgress } from '@mui/material'
-import { Box, Container } from '@mui/material'
-import React, { useEffect } from 'react'
-import { useState } from 'react'
-import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { MdLockOutline } from 'react-icons/md'
+import React, { useContext, useEffect, useState } from 'react';
+import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography, CircularProgress, Paper, Box, Container, Checkbox, FormControlLabel } from '@mui/material';
+import axiosInstance from '../../utils/axiosInstance';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { MdLockOutline } from 'react-icons/md';
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
-
-import CopyRight from '../../Components/CopyRight/CopyRight'
-
+import { ContextFunction } from '../../Context/Context';
+import PropTypes from 'prop-types';
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" })
+  const { setLoginUser } = useContext(ContextFunction);
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const navigate = useNavigate()
-
-  const handleOnChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value })
-  }
   useEffect(() => {
-    let auth = localStorage.getItem('Authorization');
-    if (auth) {
-      navigate("/")
+    // Redirects to home page if user is already logged in
+    if (localStorage.getItem('Authorization')) {
+      navigate("/");
     }
-  }, [navigate])
+  }, [navigate]);
 
+  // Handles input changes for email and password fields
+  const handleOnChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
+
+  // Handles the login form submission
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true);
-    let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    e.preventDefault();
+    setLoading(true); // Set loading state to true during API call
     try {
-      if (!credentials.email || !credentials.password) {
-        toast.error("All fields are required", { autoClose: 500, theme: 'colored' })
+      // Make POST request to login endpoint
+      const { data } = await axiosInstance.post(process.env.REACT_APP_LOGIN, credentials);
+      if (data.success) {
+        // Show success toast notification
+        toast.success("Login Successfully", { autoClose: 1500, theme: 'colored' });
+        // Store authentication token in local storage
+        localStorage.setItem('Authorization', data.authToken);
+        // Update global login user state with user data from response
+        setLoginUser(data.user);
+        // Navigate to the home page
+        navigate('/');
       }
-      else if (!emailRegex.test(credentials.email)) {
-        toast.error("Please enter a valid email", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.password.length < 5) {
-        toast.error("Please enter valid password", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.email && credentials.password) {
-        const sendAuth = await axios.post(`${process.env.REACT_APP_LOGIN}`, { email: credentials.email, password: credentials.password })
-        const receive = await sendAuth.data
-        if (receive.success === true) {
-          toast.success("Login Successfully", { autoClose: 500, theme: 'colored' })
-          localStorage.setItem('Authorization', receive.authToken)
-          navigate('/')
-        }
-        else{
-          toast.error("Something went wrong, Please try again", { autoClose: 500, theme: 'colored' })
-          navigate('/')
-        }
-      }
-    }
-    catch (error) {
-      error.response.data.error.length === 1 ?
-        toast.error(error.response.data.error[0].msg, { autoClose: 500, theme: 'colored' })
-        : toast.error(error.response.data.error, { autoClose: 500, theme: 'colored' })
+    } catch (error) {
+      // Show error toast notification, using backend's 'message' field for consistency
+      toast.error(error.response?.data?.message || "Login failed. Please try again.", { theme: 'colored' });
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset loading state after API call
     }
-  }
+  };
 
+  // Custom styles for Material-UI TextField components
   const textFieldSx = {
     '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: '#444444', 
-        },
-        '&:hover fieldset': {
-            borderColor: '#666666', 
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: '#FFD700', 
-        },
-        backgroundColor: '#1e1e1e', 
-        borderRadius: '8px',
+      '& fieldset': { borderColor: '#444' }, // Default border color
+      '&:hover fieldset': { borderColor: '#666' }, // Border color on hover
+      '&.Mui-focused fieldset': { borderColor: '#FFD700' }, // Border color when focused
+      backgroundColor: '#1a1a1a', // Background color of the input field
+      borderRadius: '8px', // Rounded corners for the input field
     },
-    '& .MuiInputLabel-outlined': {
-        color: '#cccccc', 
-    },
-    '& .MuiInputLabel-outlined.Mui-focused': {
-        color: '#FFD700', 
-    },
-    '& .MuiInputBase-input': {
-        fontFamily: 'Cooper Black, serif !important', 
-        color: '#ffffff !important', 
-    },
-    '& .MuiInputAdornment-root': {
-      color: '#cccccc !important', 
-    }
+    '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' }, // Label color
+    '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' }, // Label color when focused
+    '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' }, // Input text color
+    '& .MuiInputAdornment-root': { color: '#cccccc' }, // Adornment icon color
   };
 
-
   return (
-    <Container component="main" maxWidth="xs" sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: 'calc(100vh - 180px)',
-      backgroundColor: '#000000',
-      padding: '20px'
-    }}>
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh', // Ensure it takes full viewport height for alignment
+        paddingTop: '120px', // Extra space at the top to allow scrolling
+        paddingBottom: '60px', // Extra space at the bottom (optional, but good for symmetrical scroll)
+        boxSizing: 'border-box' // Include padding in element's total width and height
+      }}
+    >
       <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          p: 4,
-          bgcolor: '#1e1e1e',
-          borderRadius: '12px',
-          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
-          border: '1px solid #333333',
-          width: '100%',
-          maxWidth: '400px',
-          boxSizing: 'border-box',
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: '#FFD700' }}>
-          <MdLockOutline sx={{ color: '#000000' }} />
-        </Avatar>
-        <Typography component="h1" variant="h5" sx={{ mb: 3, fontFamily: 'Cooper Black, serif !important', color: '#ffffff' }}>
-          Sign in
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+      {/* Admin Login Button - Visible only on desktop */}
+      <Box sx={{ position: 'absolute', top: 100, right: 20, zIndex: 1000, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+        <Typography variant="body2" sx={{ color: '#cccccc' }}>Admin?</Typography>
+        <Link to="/admin/login" style={{ textDecoration: 'none' }}>
+          <Button variant="contained" sx={{ borderRadius: '8px', bgcolor: '#FFD700', color: '#1a1a1a', '&:hover': { bgcolor: '#e6c200' }, fontFamily: 'Cooper Black, serif' }}>Login</Button>
+        </Link>
+      </Box>
+
+      {/* Login Form Paper */}
+      <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+        <Avatar sx={{ m: 'auto', bgcolor: '#FFD700' }}><MdLockOutline sx={{ color: '#1a1a1a' }} /></Avatar>
+        <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700' }}>Sign In</Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField margin="normal" required fullWidth id="email" label="Email Address" name='email' value={credentials.email} onChange={handleOnChange} autoComplete="email" autoFocus sx={textFieldSx} />
           <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            value={credentials.email}
-            name='email'
-            onChange={handleOnChange}
-            autoComplete="email"
-            autoFocus
-            sx={textFieldSx}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            value={credentials.password}
-            name='password'
-            onChange={handleOnChange}
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            id="password"
+            margin="normal" required fullWidth name='password' label="Password" type={showPassword ? "text" : "password"} id="password" value={credentials.password} onChange={handleOnChange}
             InputProps={{
               endAdornment: (
-                <InputAdornment position="end" onClick={handleClickShowPassword} sx={{cursor:'pointer'}}>
+                <InputAdornment position="end" onClick={() => setShowPassword(!showPassword)} sx={{ cursor: 'pointer' }}>
                   {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
                 </InputAdornment>
               )
             }}
-            autoComplete="current-password"
             sx={textFieldSx}
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" sx={{ color: '#FFD700' }} />}
-            label={<Typography sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}>Remember me</Typography>}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{
-              mt: 3,
-              mb: 2,
-              backgroundColor: '#FFD700 !important', 
-              color: '#000000 !important', 
-              borderRadius: '8px',
-              padding: '12px 30px',
-              fontFamily: 'Cooper Black, serif !important',
-              '&:hover': {
-                  backgroundColor: '#e6b800 !important', 
-                  boxShadow: '0 6px 15px rgba(0, 0, 0, 0.4)',
-              },
-              '&.Mui-disabled': { 
-                  backgroundColor: '#555555 !important',
-                  color: '#aaaaaa !important',
-                  cursor: 'not-allowed',
-              }
-            }}
-          >
-            {loading ? <CircularProgress size={24} sx={{ color: '#000000' }} /> : 'Sign In'}
+          {/* Remember Me Checkbox */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <FormControlLabel
+              control={<Checkbox value="remember" sx={{ color: '#444', '&.Mui-checked': { color: '#FFD700' } }} />}
+              label={<Typography sx={{ color: '#cccccc' }}>Remember me</Typography>}
+            />
+          </Box>
+          {/* Sign In Button */}
+          <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
+            {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign In'}
           </Button>
+          {/* Forgot Password and Sign Up Links */}
           <Grid container>
             <Grid item xs>
-              <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>
-                <Typography variant="body2" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif !important', '&:hover': { textDecoration: 'underline' } }}>
-                  Forgot password?
-                </Typography>
-              </Link>
+              <Link to="/forgotpassword" style={{ textDecoration: 'none' }}><Typography variant="body2" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Forgot password?</Typography></Link>
             </Grid>
             <Grid item>
-              {}
-              <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}>
-                Don't have an account?{' '} {}
-                <Link to="/register" style={{ textDecoration: 'none' }}>
-                  <Typography component="span" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif !important', '&:hover': { textDecoration: 'underline' } }}>
-                    Sign Up
-                  </Typography>
-                </Link>
+              <Typography variant="body2" sx={{ color: '#cccccc' }}>
+                {"Don't have an account? "}
+                <Link to="/register" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Sign Up</Typography></Link>
               </Typography>
             </Grid>
           </Grid>
         </Box>
-      </Box>
-      <Box sx={{ mt: 10 }}>
-        <CopyRight />
-      </Box>
+      </Paper>
     </Container>
-  )
-}
+  );
+};
 
-export default Login
+Login.propTypes = {
+  // This component does not receive props.
+};
+
+export default Login;

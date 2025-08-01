@@ -1,180 +1,157 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react'
-import { Button, Container, Dialog, DialogActions, DialogContent, Grid, TextField, Typography, Box, CssBaseline } from '@mui/material'
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Container, Dialog, DialogActions, DialogContent, Grid, TextField, Typography, Box, CssBaseline } from '@mui/material';
 import axiosInstance from '../../utils/axiosInstance';
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { BsFillCartCheckFill } from 'react-icons/bs'
-import { MdUpdate } from 'react-icons/md'
-import { AiFillCloseCircle, AiOutlineLogin, AiOutlineSave } from 'react-icons/ai'
-import { profile } from '../../Assets/Images/Image'
-import { ContextFunction } from '../../Context/Context'
-import CopyRight from '../../Components/CopyRight/CopyRight'
-import { Transition, handleClose } from '../../Constants/Constant'
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { BsFillCartCheckFill } from 'react-icons/bs';
+import { MdUpdate } from 'react-icons/md';
+import { AiFillCloseCircle, AiOutlineSave } from 'react-icons/ai';
+import { profile } from '../../Assets/Images/Image'; // Assuming this path is correct
+import { ContextFunction } from '../../Context/Context';
+import { Transition } from '../../Constants/Constant'; // Assuming this constant exists
+import PropTypes from 'prop-types';
 
 const CheckoutForm = () => {
-    const { cart } = useContext(ContextFunction)
-    const [userData, setUserData] = useState(null)
-    const [openAlert, setOpenAlert] = useState(false);
-    const [loading, setLoading] = useState(true);
+    // CRITICAL FIX: Destructure loginUser from ContextFunction
+    const { cart, loginUser } = useContext(ContextFunction);
+    const [openAlert, setOpenAlert] = useState(false); // State for address update alert
+    const [loading, setLoading] = useState(true); // Loading state for fetching user data
+    const navigate = useNavigate();
+    const authToken = localStorage.getItem('Authorization'); // Get auth token
+    const totalAmount = sessionStorage.getItem('totalAmount'); // Get total amount from session storage
 
-    let authToken = localStorage.getItem('Authorization')
-    let setProceed = authToken ? true : false
-    let navigate = useNavigate()
-    let totalAmount = sessionStorage.getItem('totalAmount')
-
+    // State for user details, pre-filled from profile or updated by user
     const [userDetails, setUserDetails] = useState({
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        userEmail: '',
-        address: '',
-        zipCode: '',
-        city: '',
-        userState: '',
-    })
+        firstName: '', lastName: '', phoneNumber: '', userEmail: '',
+        address: '', zipCode: '', city: '', userState: '',
+    });
 
-    const getUserData = useCallback(async () => {
-        try {
-            const { data } = await axiosInstance.get(`${process.env.REACT_APP_GET_USER_DETAILS}`, {
-                headers: {
-                    'Authorization': authToken
-                }
-            })
-            setUserData(data);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            toast.error("Error fetching user details.", { autoClose: 500, theme: 'colored' });
-        } finally {
-            setLoading(false);
-        }
-    }, [authToken]);
-
+    // Effect to fetch user data on component mount or auth token change
     useEffect(() => {
-        if (setProceed) {
-            getUserData()
-        } else {
-            navigate('/')
-            toast.error("Please login to proceed to checkout.", { autoClose: 500, theme: 'colored' });
-            setLoading(false);
-        }
-        window.scroll(0, 0);
-    }, [setProceed, navigate, getUserData]);
-
-    useEffect(() => {
-        if (userData) {
-            setUserDetails({
-                firstName: userData.firstName || '',
-                lastName: userData.lastName || '',
-                phoneNumber: userData.phoneNumber || '',
-                userEmail: userData.email || '',
-                address: userData.address || '',
-                zipCode: userData.zipCode || '',
-                city: userData.city || '',
-                userState: userData.userState || '',
-            });
-            if (!userData.address || !userData.city || !userData.zipCode || !userData.userState) {
-                setOpenAlert(true);
+        const getUserData = async () => {
+            if (!authToken) {
+                toast.error("Please login to proceed.", { theme: 'colored' });
+                navigate('/login');
+                setLoading(false); // Stop loading if not authenticated
+                return;
             }
-        }
-    }, [userData]);
+            try {
+                const { data } = await axiosInstance.get(process.env.REACT_APP_GET_USER_DETAILS, {
+                    headers: { 'Authorization': authToken }
+                });
+                // CRITICAL FIX: Access user details from 'data.user' as per backend standardization
+                const userDataFromApi = data.user || {};
+                setUserDetails({
+                    firstName: userDataFromApi.firstName || '', lastName: userDataFromApi.lastName || '',
+                    phoneNumber: userDataFromApi.phoneNumber || '', userEmail: userDataFromApi.email || '', // Use data.email for userEmail
+                    address: userDataFromApi.address || '', zipCode: userDataFromApi.zipCode || '',
+                    city: userDataFromApi.city || '', userState: userDataFromApi.userState || '',
+                });
+                // Check if crucial address fields are missing and show alert
+                if (!userDataFromApi.address || !userDataFromApi.city || !userDataFromApi.zipCode || !userDataFromApi.userState) {
+                    setOpenAlert(true);
+                }
+            } catch (error) {
+                // Use backend's standardized 'message' field for error toasts
+                toast.error(error.response?.data?.message || "Could not fetch user details.", { theme: 'colored' });
+            } finally {
+                setLoading(false); // Always set loading to false
+            }
+        };
+        getUserData();
+        window.scroll(0, 0); // Scroll to top on component mount/update
+    }, [authToken, navigate]); // Dependencies: authToken and navigate
 
+    // Handles the checkout process
     const checkOutHandler = async (e) => {
-        e.preventDefault()
-
-        if (!userDetails.firstName || !userDetails.lastName || !userDetails.userEmail || !userDetails.phoneNumber || !userDetails.address || !userDetails.zipCode || !userDetails.city || !userDetails.userState) {
-            toast.error("Please fill all fields", { autoClose: 500, theme: "colored" })
-            return;
+        e.preventDefault();
+        // Client-side validation for required address fields
+        const requiredFields = ['firstName', 'lastName', 'userEmail', 'phoneNumber', 'address', 'zipCode', 'city', 'userState'];
+        if (requiredFields.some(field => !userDetails[field])) {
+            return toast.error("Please fill all address fields.", { theme: "colored" });
         }
-
-        if (cart.length === 0) {
-            toast.error("Your cart is empty. Please add items to proceed.", { autoClose: 500, theme: "colored" });
-            return;
+        // Validate cart and total amount
+        if (!cart || cart.length === 0) {
+            return toast.error("Your cart is empty.", { theme: "colored" });
+        }
+        if (!totalAmount || isNaN(Number(totalAmount)) || Number(totalAmount) <= 0) {
+            return toast.error("Invalid total amount. Please ensure your cart has items.", { theme: "colored" });
         }
 
         try {
-            const { data: { key } } = await axiosInstance.get(`${process.env.REACT_APP_GET_KEY}`)
-            const { data } = await axiosInstance.post(`${process.env.REACT_APP_GET_CHECKOUT}`, {
-                amount: totalAmount,
-                productDetails: JSON.stringify(cart),
-                userId: userData._id,
-                userDetails: JSON.stringify(userDetails),
-            })
+            // CRITICAL FIX: Get userId directly from loginUser context
+            const userId = loginUser?._id;
+            if (!userId) {
+                toast.error("User ID not found. Please log in again.", { theme: 'colored' });
+                navigate('/login');
+                return;
+            }
 
+            // Fetch Razorpay API key
+            const { data: { key } } = await axiosInstance.get(process.env.REACT_APP_GET_KEY);
+            // Initiate checkout with backend
+            const { data: checkoutData } = await axiosInstance.post(process.env.REACT_APP_GET_CHECKOUT, {
+                amount: Number(totalAmount), // Ensure amount is a number
+                userId: userId, // Pass userId explicitly
+                productDetails: JSON.stringify(cart), // Stringify complex objects for transport
+                userDetails: JSON.stringify(userDetails), // Stringify complex objects for transport
+            });
+
+            // Razorpay options for payment gateway
             const options = {
-                key: key,
-                amount: totalAmount * 100,
+                key, // Your Razorpay API Key
+                amount: checkoutData.order.amount, // Amount from the created Razorpay order
                 currency: "INR",
                 name: "ARISTAYA",
-                description: "Payment for ARISTAYA Order",
-                image: profile,
-                order_id: data.order.id,
-                callback_url: process.env.REACT_APP_GET_PAYMENTVERIFICATION,
-                prefill: {
-                    name: userDetails.firstName + ' ' + userDetails.lastName,
+                description: "Payment for your ARISTAYA Order",
+                image: profile, // Your brand logo/image
+                order_id: checkoutData.order.id, // Order ID from Razorpay
+                callback_url: process.env.REACT_APP_GET_PAYMENTVERIFICATION, // Backend endpoint for verification
+                prefill: { // Pre-fill user details for convenience
+                    name: `${userDetails.firstName} ${userDetails.lastName}`,
                     email: userDetails.userEmail,
                     contact: userDetails.phoneNumber
                 },
-                notes: {
-                    "address": `${userDetails.address}, ${userDetails.city}, ${userDetails.zipCode}, ${userDetails.userState}`
-                },
-                theme: {
-                    "color": "#FFD700"
-                },
+                theme: { "color": "#FFD700" }, // Theme color for Razorpay modal
             };
-            const razor = new window.Razorpay(options);
-            razor.open();
+            const razor = new window.Razorpay(options); // Initialize Razorpay
+            razor.open(); // Open the Razorpay payment modal
         } catch (error) {
-            console.error("Error during checkout process:", error.response?.data?.message || error.message);
-            toast.error(error.response?.data?.message || "Failed to initiate checkout", { autoClose: 500, theme: 'colored' });
+            // Use backend's standardized 'message' field for error toasts
+            toast.error(error.response?.data?.message || "Checkout failed. Please try again.", { theme: 'colored' });
+            console.error("Checkout error:", error);
         }
-    }
+    };
 
-    const handleOnchange = (e) => {
-        setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
-    }
+    // Handles changes in user details form fields
+    const handleOnChange = (e) => {
+        setUserDetails({ ...userDetails, [e.target.name]: e.target.value });
+    };
 
-    
+    // Custom styles for Material-UI TextField components
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: '#444444', 
-            },
-            '&:hover fieldset': {
-                borderColor: '#666666', 
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#FFD700', 
-            },
-            backgroundColor: '#1e1e1e', 
+            '& fieldset': { borderColor: '#444' },
+            '&:hover fieldset': { borderColor: '#666' },
+            '&.Mui-focused fieldset': { borderColor: '#FFD700' },
+            backgroundColor: '#1e1e1e',
             borderRadius: '8px',
         },
-        '& .MuiInputLabel-outlined': {
-            color: '#cccccc', 
-        },
-        '& .MuiInputLabel-outlined.Mui-focused': {
-            color: '#FFD700', 
-        },
-        '& .MuiInputBase-input': {
-            fontFamily: 'Cooper Black, serif !important', 
-            color: '#ffffff !important', 
-        },
-        
-        '& .MuiInputBase-input.Mui-disabled': {
-            WebkitTextFillColor: '#ffffff !important', 
-            color: '#ffffff !important', 
-            opacity: 1, 
-        },
-        
-        '& .MuiInputBase-root.Mui-disabled': {
-            backgroundColor: '#1e1e1e !important', 
-            color: '#ffffff !important', 
+        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
+        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' },
+        '& .Mui-disabled': {
+            WebkitTextFillColor: '#cccccc !important', // Ensure disabled text is visible
+            color: '#cccccc !important',
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#333 !important' }
         },
     };
 
+    // Show loading indicator while fetching user data
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', backgroundColor: '#000000' }}>
-                <Typography variant='h4' sx={{ color: '#ffffff', fontFamily: 'Cooper Black, serif !important' }}>Loading Checkout...</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                <Typography variant='h4' sx={{ color: 'white' }}>Loading Checkout...</Typography>
             </Box>
         );
     }
@@ -182,142 +159,48 @@ const CheckoutForm = () => {
     return (
         <>
             <CssBaseline />
-            <Container sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-                marginBottom: 10,
-                marginTop: 10,
-                padding: '20px',
-                backgroundColor: '#000000', 
-                minHeight: 'calc(100vh - 180px)' 
-            }}>
-                <Typography variant='h4' sx={{ margin: '20px 0', color: '#ffffff', fontWeight: 'bold', fontFamily: 'Cooper Black, serif !important' }}>Checkout</Typography>
-                <Box
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    onSubmit={checkOutHandler}
-                    sx={{
-                        backgroundColor: '#1e1e1e', 
-                        padding: '40px',
-                        borderRadius: '15px',
-                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
-                        border: '1px solid #333333',
-                        width: '100%',
-                        maxWidth: '800px',
-                        boxSizing: 'border-box',
-                        mb: 5
-                    }}
-                >
-                    <Grid container spacing={4}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField inputProps={{ readOnly: true }} disabled label="First Name" name='firstName' value={userDetails.firstName} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField inputProps={{ readOnly: true }} disabled label="Last Name" name='lastName' value={userDetails.lastName} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField inputProps={{ readOnly: true }} disabled label="Contact Number" type='tel' name='phoneNumber' value={userDetails.phoneNumber} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField inputProps={{ readOnly: true }} disabled label="Email" name='userEmail' value={userDetails.userEmail} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField label="Address" name='address' value={userDetails.address} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField label="City" name='city' value={userDetails.city} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField type='tel' label="Postal/Zip Code" name='zipCode' value={userDetails.zipCode} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
-                        <Grid item xs={12} >
-                            <TextField label="Province/State" name='userState' value={userDetails.userState} onChange={handleOnchange} variant="outlined" fullWidth sx={textFieldSx} />
-                        </Grid>
+            <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 10, mt: 10 }}>
+                <Typography variant='h4' sx={{ mb: 4, color: 'white', fontWeight: 'bold' }}>Checkout</Typography>
+                <Box component="form" onSubmit={checkOutHandler} sx={{ bgcolor: '#1e1e1e', p: 4, borderRadius: '15px', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)', border: '1px solid #333', width: '100%', maxWidth: '800px' }}>
+                    <Grid container spacing={3}>
+                        {/* User Details Fields (some disabled as they come from user profile) */}
+                        <Grid item xs={12} sm={6}><TextField disabled label="First Name" name='firstName' value={userDetails.firstName} variant="outlined" fullWidth sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField disabled label="Last Name" name='lastName' value={userDetails.lastName} variant="outlined" fullWidth sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField disabled label="Contact Number" name='phoneNumber' value={userDetails.phoneNumber} variant="outlined" fullWidth sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField disabled label="Email" name='userEmail' value={userDetails.userEmail} variant="outlined" fullWidth sx={textFieldSx} /></Grid>
+                        {/* Address Fields (editable) */}
+                        <Grid item xs={12}><TextField label="Address" name='address' value={userDetails.address} onChange={handleOnChange} variant="outlined" fullWidth required sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField label="City" name='city' value={userDetails.city} onChange={handleOnChange} variant="outlined" fullWidth required sx={textFieldSx} /></Grid>
+                        <Grid item xs={12} sm={6}><TextField label="Postal/Zip Code" name='zipCode' value={userDetails.zipCode} onChange={handleOnChange} variant="outlined" fullWidth required sx={textFieldSx} /></Grid>
+                        <Grid item xs={12}><TextField label="Province/State" name='userState' value={userDetails.userState} onChange={handleOnChange} variant="outlined" fullWidth required sx={textFieldSx} /></Grid>
                     </Grid>
-                    <Container sx={{ display: 'flex', gap: { xs: 2, md: 5 }, justifyContent: 'center', marginTop: 5, flexWrap: 'wrap' }}>
-                        <Link to='/update' style={{ textDecoration: 'none' }}>
-                            <Button variant='contained' endIcon={<MdUpdate />}
-                                sx={{
-                                    backgroundColor: '#333333 !important',
-                                    color: 'white !important',
-                                    border: '1px solid #444444',
-                                    '&:hover': { backgroundColor: '#444444 !important' },
-                                    fontFamily: 'Cooper Black, serif !important',
-                                    padding: '12px 30px'
-                                }}>
-                                Update Profile
-                            </Button>
-                        </Link>
-                        <Button variant='contained' endIcon={<BsFillCartCheckFill />} type='submit'
-                            sx={{
-                                backgroundColor: '#FFD700 !important',
-                                color: '#000000 !important',
-                                border: '1px solid #FFD700',
-                                '&:hover': { backgroundColor: '#e6b800 !important' },
-                                fontFamily: 'Cooper Black, serif !important',
-                                padding: '12px 30px'
-                            }}>
-                            Checkout
-                        </Button>
-                    </Container>
-                </Box >
+                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4, flexWrap: 'wrap' }}>
+                        {/* Button to update profile (redirects to UpdateDetails page) */}
+                        <Button component={Link} to='/update' variant='contained' endIcon={<MdUpdate />} sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' }, p: '12px 30px' }}>Update Profile</Button>
+                        {/* Button to proceed to payment */}
+                        <Button variant='contained' endIcon={<BsFillCartCheckFill />} type='submit' sx={{ bgcolor: '#FFD700', color: '#000', '&:hover': { bgcolor: '#e6c200' }, p: '12px 30px' }}>Proceed to Pay</Button>
+                    </Box>
+                </Box>
 
-                <Dialog
-                    open={openAlert}
-                    TransitionComponent={Transition}
-                    keepMounted
-                    onClose={() => handleClose(setOpenAlert)}
-                    aria-describedby="alert-dialog-slide-description"
-                    PaperProps={{
-                        sx: {
-                            backgroundColor: '#1e1e1e',
-                            color: '#ffffff',
-                            borderRadius: '12px',
-                            boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
-                            border: '1px solid #333333',
-                        }
-                    }}
-                >
-                    <DialogContent sx={{ width: { xs: 280, md: 350, xl: 400 }, display: 'flex', justifyContent: 'center', padding: '30px' }}>
-                        <Typography variant='h6' sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif !important', color: '#ffffff' }}>
-                            Add permanent address then you don't have to add again.
+                {/* Address Missing Alert Dialog */}
+                <Dialog open={openAlert} TransitionComponent={Transition} keepMounted onClose={() => setOpenAlert(false)} PaperProps={{ sx: { bgcolor: '#1e1e1e', color: 'white', borderRadius: '12px', border: '1px solid #333' } }}>
+                    <DialogContent sx={{ width: { xs: 280, md: 350 }, p: 4 }}>
+                        <Typography variant='h6' sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif' }}>
+                            Please add your address to continue.
                         </Typography>
                     </DialogContent>
-                    <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', paddingBottom: '20px' }}>
-                        <Link to='/update' style={{ textDecoration: 'none' }}>
-                            <Button variant='contained' endIcon={<AiOutlineSave />}
-                                sx={{
-                                    backgroundColor: '#333333 !important',
-                                    color: 'white !important',
-                                    border: '1px solid #444444',
-                                    '&:hover': { backgroundColor: '#444444 !important' },
-                                    fontFamily: 'Cooper Black, serif !important'
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </Link>
-                        <Button variant='contained'
-                            sx={{
-                                backgroundColor: '#333333 !important',
-                                color: 'white !important',
-                                border: '1px solid #444444',
-                                '&:hover': { backgroundColor: '#444444 !important' },
-                                fontFamily: 'Cooper Black, serif !important'
-                            }}
-                            endIcon={<AiFillCloseCircle />} onClick={() => handleClose(setOpenAlert)}>Close</Button>
+                    <DialogActions sx={{ justifyContent: 'space-evenly', pb: 3 }}>
+                        <Button component={Link} to='/update' variant='contained' endIcon={<AiOutlineSave />} sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' } }}>Add Address</Button>
+                        <Button variant='contained' endIcon={<AiFillCloseCircle />} onClick={() => setOpenAlert(false)} sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' } }}>Close</Button>
                     </DialogActions>
                 </Dialog>
-
-            </Container >
-            <CopyRight sx={{ mt: 8, mb: 10 }} />
-
+            </Container>
         </>
-    )
-}
+    );
+};
 
-export default CheckoutForm
+CheckoutForm.propTypes = {
+    // This component does not receive props.
+};
+
+export default CheckoutForm;

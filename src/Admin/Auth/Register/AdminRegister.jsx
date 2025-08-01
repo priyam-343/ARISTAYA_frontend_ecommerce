@@ -1,209 +1,110 @@
-import '../Login/login.css'
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
-import { Avatar, Button, Checkbox, CssBaseline, FormControlLabel, Grid, InputAdornment, TextField, Typography } from '@mui/material'
-import { MdLockOutline } from 'react-icons/md'
-import { Box, Container } from '@mui/system'
-import { toast } from 'react-toastify'
+import React, { useContext, useState } from 'react'; // Removed useEffect as it was empty
+import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography, Box, Container, Paper, CircularProgress } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axiosInstance from '../../../utils/axiosInstance'; // Assumes axiosInstance is correctly configured for your backend URL
+import { MdLockOutline } from 'react-icons/md';
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
-
-import CopyRight from '../../../Components/CopyRight/CopyRight'
-
+// Removed CopyRight import as it's handled globally
+import { ContextFunction } from '../../../Context/Context';
+// Removed PropTypes import as component does not receive props
 
 const AdminRegister = () => {
+    const { setLoginUser } = useContext(ContextFunction);
+    const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "", key: "" });
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-  const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "", key: "" })
-  const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const navigate = useNavigate()
-  const handleOnChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value })
-  }
-  useEffect(() => {
-    let auth = localStorage.getItem('Authorization');
-    if (auth) {
-      navigate("/")
-    }
-  }, [])
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    let phoneRegex = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/gm;
-    let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    try {
-      if (!credentials.email && !credentials.firstName && !credentials.password && !credentials.phoneNumber && !credentials.lastName) {
-        toast.error("All fields are required", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.firstName.length <= 3 || credentials.lastName.length <= 3) {
-        toast.error("Please enter name with more than 3 characters", { autoClose: 500, theme: 'colored' })
-      }
-      else if (!emailRegex.test(credentials.email)) {
-        toast.error("Please enter valid email", { autoClose: 500, theme: 'colored' })
-      }
-      else if (!phoneRegex.test(credentials.phoneNumber)) {
-        toast.error("Please enter a valid phone number", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.password.length < 5) {
-        toast.error("Please enter password with more than 5 characters", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.email && credentials.firstName && credentials.lastName && credentials.phoneNumber && credentials.password) {
-        const sendAuth = await axios.post(process.env.REACT_APP_ADMIN_REGISTER,
-          {
-            firstName: credentials.firstName,
-            lastName: credentials.lastName,
-            email: credentials.email,
-            phoneNumber: credentials.phoneNumber,
-            password: credentials.password,
-            key: credentials.key
-          })
-        const receive = await sendAuth.data
-        if (receive.success === true) {
-          toast.success("Registered Successfully", { autoClose: 500, theme: 'colored' })
-          localStorage.setItem('Authorization', receive.authToken)
-          navigate('/admin/home')
+    const handleOnChange = (e) => {
+        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            // Ensure process.env.REACT_APP_ADMIN_REGISTER points to your correct backend admin register endpoint
+            const { data } = await axiosInstance.post(process.env.REACT_APP_ADMIN_REGISTER, credentials);
+            if (data.success) {
+                toast.success("Admin Registered Successfully!", { autoClose: 1500, theme: 'colored' });
+                localStorage.setItem('Authorization', data.authToken);
+                setLoginUser(data.user);
+                navigate('/admin/home'); // Navigate to admin dashboard on successful registration
+            }
+        } catch (error) {
+            // Display error message from the backend, or a generic one if unavailable
+            toast.error(error.response?.data?.message || "Registration failed. Please check your details and admin key.", { theme: 'colored' });
+        } finally {
+            setLoading(false);
         }
-        else {
-          toast.error("Invalid Credentials", { autoClose: 500, theme: 'colored' })
-        }
-      }
-    } catch (error) {
-      toast.error("Invalid Credentials", { autoClose: 500, theme: 'colored' })
-    }
+    };
 
-  }
+    // Consistent styling for TextFields
+    const textFieldSx = {
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': { borderColor: '#444' },
+            '&:hover fieldset': { borderColor: '#666' },
+            '&.Mui-focused fieldset': { borderColor: '#FFD700' },
+            backgroundColor: '#1a1a1a',
+            borderRadius: '8px',
+        },
+        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
+        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputAdornment-root': { color: '#cccccc' },
+    };
 
-
-  return (
-    <>
-      <Container component="main" maxWidth="xs" sx={{ marginBottom: 10 }}>
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: '#1976d2' }}>
-            <MdLockOutline />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  value={credentials.firstName}
-                  onChange={handleOnChange}
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  value={credentials.lastName}
-                  onChange={handleOnChange}
-                  autoComplete="family-name"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  value={credentials.email}
-                  onChange={handleOnChange}
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="phoneNumber"
-                  label="Contact Number"
-                  name="phoneNumber"
-                  value={credentials.phoneNumber}
-                  onChange={handleOnChange}
-                  inputMode='numeric'
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  value={credentials.password}
-                  onChange={handleOnChange}
-                  type={showPassword ? "text" : "password"}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" onClick={handleClickShowPassword} sx={{ cursor: 'pointer' }}>
-                        {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
-                      </InputAdornment>
-                    )
-                  }}
-                  autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  value={credentials.key}
-                  name='key'
-                  onChange={handleOnChange}
-                  label="Admin Code"
-                  type="password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                Already have an account?
-                <Link to='/admin/login' style={{ color: '#1976d2', marginLeft: 3 }}>
-                  Sign in
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#000000' }}>
+            <CssBaseline />
+            {/* "Not an Admin?" button positioned at the top right for easy access to user registration. */}
+            <Box sx={{ position: 'absolute', top: { xs: 20, md: 30 }, right: { xs: 20, md: 30 }, zIndex: 1000, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#cccccc' }}>Not an Admin?</Typography>
+                <Link to="/register" style={{ textDecoration: 'none' }}>
+                    <Button variant="contained" sx={{ borderRadius: '8px', bgcolor: '#FFD700', color: '#1a1a1a', '&:hover': { bgcolor: '#e6c200' }, fontFamily: 'Cooper Black, serif' }}>Register</Button>
                 </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-        <CopyRight sx={{ mt: 10 }} />
-      </Container>
-    </>
-  )
-}
+            </Box>
 
-export default AdminRegister
+            <Container component="main" maxWidth="xs" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                    <Avatar sx={{ m: 'auto', bgcolor: '#FFD700' }}><MdLockOutline sx={{ color: '#1a1a1a' }} /></Avatar>
+                    <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700' }}>Sign Up (Admin)</Typography>
+                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}><TextField name="firstName" required fullWidth id="firstName" label="First Name" value={credentials.firstName} onChange={handleOnChange} autoFocus sx={textFieldSx} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField required fullWidth id="lastName" label="Last Name" name="lastName" value={credentials.lastName} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                            <Grid item xs={12}><TextField required fullWidth id="email" label="Email Address" name="email" value={credentials.email} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                            <Grid item xs={12}><TextField required fullWidth id="phoneNumber" label="Contact Number" name="phoneNumber" value={credentials.phoneNumber} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                            <Grid item xs={12}><TextField
+                                required fullWidth name="password" label="Password" type={showPassword ? "text" : "password"} id="password" value={credentials.password} onChange={handleOnChange}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" onClick={() => setShowPassword(!showPassword)} sx={{ cursor: 'pointer', color: '#cccccc' }}>
+                                            {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
+                                        </InputAdornment>
+                                    )
+                                }}
+                                sx={textFieldSx}
+                            /></Grid>
+                            <Grid item xs={12}><TextField required fullWidth name='key' label="Admin Secret Key" type="password" value={credentials.key} onChange={handleOnChange} sx={textFieldSx} /></Grid>
+                        </Grid>
+                        <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
+                            {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
+                        </Button>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item>
+                                <Typography variant="body2" sx={{ color: '#cccccc' }}>
+                                    Already have an admin account?{' '}
+                                    <Link to="/admin/login" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Sign in</Typography></Link>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Container>
+        </Box>
+    );
+};
+
+export default AdminRegister;

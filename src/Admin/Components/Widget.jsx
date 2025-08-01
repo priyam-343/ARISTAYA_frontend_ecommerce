@@ -1,63 +1,65 @@
-import { Box, IconButton, Typography, useMediaQuery } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React from 'react';
+import { Box, IconButton, Typography } from '@mui/material';
 import CountUp from 'react-countup';
-
+import PropTypes from 'prop-types';
 
 const Widget = ({ numbers, heading, color, icon }) => {
-    const isSmallScreen = useMediaQuery('(max-width:600px)');
-    const [value, setValue] = useState(0);
-    const endValue = numbers;
-
-    useEffect(() => {
-        setValue(endValue);
-    }, [endValue]);
-
+    // Determine the currency symbol based on the heading
     const prefix = heading === 'Revenue' ? '₹' : '';
+
     return (
         <Box
             sx={{
                 backgroundColor: color,
-                borderRadius: 4,
+                borderRadius: '12px',
                 p: 2,
-                width:"auto",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
                 boxShadow: '0px 8px 13px rgba(0, 0, 0, 0.2)',
                 transition: 'transform 0.2s ease-in-out',
                 '&:hover': {
                     transform: 'translateY(-5px)',
                 },
-
-            }}>
+            }}
+        >
             <Box>
-                < Typography variant="h6" sx={{
-                    color: "white", mb: 1, fontWeight: 'bold',
+                {/* Display the heading of the widget */}
+                <Typography variant="h6" sx={{
+                    color: "#1a1a1a",
+                    mb: 1,
+                    fontWeight: 'bold',
+                    fontFamily: 'Cooper Black, serif'
                 }}>
                     {heading}
-                </Typography >
-                <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Typography variant="h4" sx={{ color: "white", textAlign: 'center' }}>
-                            <CountUp start={0} prefix={prefix} end={value} duration={4} separator="," />
-
-                        </Typography>
-                    </Box>
-                </Box>
+                </Typography>
+                {/* Display the animated number using react-countup */}
+                <Typography variant="h4" sx={{
+                    color: "#1a1a1a",
+                    fontFamily: 'Cooper Black, serif'
+                }}>
+                    <CountUp start={0} prefix={prefix} end={numbers} duration={4} separator="," />
+                </Typography>
             </Box>
             <Box>
-                <IconButton sx={{ fontSize: 45, color: "white" }} >
+                {/* Display the icon for the widget */}
+                <IconButton sx={{
+                    fontSize: 45,
+                    color: "#1a1a1a",
+                    p: 1.5
+                }}>
                     {icon}
                 </IconButton>
             </Box>
-        </Box >
+        </Box>
+    );
+};
 
-    )
-}
+Widget.propTypes = {
+    numbers: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    heading: PropTypes.string.isRequired,
+    color: PropTypes.string.isRequired,
+    icon: PropTypes.element.isRequired,
+};
 
-export default Widget
+export default Widget;

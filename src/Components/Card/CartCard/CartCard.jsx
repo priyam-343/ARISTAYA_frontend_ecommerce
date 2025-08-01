@@ -1,96 +1,88 @@
-import { Card, CardContent, Typography, Box, Button, Rating } from '@mui/material' 
-import React from 'react'
-import styles from './CartCard.module.css' 
-import { AiFillDelete } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Card, CardContent, Typography, Box, Button, Rating } from '@mui/material';
+import { AiFillDelete } from 'react-icons/ai';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const CartCard = ({ product, removeFromCart }) => {
-    
-    const imageUrl = product?.productId?.images && product.productId.images.length > 0
-        ? product.productId.images[0].url
-        : 'https://placehold.co/400x600/1e1e1e/ffffff?text=No+Image'; 
+
+    const getImageUrl = () => {
+        const p = product?.productId;
+        if (!p) {
+            return 'https://placehold.co/400x600/1e1e1e/ffffff?text=No+Product';
+        }
+        if (p.images && Array.isArray(p.images) && p.images.length > 0 && p.images[0]?.url) {
+            return p.images[0].url;
+        }
+        return 'https://placehold.co/400x600/1e1e1e/ffffff?text=No+Image+From+API';
+    };
+
+    const imageUrl = getImageUrl();
 
     return (
         <Card
-            className={styles.main_card} 
             sx={{
-                backgroundColor: '#1e1e1e !important', 
-                color: '#ffffff !important', 
-                borderRadius: '12px !important',
-                boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4) !important', 
-                border: '1px solid #333333 !important', 
-                fontFamily: 'Cooper Black, serif !important', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                justifyContent: 'space-between', 
-                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out', 
+                width: 300,
+                minHeight: 480,
+                m: 2,
+                bgcolor: '#1e1e1e',
+                color: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
+                border: '1px solid #333',
+                fontFamily: 'Cooper Black, serif',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'transform 0.2s ease-in-out',
                 '&:hover': {
-                    transform: 'translateY(-5px)', 
-                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.6) !important', 
+                    transform: 'translateY(-5px)',
                 },
             }}
-            elevation={15}
         >
-            {}
-            <Link to={`/Detail/type/${product?.productId?.type}/${product?.productId?._id}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                <Box className={styles.img_box}> {}
-                    <img alt={product?.productId?.name} loading='lazy' src={imageUrl} className={styles.img} />
+            <Link to={`/product/${product?.productId?.mainCategory}/${product?.productId?._id}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                <Box sx={{ width: '100%', height: 300, p: 2, boxSizing: 'border-box' }}>
+                    <img alt={product?.productId?.name} loading='lazy' src={imageUrl} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </Box>
-                <CardContent sx={{ flexGrow: 1, padding: '15px !important' }}> {}
+                <CardContent sx={{ flexGrow: 1, p: 2 }}>
                     <Typography
                         gutterBottom
                         variant="h6"
                         sx={{
                             textAlign: "center",
-                            color: '#ffffff !important', 
-                            fontFamily: 'Cooper Black, serif !important',
-                            fontSize: { xs: '1rem', md: '1.1rem' },
+                            color: 'white',
+                            fontFamily: 'Cooper Black, serif',
+                            fontSize: '1.1rem',
                             mb: 1
                         }}
                     >
-                        {product?.productId?.name.length > 25 ? product.productId.name.slice(0, 25) + '...' : product.productId.name}
+                        {product?.productId?.name ? (product.productId.name.length > 25 ? product.productId.name.slice(0, 25) + '...' : product.productId.name) : 'No Name'}
                     </Typography>
                     <Typography
                         variant="body2"
-                        sx={{
-                            textAlign: "center",
-                            color: '#cccccc !important', 
-                            fontFamily: 'Cooper Black, serif !important',
-                            mb: 1
-                        }}
+                        sx={{ textAlign: "center", color: '#cccccc', fontFamily: 'Cooper Black, serif', mb: 1 }}
                     >
                         Qty: {product?.quantity}
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 1, mb: 1 }}>
                         <Typography
-                            gutterBottom
                             variant="h6"
-                            sx={{
-                                textAlign: "center",
-                                color: '#FFD700 !important', 
-                                fontFamily: 'Cooper Black, serif !important',
-                                fontWeight: 'bold',
-                                fontSize: { xs: '1.1rem', md: '1.2rem' }
-                            }}
+                            sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold' }}
                         >
-                            ₹{product?.productId?.price.toLocaleString()}
+                            ₹{product?.productId?.price ? product.productId.price.toLocaleString() : '0'}
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                         <Rating
                             name="read-only"
-                            value={Math.round(product?.productId?.rating || 0)}
+                            value={product?.productId?.rating || 0}
                             readOnly
-                            precision={0.5}
-                            sx={{ color: '#FFD700 !important' }} 
+                            precision={0.1}
+                            sx={{ color: '#FFD700' }}
                         />
                         <Typography
                             variant="body2"
-                            sx={{
-                                color: '#cccccc !important', 
-                                fontFamily: 'Cooper Black, serif !important',
-                                mt: 0.5
-                            }}
+                            sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif', mt: 0.5 }}
                         >
                             ({product?.productId?.numOfReviews || 0} reviews)
                         </Typography>
@@ -98,22 +90,18 @@ const CartCard = ({ product, removeFromCart }) => {
                 </CardContent>
             </Link>
 
-            {}
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', pb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
                 <Button
                     variant='contained'
                     endIcon={<AiFillDelete />}
-                    onClick={() => removeFromCart(product)} 
+                    onClick={() => removeFromCart(product)}
                     sx={{
                         borderRadius: '8px',
-                        backgroundColor: '#8B0000 !important', 
-                        color: 'white !important',
-                        border: '1px solid #B22222', 
-                        fontFamily: 'Cooper Black, serif !important',
-                        padding: '8px 20px',
+                        bgcolor: '#8B0000',
+                        color: 'white',
+                        fontFamily: 'Cooper Black, serif',
                         '&:hover': {
-                            backgroundColor: '#B22222 !important', 
-                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)'
+                            bgcolor: '#B22222',
                         },
                     }}
                 >
@@ -121,7 +109,12 @@ const CartCard = ({ product, removeFromCart }) => {
                 </Button>
             </Box>
         </Card>
-    )
-}
+    );
+};
 
-export default CartCard
+CartCard.propTypes = {
+    product: PropTypes.object.isRequired,
+    removeFromCart: PropTypes.func.isRequired,
+};
+
+export default CartCard;

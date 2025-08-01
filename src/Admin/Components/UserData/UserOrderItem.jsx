@@ -1,40 +1,122 @@
-import { Box, Container, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import ProductCard from '../../../Components/Card/Product Card/ProductCard';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Box, Container, Typography, CircularProgress, Grid } from '@mui/material';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
+import ProductCard from '../../../Components/Card/Product Card/ProductCard'; 
 
-const UserOrderItem = ({ commonGetRequest, id }) => {
-    const [data, setData] = useState([]);
+/**
+ * UserOrderItem component displays a list of orders for a specific user,
+ * identified by their ID. It fetches order data from the backend.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.id - The ID of the user whose orders are to be fetched.
+ */
+const UserOrderItem = ({ id }) => {
+    const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const authToken = localStorage.getItem("Authorization");
 
     useEffect(() => {
-        commonGetRequest(process.env.REACT_APP_ADMIN_GET_ORDER, id, setData);
-    }, [])
-    const total = data.reduce((acc, curr) => (acc + curr.totalAmount), 0);
-    return (
-        <Container>
-            <Typography variant='h6' fontWeight="bold" sx={{ margin: '20px 0', textAlign: 'center' }}>User Orders</Typography>
-            {data.length === 0 ?
-                <Typography variant='h6' textAlign="center">User not order any thing yet</Typography>
-                :
-                <>
-                    <Typography variant='h6' textAlign='center' >Total Amount Spend  <span style={{color:"#1976d2"}}>₹{total} </span> </Typography>
-                    <Box>
-                        <Box className='similarProduct' sx={{ display: 'flex', overflowX: 'auto',justifyContent:'center', marginBottom: 10 }}>
-                            {
-                                data.map(product => (
-                                    product.productData.map(prod => <Link to={`/Detail/type/${prod.productId.type}/${prod.productId._id}`} key={prod._id}>
-                                        <ProductCard prod={prod.productId} />
-                                    </Link>
-                                    )
-                                )
-                                )}
-                        </Box>
-                    </Box>
-                </>
+        let isMounted = true; 
+
+        const fetchUserOrders = async () => {
+            setIsLoading(true); 
+            try {
+                const apiUrl = `${process.env.REACT_APP_ADMIN_GET_USER_ORDER}/${id}`;
+                
+                const { data } = await axios.get(apiUrl, {
+                    headers: { 'Authorization': authToken }
+                });
+
+                // --- CRITICAL FIX: Access data.payments array ---
+                if (isMounted) {
+                    setOrders(Array.isArray(data.payments) ? data.payments : []); 
+                }
+            } catch (error) {
+                console.error("Error fetching user orders:", error);
+                toast.error(error.response?.data?.message || "Failed to fetch user orders. Please try again.", { theme: "colored" });
+                if (isMounted) {
+                    setOrders([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
-        </Container>
+        };
 
-    )
-}
+        if (id && authToken) {
+            fetchUserOrders();
+        } else {
+            setIsLoading(false);
+            if (!authToken) {
+                toast.warn("Authentication token missing. Please log in.", { theme: "colored" });
+            }
+        }
 
-export default UserOrderItem
+        return () => {
+            isMounted = false;
+        };
+    }, [id, authToken]);
+
+    const totalSpent = orders.reduce((acc, curr) => acc + curr.totalAmount, 0);
+
+    if (isLoading) {
+        return (
+            <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <CircularProgress sx={{ color: '#FFD700' }} />
+                <Typography variant="h6" sx={{ ml: 2, color: '#FFD700' }}>Loading orders...</Typography>
+            </Container>
+        );
+    }
+
+    return (
+        <Box sx={{ my: 4 }}>
+            <Typography variant='h6' fontWeight="bold" sx={{ mb: 3, textAlign: 'center', color: '#FFD700' }}>
+                User Orders
+            </Typography>
+            {orders.length === 0 ? (
+                <Typography variant='body1' sx={{ textAlign: 'center', color: '#cccccc' }}>
+                    This user has not placed any orders yet.
+                </Typography>
+            ) : (
+                <>
+                    <Typography variant='h6' textAlign='center' sx={{ color: 'white', mb: 3 }}>
+                        Total Amount Spent: <span style={{ color: "#FFD700" }}>₹{totalSpent.toLocaleString()}</span>
+                    </Typography>
+                    <Grid container spacing={2} justifyContent="center">
+                        {orders.flatMap(order =>
+                            order.productData.map((prod, index) => (
+                                prod.productId && prod.productId.mainCategory ? (
+                                    <Grid item key={prod._id || prod.productId._id || `order-prod-${index}`}>
+                                        <ProductCard 
+                                            prod={prod.productId} 
+                                            category={prod.productId.mainCategory} 
+                                        />
+                                    </Grid>
+                                ) : (
+                                    <Grid item key={prod._id || prod.productId?._id || `order-prod-missing-${index}`}>
+                                        <Box sx={{
+                                            p: 2, bgcolor: '#2a2a2a', borderRadius: '15px', border: '1px solid #333',
+                                            color: '#cccccc', fontFamily: 'Cooper Black, serif', textAlign: 'center',
+                                            width: '250px', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                            Order Product Data Missing (ID or Category)
+                                        </Box>
+                                    </Grid>
+                                )
+                            ))
+                        )}
+                    </Grid>
+                </>
+            )}
+        </Box>
+    );
+};
+
+UserOrderItem.propTypes = {
+    id: PropTypes.string.isRequired,
+};
+
+export default UserOrderItem;

@@ -1,84 +1,13 @@
+import React, { forwardRef } from 'react';
 import { Slide } from "@mui/material";
-import axiosInstance from "./../utils/axiosInstance"; 
-import { forwardRef } from "react";
 
-const getCart = async (setProceed, setCart, authToken) => {
-    if (setProceed) {
-        try {
-            const { data } = await axiosInstance.get(`${process.env.REACT_APP_GET_CART}`,
-                {
-                    headers: {
-                        'Authorization': authToken
-                    }
-                });
-            
-            setCart(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error("Error in getCart (Constants):", error);
-            setCart([]); 
-        }
-    }
-};
-
-const getWishList = async (setProceed, setWishlistData, authToken) => {
-    if (setProceed) {
-        try {
-            const { data } = await axiosInstance.get(`${process.env.REACT_APP_GET_WISHLIST}`,
-                {
-                    headers: {
-                        'Authorization': authToken
-                    }
-                });
-            
-            setWishlistData(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error("Error in getWishList (Constants):", error);
-            setWishlistData([]); 
-        }
-    }
-};
-
-const handleLogOut = (setProceed, toast, navigate, setOpenAlert) => {
-    if (setProceed) {
-        localStorage.removeItem('Authorization');
-        toast.success("Logout Successfully", { autoClose: 500, theme: 'colored' });
-        navigate('/');
-        setOpenAlert(false);
-    } else {
-        toast.error("User is already logged off", { autoClose: 500, theme: 'colored' });
-    }
-};
-
-const handleClickOpen = (setOpenAlert) => {
-    setOpenAlert(true);
-};
-
-const handleClose = (setOpenAlert) => {
-    setOpenAlert(false);
-};
-
-const getAllProducts = async (setData) => {
-    try {
-        const { data } = await axiosInstance.get(process.env.REACT_APP_FETCH_PRODUCT);
-        setData(data);
-    } catch (error) {
-        console.error("Error in getAllProducts (Constants):", error);
-    }
-};
-
-const getSingleProduct = async (setProduct, id, setLoading) => {
-    try {
-        const { data } = await axiosInstance.get(`${process.env.REACT_APP_FETCH_PRODUCT}/${id}`);
-        setProduct(data);
-        setLoading(false);
-    } catch (error) {
-        console.error(`Error in getSingleProduct (Constants) for ID ${id}:`, error);
-        setLoading(false);
-    }
-};
-
+// This is a reusable transition component for Material-UI Dialogs.
+// It is the only truly constant, reusable piece of logic from the original file.
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export { getCart, getWishList, handleClickOpen, handleClose, handleLogOut, getAllProducts, getSingleProduct, Transition };
+// All other functions have been removed as their logic is now handled
+// directly within the components that need them, which is a more consistent
+// and maintainable pattern for this project.
+export { Transition };

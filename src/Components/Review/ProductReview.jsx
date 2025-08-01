@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import axiosInstance from '../../utils/axiosInstance'; 
-import Rating from '@mui/material/Rating';
+import React, { useEffect, useState, useCallback } from 'react';
+import axiosInstance from '../../utils/axiosInstance';
+import { Rating, Box, Button, MenuItem, Select, TextField, Tooltip, Typography, FormControl } from '@mui/material';
 import {
     MdSentimentSatisfiedAlt,
     MdSentimentDissatisfied,
@@ -8,266 +8,197 @@ import {
     MdSentimentNeutral,
     MdSentimentVerySatisfied,
     MdStarRate,
-    MdOutlineSentimentVeryDissatisfied,
     MdSend,
     MdOutlineFilterAlt
-} from 'react-icons/md'
-import Box from '@mui/material/Box';
-import { Button, MenuItem, Select, TextField, Tooltip, Typography } from '@mui/material';
+} from 'react-icons/md';
 import { toast } from 'react-toastify';
-import './Review.css'
 import CommentCard from '../Card/Comment Card/CommentCard';
-import { customerReview } from '../../Assets/Images/Image';
+import { customerReview } from '../../Assets/Images/Image'; // Assuming this path is correct
+import PropTypes from 'prop-types';
 
-
-
+// Labels for rating icons (emojis)
 const labels = {
-    0: <MdOutlineSentimentVeryDissatisfied style={{ color: '#FFD700' }} />,
-    0.5: <MdOutlineSentimentVeryDissatisfied style={{ color: '#FFD700' }} />,
     1: <MdSentimentVeryDissatisfied style={{ color: '#FFD700' }} />,
-    1.5: <MdSentimentVeryDissatisfied style={{ color: '#FFD700' }} />,
     2: <MdSentimentDissatisfied style={{ color: '#FFD700' }} />,
-    2.5: <MdSentimentDissatisfied style={{ color: '#FFD700' }} />,
     3: <MdSentimentNeutral style={{ color: '#FFD700' }} />,
-    3.5: <MdSentimentNeutral style={{ color: '#FFD700' }} />,
     4: <MdSentimentSatisfiedAlt style={{ color: '#FFD700' }} />,
-    4.5: <MdSentimentSatisfiedAlt style={{ color: '#FFD700' }} />,
     5: <MdSentimentVerySatisfied style={{ color: '#FFD700' }} />,
 };
 
+const ProductReview = ({ product, onReviewChange, isLoggedIn, authToken, setOpenAlert }) => {
+    const [value, setValue] = useState(0); // State for the rating value
+    const [hover, setHover] = useState(-1); // State for hover effect on rating icons
+    const [reviews, setReviews] = useState([]); // State to store fetched reviews
+    const [comment, setComment] = useState(''); // State for the review comment
+    const [filterOption, setFilterOption] = useState('All'); // State for review filter/sort option
 
-function getLabelText(value) {
-    return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
-}
-const ProductReview = ({ authToken, setProceed, setOpenAlert, id }) => {
-    const [value, setValue] = useState(0);
-    const [hover, setHover] = useState('');
-    const [reviews, setReviews] = useState([])
-    const [comment, setComment] = useState('')
-    const [filterOption, setFilterOption] = useState('all')
-    const [title, setTitle] = useState('All')
+    // Options for filtering and sorting comments
+    const commentFilter = ["All", "Most Recent", "Old", "Positive First", "Negative First"];
 
-    const commentFilter = ["All", "Most Recent", "Old", "Positive First", "Negative First"]
-
+    // Callback to fetch reviews based on product ID and filter option
     const fetchReviews = useCallback(async () => {
-        const filter = filterOption.toLowerCase();
         try {
-            const { data } = await axiosInstance.post(`${process.env.REACT_APP_GET_REVIEW}/${id}`, { filterType: filter });
-            setReviews(data);
+            const { data } = await axiosInstance.post(`${process.env.REACT_APP_GET_REVIEW}/${product._id}`, {
+                filterType: filterOption.toLowerCase().replace(/ /g, '') // Format filter string for backend
+            });
+            // Backend now returns { success: true, reviews: [...] }
+            if (data.success) {
+                setReviews(data.reviews || []); // Set reviews from the 'reviews' field
+            } else {
+                // Handle cases where success is false but no error is thrown
+                toast.error(data.message || "Error fetching reviews.", { theme: 'colored' });
+            }
         } catch (error) {
-            console.error("Error fetching reviews:", error.response?.data?.msg || error.message);
-            toast.error("Error fetching reviews", { autoClose: 500, theme: 'colored' });
-            setReviews([]);
+            // Use backend's standardized 'message' field for error toasts
+            toast.error(error.response?.data?.message || "Error fetching reviews.", { theme: 'colored' });
+            console.error("Error fetching reviews:", error);
         }
-    }, [filterOption, id]);
+    }, [filterOption, product._id]);
 
+    // Effect to fetch reviews when filter option or product ID changes
     useEffect(() => {
         fetchReviews();
-    }, [title, id, fetchReviews]);
+    }, [filterOption, fetchReviews]);
 
-    const handleChange = (e) => {
-        setTitle(e.target.value);
-        setFilterOption(e.target.value.split(" ").join("").toLowerCase());
-    }
-
+    // Handles submission of a new review
     const handleSubmitReview = async (e) => {
-        e.preventDefault()
-        if (!comment && value === 0) { // Check value === 0 for initial state
-            toast.error("Please fill all fields", { theme: "colored", autoClose: 500, })
+        e.preventDefault();
+        // Client-side validation for comment and rating
+        if (!comment || value === 0) {
+            return toast.error("Please add a rating and a comment.", { theme: "colored" });
         }
-        else if (comment.length <= 4) {
-            toast.error("Please add more than 4 characters", { theme: "colored", autoClose: 500, })
-        }
-        else if (value <= 0) {
-            toast.error("Please add rating", { theme: "colored", autoClose: 500, })
-        }
-        else if (comment.length >= 4 && value > 0) {
+        if (isLoggedIn) {
             try {
-                if (setProceed) {
-                    const { data } = await axiosInstance.post(`${process.env.REACT_APP_ADD_REVIEW}`, { id: id, comment: comment, rating: value }, {
-                        headers: {
-                            'Authorization': authToken
-                        }
-                    })
-                    toast.success(data.msg, { theme: "colored", autoClose: 500, })
-                    fetchReviews()
+                const { data } = await axiosInstance.post(`${process.env.REACT_APP_ADD_REVIEW}`,
+                    { id: product._id, comment, rating: value }, // Send product ID, comment, and rating
+                    { headers: { 'Authorization': authToken } } // Send auth token
+                );
+                // Backend now returns { success: true, message: "...", review: {...} }
+                if (data.success) {
+                    toast.success(data.message, { theme: "colored" }); // Use data.message for success
+                    setReviews(prevReviews => [data.review, ...prevReviews]); // Add new review to state
+                    onReviewChange(); // Callback to parent to update product's overall rating
+                    setComment(''); // Clear comment field
+                    setValue(0); // Reset rating
+                } else {
+                    toast.error(data.message, { theme: "colored" }); // Use data.message for backend-specific error
                 }
-                else {
-                    setOpenAlert(true)
-                }
-                setComment('')
-                setValue(0)
+            } catch (error) {
+                // Use backend's standardized 'message' field for error toasts
+                toast.error(error.response?.data?.message || "Something went wrong while adding review.", { theme: "colored" });
+                console.error("Error submitting review:", error);
             }
-            catch (error) {
-                toast.error(error.response?.data?.msg || "Something went wrong", { theme: "colored", autoClose: 600, })
-                setComment('')
-                setValue(0)
-            }
-        }
-    }
-
-    const textFieldSx = {
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: '#444444',
-            },
-            '&:hover fieldset': {
-                borderColor: '#666666',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#FFD700',
-            },
-            backgroundColor: '#1e1e1e',
-            borderRadius: '8px',
-        },
-        '& .MuiInputLabel-outlined': {
-            color: '#cccccc',
-        },
-        '& .MuiInputLabel-outlined.Mui-focused': {
-            color: '#FFD700',
-        },
-        '& .MuiInputBase-input': {
-            fontFamily: 'Cooper Black, serif !important',
-            color: '#ffffff !important',
-        },
-        '& .MuiInputBase-multiline': {
-            padding: '12px 14px',
+        } else {
+            setOpenAlert(true); // Prompt login if not logged in
         }
     };
 
+    // Callback for successful review deletion (from CommentCard)
+    const deleteReviewSuccess = (reviewId) => {
+        setReviews(prevReviews => prevReviews.filter(review => review._id !== reviewId)); // Remove deleted review from state
+        onReviewChange(); // Callback to parent to update product's overall rating
+    };
+
+    // Callback for successful review update (from CommentCard)
+    const updateReviewSuccess = (updatedReview) => {
+        setReviews(prevReviews => prevReviews.map(review =>
+            review._id === updatedReview._id ? updatedReview : review // Replace old review with updated one
+        ));
+        onReviewChange(); // Callback to parent to update product's overall rating
+    };
+
+    // Custom styles for Material-UI TextField components
+    const textFieldSx = {
+        width: '100%',
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': { borderColor: '#444' },
+            '&:hover fieldset': { borderColor: '#666' },
+            '&.Mui-focused fieldset': { borderColor: '#FFD700' },
+            backgroundColor: '#1e1e1e',
+            borderRadius: '8px',
+        },
+        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
+        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' },
+    };
+
     return (
-        <>
-            <div className='form-container'>
-                <form onSubmit={handleSubmitReview} className='form'>
-                    <Typography variant='h5' sx={{ color: '#ffffff', fontFamily: 'Cooper Black, serif !important', mb: 2 }}>
-                        Add Your Review
-                    </Typography>
-                    <Box
-                        sx={{
-                            width: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                            mb: 2
-                        }}
-                    >
+        <Box sx={{ mt: 8, width: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 4, p: 3, bgcolor: '#1e1e1e', borderRadius: '12px', border: '1px solid #333' }}>
+                {/* Add Review Form */}
+                <Box component="form" onSubmit={handleSubmitReview} sx={{ flex: 1, width: '100%' }}>
+                    <Typography variant='h5' sx={{ color: 'white', mb: 2 }}>Add Your Review</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <Rating
-                            name="hover-feedback"
-                            value={value}
-                            precision={0.5}
-                            getLabelText={getLabelText}
-                            id="rating"
-                            onChange={(event, newValue) => {
-                                setValue(newValue);
-                            }}
-                            onChangeActive={(event, newHover) => {
-                                setHover(newHover);
-                            }}
-                            emptyIcon={<MdStarRate style={{ opacity: 0.55, color: '#444444' }} fontSize="inherit" />}
-                            sx={{ color: '#FFD700' }}
+                            name="hover-feedback" value={value} precision={1}
+                            onChange={(event, newValue) => setValue(newValue)}
+                            onChangeActive={(event, newHover) => setHover(newHover)}
+                            emptyIcon={<MdStarRate style={{ opacity: 0.55, color: '#444' }} fontSize="inherit" />}
+                            sx={{ color: '#FFD700', fontSize: '2.5rem' }}
                         />
-                        {value !== null && (
-                            <Box className='expression-icon' sx={{ ml: 2, color: '#FFD700' }}>{labels[hover !== -1 ? hover : value]}</Box>
-                        )}
+                        {value !== null && (<Box sx={{ ml: 2, fontSize: '2rem' }}>{labels[hover !== -1 ? hover : value]}</Box>)}
                     </Box>
-                    <TextField
-                        id="filled-textarea"
-                        value={comment} onChange={(e) => {
-                            setComment(e.target.value)
-                        }}
-                        label="Add Review"
-                        placeholder="What did you like or dislike?"
-                        multiline
-                        rows={4}
-                        className='comment'
-                        variant="outlined"
-                        sx={textFieldSx}
-                    />
-
+                    <TextField value={comment} onChange={(e) => setComment(e.target.value)} label="Add Review" placeholder="What did you like or dislike?" multiline rows={4} variant="outlined" sx={textFieldSx} />
                     <Tooltip title='Send Review'>
-                        <Button className='form-btn' variant='contained' type='submit' endIcon={<MdSend />}
-                            sx={{
-                                backgroundColor: '#333333 !important',
-                                color: 'white !important',
-                                border: '1px solid #444444',
-                                '&:hover': { backgroundColor: '#444444 !important' },
-                                fontFamily: 'Cooper Black, serif !important',
-                                padding: '12px 30px'
-                            }}>
-                            Send
-                        </Button>
+                        <Button variant='contained' type='submit' endIcon={<MdSend />} sx={{ mt: 2, bgcolor: '#333', '&:hover': { bgcolor: '#444' }, p: '12px 30px' }}>Send</Button>
                     </Tooltip>
+                </Box>
+                {/* Customer Review Image (hidden on small screens) */}
+                <Box sx={{ flex: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
+                    <img src={customerReview} loading='lazy' alt="Customer Review" style={{ maxWidth: '100%', height: 'auto', maxHeight: '300px' }} />
+                </Box>
+            </Box>
 
-                </form>
-                <div className="form-img-box">
-                    <img src={customerReview} loading='lazy' alt="Customer Review" className='review-img' />
-                </div>
-            </div>
-
-            {reviews.length >= 1 ?
+            {/* Display Reviews Section */}
+            {reviews.length > 0 && (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, width: "80vw", maxWidth: '1200px', mx: 'auto', mt: 5, pr: { xs: 2, md: 0 } }}>
-                        <Button endIcon={<MdOutlineFilterAlt />}
-                            sx={{
-                                backgroundColor: '#333333 !important',
-                                color: 'white !important',
-                                border: '1px solid #444444',
-                                '&:hover': { backgroundColor: '#444444 !important' },
-                                fontFamily: 'Cooper Black, serif !important',
-                                padding: '8px 15px'
-                            }}>Filters</Button>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={title}
-                            sx={{
-                                width: 200,
-                                backgroundColor: '#1e1e1e',
-                                color: '#ffffff',
-                                fontFamily: 'Cooper Black, serif !important',
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#444444',
-                                },
-                                '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#666666',
-                                },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#FFD700',
-                                },
-                                '& .MuiSelect-icon': {
-                                    color: '#cccccc',
-                                },
-                            }}
-                            onChange={handleChange}
-                        >
-                            {commentFilter.map(prod => (
-                                <MenuItem key={prod} value={prod} sx={{
-                                    backgroundColor: '#1e1e1e !important',
-                                    color: '#ffffff !important',
-                                    fontFamily: 'Cooper Black, serif !important',
-                                    '&:hover': {
-                                        backgroundColor: '#333333 !important',
-                                    }
-                                }}>{prod}</MenuItem>
-                            ))}
-                        </Select>
-
+                    {/* Review Filters */}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2, maxWidth: '1200px', mx: 'auto', mt: 5, px: { xs: 2, md: 0 } }}>
+                        <Button startIcon={<MdOutlineFilterAlt />} sx={{ color: '#FFD700', textTransform: 'none', fontSize: '1rem' }}>Filters</Button>
+                        <FormControl sx={{ minWidth: 200 }}>
+                            <Select value={filterOption} onChange={(e) => setFilterOption(e.target.value)}
+                                sx={{
+                                    color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#444' },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#666' },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#FFD700' },
+                                    '.MuiSvgIcon-root': { color: 'white' }, fontFamily: 'Cooper Black, serif',
+                                    bgcolor: '#1e1e1e', borderRadius: '8px', '.MuiSelect-select': { py: 1.5 }
+                                }}
+                            >
+                                {commentFilter.map(option => (<MenuItem key={option} value={option}>{option}</MenuItem>))}
+                            </Select>
+                        </FormControl>
                     </Box>
-                    <Box className='review-box' >
-                        {
-                            reviews.map(review =>
-                                <CommentCard userReview={review} key={review._id} authToken={authToken} setReviews={setReviews} reviews={reviews} fetchReviews={fetchReviews} />
-                            )
-                        }
+                    {/* List of Comment Cards */}
+                    <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        {reviews.map(review => (
+                            <Box
+                                key={review._id}
+                                sx={{
+                                    width: { xs: '95%', sm: '80%', md: '700px', lg: '800px' },
+                                    maxWidth: '800px',
+                                }}
+                            >
+                                <CommentCard
+                                    userReview={review}
+                                    onDeleteSuccess={deleteReviewSuccess}
+                                    onUpdateSuccess={updateReviewSuccess}
+                                />
+                            </Box>
+                        ))}
                     </Box>
                 </>
-                :
-                <Typography sx={{ textAlign: 'center', mt: 5, color: '#cccccc', fontFamily: 'Cooper Black, serif !important' }}>No reviews have been submitted for this product yet. Be the first to add a review!</Typography>
-            }
+            )}
+        </Box>
+    );
+};
 
+ProductReview.propTypes = {
+    product: PropTypes.object.isRequired,
+    onReviewChange: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
+    authToken: PropTypes.string,
+    setOpenAlert: PropTypes.func.isRequired,
+};
 
-        </>
-    )
-}
-
-export default ProductReview
+export default ProductReview;
