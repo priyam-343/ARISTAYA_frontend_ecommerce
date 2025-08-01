@@ -229,9 +229,12 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                     outerRadius={100}
                                     dataKey="value"
                                 >
-                                    {cartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                                    ))}
+                                    {cartData.map((entry, index) => {
+                                        // Find the index of the category in CATEGORY_DEFINITIONS to get the corresponding color
+                                        const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === entry.name);
+                                        const color = CHART_COLORS[categoryIndex % CHART_COLORS.length];
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })}
                                 </Pie>
                             </PieChart>
                         </ResponsiveContainer>
@@ -246,20 +249,24 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                 maxWidth: '100%',
                                 p:1
                             }}>
-                                {cartData.map((entry, index) => (
-                                    <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Box sx={{
-                                            width: 16,
-                                            height: 16,
-                                            borderRadius: '50%',
-                                            bgcolor: CHART_COLORS[index % CHART_COLORS.length],
-                                            mr: 1, // Margin right for spacing from text
-                                        }} />
-                                        <Typography variant="body2" sx={{ color: 'white', fontFamily: 'Cooper Black, serif' }}>
-                                            {entry.name}
-                                        </Typography>
-                                    </Box>
-                                ))}
+                                {cartData.map((entry, index) => {
+                                    const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === entry.name);
+                                    const color = CHART_COLORS[categoryIndex % CHART_COLORS.length];
+                                    return (
+                                        <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Box sx={{
+                                                width: 16,
+                                                height: 16,
+                                                borderRadius: '50%',
+                                                bgcolor: color, // Use the synced color
+                                                mr: 1, // Margin right for spacing from text
+                                            }} />
+                                            <Typography variant="body2" sx={{ color: 'white', fontFamily: 'Cooper Black, serif' }}>
+                                                {entry.name}
+                                            </Typography>
+                                        </Box>
+                                    );
+                                })}
                             </Box>
                         )}
                         {cartData.length === 0 && (
