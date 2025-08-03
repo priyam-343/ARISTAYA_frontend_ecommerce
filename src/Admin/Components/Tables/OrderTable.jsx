@@ -24,7 +24,7 @@ const OrderTable = ({ orders }) => {
     const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // Placeholder image for products that might not have an image URL
-    const PLACEHOLDER_IMAGE = "https:
+    const PLACEHOLDER_IMAGE = "https://placehold.co/100x100";
 
     
     const linkSx = {
