@@ -135,7 +135,14 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
     
     const groupedPaymentData = paymentData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
         .reduce((acc, item) => {
-            const date = new Date(item.createdAt).toISOString().substr(0, 10); 
+            // CRITICAL FIX: We now get the year, month, and day from the local Date object,
+            // avoiding the use of .toISOString() which converts to UTC.
+            const dateObj = new Date(item.createdAt);
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const date = `${year}-${month}-${day}`;
+
             const existing = acc.find(el => el.date === date);
             if (existing) {
                 existing.totalAmount += item.totalAmount; 
