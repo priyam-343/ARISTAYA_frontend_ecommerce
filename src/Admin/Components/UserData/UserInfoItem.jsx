@@ -22,10 +22,10 @@ const UserInfoItem = ({ id }) => {
                 const { data } = await axios.get(apiEndpoint, {
                     headers: { 'Authorization': authToken }
                 });
-                // --- CRITICAL FIX: Access data.user object ---
-                setUserData(data.user || {}); // Set userData to the nested user object
+                
+                setUserData(data.user || {}); 
             } catch (error) {
-                console.error("Error fetching user data:", error); // Added detailed logging
+                console.error("Error fetching user data:", error); 
                 toast.error(error.response?.data?.message || "Failed to load user data.", { theme: 'colored' });
             } finally {
                 setIsLoading(false);
@@ -36,7 +36,7 @@ const UserInfoItem = ({ id }) => {
             fetchUserData();
         } else {
             setIsLoading(false);
-            if (!authToken) { // Added warning for missing token
+            if (!authToken) { 
                 toast.warn("Authentication token missing. Please log in.", { theme: "colored" });
             }
         }
@@ -46,14 +46,14 @@ const UserInfoItem = ({ id }) => {
     const deleteAccount = async () => {
         try {
             const deleteApiUrl = `${process.env.REACT_APP_ADMIN_DELETE_USER}/${id}`;
-            const { data } = await axios.delete(deleteApiUrl, { // Capture data to check for 'message' key
+            const { data } = await axios.delete(deleteApiUrl, { 
                 headers: { 'Authorization': authToken }
             });
-            // FIX: Backend returns 'message', not 'msg'
+            
             toast.success(data.message || "Account deleted successfully", { autoClose: 500, theme: 'colored' });
-            navigate(-1); // Go back to the previous page
+            navigate(-1); 
         } catch (error) {
-            // FIX: Backend returns 'message', not 'msg'
+            
             toast.error(error.response?.data?.message || "Failed to delete account.", { theme: 'colored' });
         } finally {
             setOpenAlert(false);

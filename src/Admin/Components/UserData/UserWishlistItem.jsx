@@ -19,11 +19,11 @@ const UserWishlistItem = ({ id }) => {
                 const { data } = await axios.get(apiUrl, {
                     headers: { 'Authorization': authToken }
                 });
-                // --- CRITICAL FIX: Access data.wishlistItems array ---
+                
                 setUserWishlist(Array.isArray(data.wishlistItems) ? data.wishlistItems : []);
             } catch (error) {
-                console.error("Error fetching user wishlist:", error); // Added detailed logging
-                toast.error(error.response?.data?.message || "Failed to load user wishlist.", { theme: 'colored' }); // Improved error message
+                console.error("Error fetching user wishlist:", error); 
+                toast.error(error.response?.data?.message || "Failed to load user wishlist.", { theme: 'colored' }); 
                 setUserWishlist([]);
             } finally {
                 setIsLoading(false);
@@ -34,7 +34,7 @@ const UserWishlistItem = ({ id }) => {
             fetchUserWishlist();
         } else {
             setIsLoading(false);
-            if (!authToken) { // Added warning for missing token
+            if (!authToken) { 
                 toast.warn("Authentication token missing. Please log in.", { theme: "colored" });
             }
         }
@@ -51,11 +51,11 @@ const UserWishlistItem = ({ id }) => {
                 setUserWishlist(prev => prev.filter(w => w._id !== wishlistItemId));
                 toast.success("Removed From Wishlist", { autoClose: 500, theme: 'colored' });
             } else {
-                // FIX: Backend returns 'message', not 'msg' for success/error
+                
                 toast.error(data.message || "Something went wrong", { autoClose: 500, theme: 'colored' });
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to remove item.", { theme: "colored" }); // Use 'message'
+            toast.error(error.response?.data?.message || "Failed to remove item.", { theme: "colored" }); 
         }
     };
 
@@ -79,7 +79,7 @@ const UserWishlistItem = ({ id }) => {
             ) : (
                 <Grid container spacing={2} justifyContent="center">
                     {userWishlist.map(item => (
-                        // Ensure item.productId exists (i.e., it was populated) before rendering ProductCard
+                        
                         item.productId ? (
                             <Grid item key={item._id}>
                                 <Card sx={{ bgcolor: 'transparent', boxShadow: 'none', border: 'none', position: 'relative' }}>
@@ -97,7 +97,7 @@ const UserWishlistItem = ({ id }) => {
                                 </Card>
                             </Grid>
                         ) : (
-                            // Fallback for unpopulated or missing product data
+                            
                             <Grid item key={`missing-wishlist-prod-${item._id || Math.random()}`}>
                                 <Box sx={{
                                     p: 2, bgcolor: '#2a2a2a', borderRadius: '15px', border: '1px solid #333',

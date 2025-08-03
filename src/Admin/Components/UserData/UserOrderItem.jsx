@@ -5,13 +5,6 @@ import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import ProductCard from '../../../Components/Card/Product Card/ProductCard'; 
 
-/**
- * UserOrderItem component displays a list of orders for a specific user,
- * identified by their ID. It fetches order data from the backend.
- *
- * @param {object} props - Component props.
- * @param {string} props.id - The ID of the user whose orders are to be fetched.
- */
 const UserOrderItem = ({ id }) => {
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +22,7 @@ const UserOrderItem = ({ id }) => {
                     headers: { 'Authorization': authToken }
                 });
 
-                // --- CRITICAL FIX: Access data.payments array ---
+                
                 if (isMounted) {
                     setOrders(Array.isArray(data.payments) ? data.payments : []); 
                 }

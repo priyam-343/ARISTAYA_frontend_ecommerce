@@ -146,7 +146,7 @@ const Register = () => {
                             }}
                             sx={textFieldSx}
                         /></Grid>
-                        {/* The "I want to receive inspiration and updates via email." checkbox has been removed */}
+                        {}
                     </Grid>
                     <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
                         {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
@@ -166,7 +166,7 @@ const Register = () => {
 };
 
 Register.propTypes = {
-    // This component does not receive props.
+    
 };
 
 export default Register;

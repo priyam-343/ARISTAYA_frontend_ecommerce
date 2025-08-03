@@ -27,7 +27,7 @@ const VerifyEmailPage = () => {
             }
 
             try {
-                // ** Using REACT_APP_BACKEND_URL from your .env file **
+                
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/verify-email-post`, {
                     method: 'POST',
                     headers: {

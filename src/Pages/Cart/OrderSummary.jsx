@@ -8,7 +8,7 @@ const OrderSummary = ({ proceedToCheckout, total, shippingCost }) => {
         <Card
             sx={{
                 width: '100%',
-                // THEME FIX: Constrains the width on larger screens for a better "boxed" look.
+                
                 maxWidth: { xs: '100%', md: 400 },
                 bgcolor: '#1e1e1e',
                 color: 'white',

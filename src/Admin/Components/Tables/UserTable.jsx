@@ -15,25 +15,18 @@ import {
     Box
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import AddUser from '../AddUser'; // Assuming this component is located at '../AddUser'
+import AddUser from '../AddUser'; 
 import PropTypes from 'prop-types';
 
-/**
- * UserTable component displays a filterable and sortable table of users.
- * It allows searching users by name, phone number, and email.
- * It also integrates with the AddUser component for adding new users.
- *
- * @param {object} props - The props object.
- * @param {Array<object>} props.user - An array of user objects to display.
- * @param {function} props.getUsersInfo - A function to refresh user data (e.g., after a user is added).
- */
 const UserTable = ({ user, getUsersInfo }) => {
-    // Define table columns with their IDs, labels, and default alignment/width.
+    
     const columns = [
         { id: 'name', label: 'Name', minWidth: 170, align: 'center' },
         { id: 'phone', label: 'Phone Number', align: 'center', minWidth: 100 },
         { id: 'email', label: 'Email', minWidth: 170, align: 'center' },
         { id: 'date', label: 'Created On', minWidth: 170, align: 'center' },
+        
+        { id: 'admin', label: 'Admin', minWidth: 100, align: 'center' },
     ];
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -100,7 +93,7 @@ const UserTable = ({ user, getUsersInfo }) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     value={searchQuery}
                     sx={{
-                        width: { xs: '90%', sm: 500, md: 800 }, // Responsive width
+                        width: { xs: '90%', sm: 500, md: 800 }, 
                         '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' },
                         '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
                         '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
@@ -121,15 +114,15 @@ const UserTable = ({ user, getUsersInfo }) => {
                 />
             </Container>
 
-            {/* The AddUser component is passed the `getUsersInfo` function to refresh the table after a user is added. */}
+            {}
             <AddUser getUsersInfo={getUsersInfo} />
 
-            {/* User Table Display */}
+            {}
             <Paper
                 elevation={6}
                 sx={{ bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', overflow: "hidden", width: '100%', mt: 3 }}
             >
-                <TableContainer sx={{ maxHeight: '500px' }}> {/* Fixed height with scrolling */}
+                <TableContainer sx={{ maxHeight: '500px' }}> {}
                     <Table stickyHeader aria-label="user table">
                         <TableHead>
                             <TableRow>
@@ -141,7 +134,7 @@ const UserTable = ({ user, getUsersInfo }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {/* Conditional rendering: If no users found after filtering */}
+                            {}
                             {filteredUsers.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} sx={tableCellSx}>
@@ -153,7 +146,7 @@ const UserTable = ({ user, getUsersInfo }) => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                // Map over filtered users to render rows
+                                
                                 filteredUsers.map((info) => (
                                     <TableRow key={info._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row" align="center" sx={tableCellSx}>
@@ -173,8 +166,14 @@ const UserTable = ({ user, getUsersInfo }) => {
                                         </TableCell>
                                         <TableCell align="center" sx={tableCellSx}>
                                             <Link to={`/admin/home/user/${info._id}`} style={linkSx}>
-                                                {/* Format date for better readability */}
+                                                {}
                                                 {new Date(info.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}
+                                            </Link>
+                                        </TableCell>
+                                        {}
+                                        <TableCell align="center" sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${info._id}`} style={linkSx}>
+                                                {info.isAdmin ? 'Yes' : 'No'}
                                             </Link>
                                         </TableCell>
                                     </TableRow>
@@ -188,7 +187,7 @@ const UserTable = ({ user, getUsersInfo }) => {
     );
 };
 
-// --- PropTypes for Type Checking ---
+
 UserTable.propTypes = {
     user: PropTypes.array.isRequired,
     getUsersInfo: PropTypes.func.isRequired,

@@ -8,7 +8,7 @@ import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
 import { ContextFunction } from '../../Context/Context';
 import PropTypes from 'prop-types';
 
-// ** FIREBASE IMPORTS **
+
 import { auth, googleProvider } from '../../firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { Google } from '@mui/icons-material';
@@ -129,13 +129,13 @@ const Login = () => {
             }}
             sx={textFieldSx}
           />
-          {/* ** REMOVED THE "REMEMBER ME" CHECKBOX ** */}
+          {}
           
           <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
             {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign In'}
           </Button>
 
-          {/* Google Sign-in Button */}
+          {}
           <Button
             fullWidth
             variant="outlined"
@@ -177,7 +177,7 @@ const Login = () => {
 };
 
 Login.propTypes = {
-  // This component does not receive props.
+  
 };
 
 export default Login;

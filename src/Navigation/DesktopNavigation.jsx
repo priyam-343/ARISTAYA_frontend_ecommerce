@@ -23,7 +23,7 @@ const DesktopNavigation = () => {
   useEffect(() => {
     const fetchNavData = async () => {
       const token = localStorage.getItem('Authorization');
-      // ** FIX: Only fetch if a token exists and we are not on the admin page **
+      
       if (token && !onAdminPage) {
         try {
           const [cartResponse, wishlistResponse] = await Promise.all([
@@ -33,7 +33,7 @@ const DesktopNavigation = () => {
           if (cartResponse.data.success) {
             setCart(cartResponse.data.cart || []);
           } else {
-            // No toast for 401s here to avoid spamming the user
+            
             console.error(cartResponse.data.message || "Failed to load cart data.");
           }
           if (wishlistResponse.data.success) {
@@ -42,11 +42,11 @@ const DesktopNavigation = () => {
             console.error(wishlistResponse.data.message || "Failed to load wishlist data.");
           }
         } catch (error) {
-          // Log errors but do not display toasts for expected 401s on token expiry
+          
           console.error("Error fetching navigation data:", error.response?.data?.message || error.message);
         }
       } else {
-          // Clear cart and wishlist on logout or no token
+          
           setCart([]);
           setWishlistData([]);
       }

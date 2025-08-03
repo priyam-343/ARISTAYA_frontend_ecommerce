@@ -8,7 +8,7 @@ import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
 import PropTypes from 'prop-types';
 
 const AddNewPassword = () => {
-    const { id, token } = useParams(); // Get user ID and token from URL parameters
+    const { id, token } = useParams(); 
     const [password, setPassword] = useState(''); // State for the new password input
     const [showPassword, setShowPassword] = useState(false); // State for password visibility toggle
     const [loading, setLoading] = useState(false); // Loading state for API call
@@ -21,41 +21,41 @@ const AddNewPassword = () => {
         if (password.length < 5) {
             return toast.error("Password must be at least 5 characters.", { theme: 'colored' });
         }
-        setLoading(true); // Set loading state to true
+        setLoading(true); 
         try {
-            // Make POST request to the backend endpoint for setting a new password
+            
             const { data } = await axiosInstance.post(`${process.env.REACT_APP_FORGOT_PASSWORD}/${id}/${token}`, { newPassword: password });
-            // Backend now returns { success: true, message: "..." }
+            
             if (data.success) {
-                toast.success(data.message || "Password has been reset successfully.", { theme: 'colored' }); // Use data.message for success
-                navigate('/login'); // Navigate to login page on success
+                toast.success(data.message || "Password has been reset successfully.", { theme: 'colored' }); 
+                navigate('/login'); 
             } else {
-                // Handle cases where success is false (e.g., link expired)
-                toast.error(data.message || "The password reset link is invalid or has expired. Please try again.", { theme: 'colored' }); // Use data.message
-                navigate('/forgotpassword'); // Navigate back to forgot password form
+                
+                toast.error(data.message || "The password reset link is invalid or has expired. Please try again.", { theme: 'colored' }); 
+                navigate('/forgotpassword'); 
             }
         } catch (error) {
-            // Use backend's standardized 'message' field for error toasts
+            
             toast.error(error.response?.data?.message || "An error occurred. Please try again.", { theme: 'colored' });
-            navigate('/forgotpassword'); // Navigate back to forgot password form on API error
+            navigate('/forgotpassword'); 
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false); 
         }
     };
 
-    // Custom styles for Material-UI TextField components
+    
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
-            '& fieldset': { borderColor: '#444' }, // Default border color
-            '&:hover fieldset': { borderColor: '#666' }, // Border color on hover
-            '&.Mui-focused fieldset': { borderColor: '#FFD700' }, // Border color when focused
-            backgroundColor: '#1a1a1a', // Background color of the input field
-            borderRadius: '8px', // Rounded corners for the input field
+            '& fieldset': { borderColor: '#444' }, 
+            '&:hover fieldset': { borderColor: '#666' }, 
+            '&.Mui-focused fieldset': { borderColor: '#FFD700' }, 
+            backgroundColor: '#1a1a1a', 
+            borderRadius: '8px', 
         },
-        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' }, // Label color
-        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' }, // Label color when focused
-        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' }, // Input text color
-        '& .MuiInputAdornment-root': { color: '#cccccc' }, // Adornment icon color
+        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' }, 
+        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' }, 
+        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' }, 
+        '& .MuiInputAdornment-root': { color: '#cccccc' }, 
     };
 
     return (
@@ -103,7 +103,7 @@ const AddNewPassword = () => {
 };
 
 AddNewPassword.propTypes = {
-    // This component does not receive props from routing.
+    
 };
 
 export default AddNewPassword;

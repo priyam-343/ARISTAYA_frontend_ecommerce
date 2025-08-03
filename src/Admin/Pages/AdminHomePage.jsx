@@ -11,7 +11,7 @@ const AdminHomePage = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // This function fetches all user data and is used to refresh the list.
+    
     const getUsersInfo = useCallback(async () => {
         const authToken = localStorage.getItem("Authorization");
         if (!authToken) {
@@ -19,19 +19,19 @@ const AdminHomePage = () => {
             return;
         }
         try {
-            // CRITICAL FIX: The backend now returns { success: true, users: [...] }
+            
             const { data } = await axios.get(process.env.REACT_APP_ADMIN_GET_ALL_USERS, {
                 headers: { 'Authorization': authToken }
             });
             if (data.success) {
-                setUsers(data.users || []); // Update the users state from the 'users' field
+                setUsers(data.users || []); 
             } else {
-                // Handle case where success is false but no error is thrown
+                
                 toast.error(data.message || "Failed to refresh user list.", { theme: "colored" });
             }
         } catch (error) {
             console.error("Error fetching all users info for refresh:", error);
-            // Use backend's standardized 'message' field for error toasts
+            
             toast.error(error.response?.data?.message || "Failed to refresh user list.", { theme: "colored" });
         }
     }, [navigate]);
@@ -49,7 +49,7 @@ const AdminHomePage = () => {
             }
 
             try {
-                // CRITICAL FIX: The backend now returns { success: true, users: [...] }
+                
                 const { data } = await axios.get(process.env.REACT_APP_ADMIN_GET_ALL_USERS, {
                     headers: { 'Authorization': authToken }
                 });
@@ -58,7 +58,7 @@ const AdminHomePage = () => {
                         setUsers(data.users || []);
                         setIsAdmin(true);
                     } else {
-                        // This case should be handled by the catch block, but it's a good defensive check
+                        
                         toast.error(data.message || "Admin verification failed.", { theme: "colored" });
                         setIsAdmin(false);
                         navigate('/admin/login');
@@ -66,7 +66,7 @@ const AdminHomePage = () => {
                 }
             } catch (error) {
                 console.error("Admin verification or initial user fetch failed:", error);
-                // Use backend's standardized 'message' field for error toasts
+                
                 toast.error(error.response?.data?.message || "Your session is invalid or you lack admin privileges. Please log in again.", { theme: "colored" });
                 localStorage.removeItem("Authorization");
                 if (isMounted) {

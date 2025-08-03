@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import PropTypes from 'prop-types';
 
-// Define chart categories and colors for consistent use across charts
+
 const CATEGORY_DEFINITIONS = [
     { name: "Men's Wear", slug: 'men-wear' },
     { name: "Women's Wear", slug: 'women-wear' },
@@ -18,38 +18,31 @@ const CATEGORY_DEFINITIONS = [
 ];
 const CHART_COLORS = ['#FFD700', '#2196F3', '#4CAF50', '#E53935', '#9C27B0', '#FF5733', '#33FF57'];
 
-// Constant for converting degrees to radians, used in custom label rendering
+
 const RADIAN = Math.PI / 180;
 
-/**
- * Renders a customized label for Pie Chart slices, displaying the percentage.
- * The label is placed slightly outside the slice for better visibility.
- */
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
-    const radius = outerRadius * 1.05; // Position label slightly outside the pie
+    const radius = outerRadius * 1.05; 
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
     return (
         <text
             x={x}
             y={y}
-            fill="#ffffff" // Changed label color to white for better contrast against dark background
+            fill="#ffffff" 
             textAnchor={x > cx ? 'start' : 'end'}
             dominantBaseline="central"
-            style={{ fontFamily: 'Cooper Black, serif', fontWeight: 'bold', fontSize: '0.8rem' }} // Slightly smaller font
+            style={{ fontFamily: 'Cooper Black, serif', fontWeight: 'bold', fontSize: '0.8rem' }} 
         >
             {`${(percent * 100).toFixed(0)}%`}
         </text>
     );
 };
 
-/**
- * Custom Tooltip component for Recharts, providing consistent styling and formatting.
- */
 const CustomChartTooltip = ({ active, payload, label, isCurrency = false }) => {
     if (active && payload && payload.length) {
-        // For AreaChart (Daily Revenue Trend), label is a date.
-        // For Bar/Pie Charts, payload[0].payload contains the 'name' (category name).
+        
+        
         const itemLabel = isCurrency
             ? new Date(label).toLocaleDateString("en-US", { day: "numeric", month: "short" })
             : payload[0].payload.name;
@@ -61,7 +54,7 @@ const CustomChartTooltip = ({ active, payload, label, isCurrency = false }) => {
                 </Typography>
                 {payload.map((entry, index) => (
                     <Typography key={`item-${index}`} variant="body2" sx={{ color: 'white', fontFamily: 'inherit' }}>
-                        {/* Ensure name is present, use dataKey if not, and format value */}
+                        {}
                         {`${entry.name || entry.dataKey}: ${isCurrency ? '₹' : ''}${entry.value.toLocaleString()}`}
                     </Typography>
                 ))}
@@ -71,41 +64,34 @@ const CustomChartTooltip = ({ active, payload, label, isCurrency = false }) => {
     return null;
 };
 
-/**
- * Reusable Paper component for wrapping charts, providing consistent styling and title.
- */
 const ChartPaper = ({ title, children }) => (
     <Paper elevation={6} sx={{ p: 3, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333' }}>
         <Typography variant="h5" sx={{ textAlign: "center", mb: 3, color: "#FFD700", fontFamily: 'Cooper Black, serif' }}>
             {title}
         </Typography>
         <Box sx={{ width: '100%', height: 350, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* The chart itself will take responsive container */}
+            {}
             {children}
         </Box>
     </Paper>
 );
 
-/**
- * ProductChart component displays various analytics charts related to products,
- * reviews, cart, wishlist, and payment data.
- */
 const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
-    // Create a map for quick product lookup by ID.
-    // This makes the data processing more efficient when dealing with cart/wishlist items.
+    
+    
     const productMap = new Map(products.map(p => [p._id, p]));
 
-    // --- Data Processing for Charts ---
+    
 
-    // Data for Product Quantity Distribution Bar Chart:
-    // Counts products per main category.
+    
+    
     const productData = CATEGORY_DEFINITIONS.map(category => ({
         name: category.name,
         Quantity: products.filter(prod => prod.mainCategory === category.slug).length
     }));
 
-    // Data for Review Rating Distribution Bar Chart:
-    // Counts reviews for each rounded star rating (1-5).
+    
+    
     const reviewData = [
         { name: "1 ⭐", Reviews: review.filter(r => Math.round(r.rating) === 1).length },
         { name: "2 ⭐", Reviews: review.filter(r => Math.round(r.rating) === 2).length },
@@ -114,30 +100,30 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
         { name: "5 ⭐", Reviews: review.filter(r => Math.round(r.rating) === 5).length },
     ];
 
-    // Data for Items in User Carts Pie Chart:
-    // Counts cart items per main category, robustly handling populated/unpopulated product IDs.
+    
+    
     const cartData = CATEGORY_DEFINITIONS.map(category => {
         const count = cart.reduce((acc, cartItem) => {
-            // Get product ID, whether it's populated object or just ID string
+            
             const productId = cartItem.productId?._id || cartItem.productId;
             const product = productId ? productMap.get(productId) : null;
             return (product && product.mainCategory === category.slug) ? acc + 1 : acc;
         }, 0);
 
-        // --- CORRECTED LOGIC: Assign the color based on the original category index ---
+        
         const categoryIndex = CATEGORY_DEFINITIONS.findIndex(cat => cat.name === category.name);
         const color = categoryIndex !== -1
             ? CHART_COLORS[categoryIndex % CHART_COLORS.length]
-            : '#888888'; // Fallback to a neutral grey if category name is not found (for debugging)
+            : '#888888'; 
 
-        return { name: category.name, value: count, color: color }; // Include the determined color
-    }).filter(item => item.value > 0); // Filter out categories with zero items for cleaner pie chart
+        return { name: category.name, value: count, color: color }; 
+    }).filter(item => item.value > 0); 
 
-    // Data for Items in User Wishlists Bar Chart:
-    // Counts wishlist items per main category, robustly handling populated/unpopulated product IDs.
+    
+    
     const wishlistData = CATEGORY_DEFINITIONS.map(category => {
         const count = wishlist.reduce((acc, wishlistItem) => {
-            // Get product ID, whether it's populated object or just ID string
+            
             const productId = wishlistItem.productId?._id || wishlistItem.productId;
             const product = productId ? productMap.get(productId) : null;
             return (product && product.mainCategory === category.slug) ? acc + 1 : acc;
@@ -145,16 +131,16 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
         return { name: category.name, "Quantity in wishlist": count };
     });
 
-    // Process payment data for Daily Revenue Trend Area Chart:
-    // Groups total revenue by date and sorts chronologically.
+    
+    
     const groupedPaymentData = paymentData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
         .reduce((acc, item) => {
-            const date = new Date(item.createdAt).toISOString().substr(0, 10); // Format date as YYYY-MM-DD
+            const date = new Date(item.createdAt).toISOString().substr(0, 10); 
             const existing = acc.find(el => el.date === date);
             if (existing) {
-                existing.totalAmount += item.totalAmount; // Add to existing date's total
+                existing.totalAmount += item.totalAmount; 
             } else {
-                acc.push({ date, totalAmount: item.totalAmount }); // Add new date entry
+                acc.push({ date, totalAmount: item.totalAmount }); 
             }
             return acc;
         }, []);
@@ -163,7 +149,7 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
     return (
         <Container sx={{ mt: 5, p: 0 }}>
             <Grid container spacing={4}>
-                {/* Daily Revenue Trend Chart (Area Chart) */}
+                {}
                 <Grid item xs={12}>
                     <ChartPaper title="Daily Revenue Trend">
                         <ResponsiveContainer>
@@ -177,16 +163,16 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                 <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                                 <XAxis
                                     dataKey="date"
-                                    // Formats X-axis ticks to show short month and day
+                                    
                                     tickFormatter={(tick) => new Date(tick).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                                     tick={{ fill: 'white', fontFamily: 'Cooper Black, serif' }}
                                 />
                                 <YAxis
                                     tick={{ fill: 'white', fontFamily: 'Cooper Black, serif' }}
-                                    // Formats Y-axis ticks as currency
+                                    
                                     tickFormatter={(value) => `₹${value.toLocaleString()}`}
                                 />
-                                {/* Custom tooltip specifically for currency data */}
+                                {}
                                 <Tooltip content={<CustomChartTooltip isCurrency={true} />} />
                                 <Area type="monotone" dataKey="totalAmount" name="Revenue" stroke="#FFD700" fill="url(#colorRevenue)" />
                             </AreaChart>
@@ -194,7 +180,7 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                     </ChartPaper>
                 </Grid>
 
-                {/* Product Quantity Distribution Chart (Bar Chart) */}
+                {}
                 <Grid item xs={12} md={6}>
                     <ChartPaper title="Product Quantity Distribution">
                         <ResponsiveContainer>
@@ -203,10 +189,10 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                                 <XAxis
                                     dataKey="name"
                                     tick={{ fill: 'white', fontSize: 11, fontFamily: 'Cooper Black, serif' }}
-                                    angle={-35} // Angle for labels to prevent overlap
+                                    angle={-35} 
                                     textAnchor="end"
-                                    interval={0} // Show all ticks
-                                    height={80} // Give more height for angled labels
+                                    interval={0} 
+                                    height={80} 
                                 />
                                 <YAxis tick={{ fill: 'white', fontFamily: 'Cooper Black, serif' }} allowDecimals={false} />
                                 <Tooltip content={<CustomChartTooltip />} />
@@ -220,50 +206,50 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                     </ChartPaper>
                 </Grid>
 
-                {/* Items in User Carts Pie Chart */}
+                {}
                 <Grid item xs={12} md={6}>
                     <ChartPaper title="Items in User Carts">
                         <ResponsiveContainer width="100%" height="80%">
                             <PieChart>
-                                {/* Tooltip for the pie chart */}
+                                {}
                                 <Tooltip content={<CustomChartTooltip />} />
                                 <Pie
                                     data={cartData}
                                     cx="50%"
                                     cy="50%"
-                                    labelLine={false} // Keep label line for external labels
-                                    label={renderCustomizedLabel} // Custom label to show percentage
+                                    labelLine={false} 
+                                    label={renderCustomizedLabel} 
                                     outerRadius={100}
                                     dataKey="value"
                                 >
                                     {cartData.map((entry, index) => {
-                                        // --- CORRECTED LOGIC: Use the pre-assigned color from the entry ---
+                                        
                                         return <Cell key={`cell-${index}`} fill={entry.color} />;
                                     })}
                                 </Pie>
                             </PieChart>
                         </ResponsiveContainer>
-                        {/* --- PIE CHART LEGEND --- */}
+                        {}
                         {cartData.length > 0 && (
                             <Box sx={{
-                                mt: 2, // Margin top for spacing from chart
+                                mt: 2, 
                                 display: 'flex',
                                 flexWrap: 'wrap',
                                 justifyContent: 'center',
-                                gap: 2, // Space between legend items
+                                gap: 2, 
                                 maxWidth: '100%',
                                 p:1
                             }}>
                                 {cartData.map((entry, index) => {
-                                    // Use entry.color for the legend swatch as well
+                                    
                                     return (
                                         <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Box sx={{
                                                 width: 16,
                                                 height: 16,
                                                 borderRadius: '50%',
-                                                bgcolor: entry.color, // Use the synced color from entry
-                                                mr: 1, // Margin right for spacing from text
+                                                bgcolor: entry.color, 
+                                                mr: 1, 
                                             }} />
                                             <Typography variant="body2" sx={{ color: 'white', fontFamily: 'Cooper Black, serif' }}>
                                                 {entry.name}
@@ -281,7 +267,7 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                     </ChartPaper>
                 </Grid>
 
-                {/* Items in User Wishlists Chart (Bar Chart) */}
+                {}
                 <Grid item xs={12} md={6}>
                     <ChartPaper title="Items in User Wishlists">
                         <ResponsiveContainer>
@@ -307,7 +293,7 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
                     </ChartPaper>
                 </Grid>
 
-                {/* Review Rating Distribution Chart (Bar Chart) */}
+                {}
                 <Grid item xs={12} md={6}>
                     <ChartPaper title="Review Rating Distribution">
                         <ResponsiveContainer>

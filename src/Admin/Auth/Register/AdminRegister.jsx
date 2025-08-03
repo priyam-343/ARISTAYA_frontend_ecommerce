@@ -8,7 +8,7 @@ import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
 import { ContextFunction } from '../../../Context/Context';
 
 const AdminRegister = () => {
-    // Context is now only used for the toast messages, not setting login state on register
+    
     const { setLoginUser } = useContext(ContextFunction);
     const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "", key: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +101,7 @@ const AdminRegister = () => {
                             <Grid item xs={12}><TextField required fullWidth name='key' label="Admin Secret Key" type="password" value={credentials.key} onChange={handleOnChange} sx={textFieldSx} /></Grid>
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
-                            {/* UPDATED: Change button text to reflect the new approval process */}
+                            {}
                             {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'REQUEST APPROVAL'}
                         </Button>
                         <Grid container justifyContent="flex-end">

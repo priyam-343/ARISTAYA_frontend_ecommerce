@@ -4,7 +4,7 @@ import CountUp from 'react-countup';
 import PropTypes from 'prop-types';
 
 const Widget = ({ numbers, heading, color, icon }) => {
-    // Determine the currency symbol based on the heading
+    
     const prefix = heading === 'Revenue' ? '₹' : '';
 
     return (
@@ -24,7 +24,7 @@ const Widget = ({ numbers, heading, color, icon }) => {
             }}
         >
             <Box>
-                {/* Display the heading of the widget */}
+                {}
                 <Typography variant="h6" sx={{
                     color: "#1a1a1a",
                     mb: 1,
@@ -33,7 +33,7 @@ const Widget = ({ numbers, heading, color, icon }) => {
                 }}>
                     {heading}
                 </Typography>
-                {/* Display the animated number using react-countup */}
+                {}
                 <Typography variant="h4" sx={{
                     color: "#1a1a1a",
                     fontFamily: 'Cooper Black, serif'
@@ -42,7 +42,7 @@ const Widget = ({ numbers, heading, color, icon }) => {
                 </Typography>
             </Box>
             <Box>
-                {/* Display the icon for the widget */}
+                {}
                 <IconButton sx={{
                     fontSize: 45,
                     color: "#1a1a1a",

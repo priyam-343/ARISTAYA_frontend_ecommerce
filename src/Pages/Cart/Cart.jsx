@@ -7,45 +7,45 @@ import { toast } from 'react-toastify';
 import { AiFillCloseCircle, AiOutlineLogin } from 'react-icons/ai';
 import CartCard from '../../Components/Card/CartCard/CartCard';
 import OrderSummary from './OrderSummary';
-import { EmptyCart } from '../../Assets/Images/Image'; // Assuming this path is correct
-import { Transition } from '../../Constants/Constant'; // Assuming this constant exists
+import { EmptyCart } from '../../Assets/Images/Image'; 
+import { Transition } from '../../Constants/Constant'; 
 
 const Cart = () => {
     const { cart, setCart } = useContext(ContextFunction);
-    const [total, setTotal] = useState(0); // State for the total amount in the cart
-    const [openAlert, setOpenAlert] = useState(false); // State for login alert dialog
-    const shippingCost = 100; // Fixed shipping cost
+    const [total, setTotal] = useState(0); 
+    const [openAlert, setOpenAlert] = useState(false); 
+    const shippingCost = 100; 
 
     const navigate = useNavigate();
     const authToken = localStorage.getItem('Authorization');
-    const isLoggedIn = !!authToken; // Check if user is logged in
+    const isLoggedIn = !!authToken; 
 
     useEffect(() => {
         const fetchCartData = async () => {
             if (isLoggedIn) {
                 try {
                     const cartRes = await axiosInstance.get(process.env.REACT_APP_GET_CART, { headers: { 'Authorization': authToken } });
-                    // CRITICAL FIX: Access the 'cart' array from the response data
-                    // Backend now returns { success: true, cart: [...] }
+                    
+                    
                     if (cartRes.data.success) {
-                        setCart(cartRes.data.cart || []); // Set cart items from the 'cart' field
+                        setCart(cartRes.data.cart || []); 
                     } else {
                         toast.error(cartRes.data.message || "Failed to load cart data.", { theme: 'colored' });
                     }
                 } catch (error) {
-                    // Use backend's standardized 'message' field for error toasts
+                    
                     toast.error(error.response?.data?.message || "Failed to load cart data.", { theme: 'colored' });
                 }
             } else {
-                setOpenAlert(true); // Prompt login if not logged in
+                setOpenAlert(true); 
             }
         };
 
         fetchCartData();
-        window.scrollTo(0, 0); // Scroll to top on component mount/update
-    }, [isLoggedIn, setCart, authToken]); // Re-fetch cart data if login status or auth token changes
+        window.scrollTo(0, 0); 
+    }, [isLoggedIn, setCart, authToken]); 
 
-    // Effect to calculate total amount whenever cart items or shipping cost changes
+    
     useEffect(() => {
         if (Array.isArray(cart)) {
             const subtotal = cart.reduce((acc, curr) => {
@@ -57,38 +57,38 @@ const Cart = () => {
         }
     }, [cart, shippingCost]);
 
-    // Handles closing the login alert dialog and navigates to home
+    
     const handleClose = () => {
         setOpenAlert(false);
         navigate('/');
     };
 
-    // Function to remove an item from the cart
+    
     const removeFromCart = async (product) => {
         try {
             const { data } = await axiosInstance.delete(`${process.env.REACT_APP_DELETE_FROM_CART}/${product._id}`, {
                 headers: { 'Authorization': authToken }
             });
-            // Backend now returns { success: true, message: "..." }
+            
             if (data.success) {
-                toast.success(data.message || "Removed From Cart", { autoClose: 500, theme: 'colored' }); // Use data.message
-                setCart(prevCart => prevCart.filter(c => c._id !== product._id)); // Update local cart state
+                toast.success(data.message || "Removed From Cart", { autoClose: 500, theme: 'colored' }); 
+                setCart(prevCart => prevCart.filter(c => c._id !== product._id)); 
             } else {
                 toast.error(data.message || "Failed to remove from cart", { autoClose: 500, theme: 'colored' });
             }
         } catch (error) {
-            // Use backend's standardized 'message' field for error toasts
+            
             toast.error(error.response?.data?.message || "Something went wrong while removing from cart.", { autoClose: 500, theme: 'colored' });
         }
     };
 
-    // Handles proceeding to checkout
+    
     const proceedToCheckout = () => {
         if (cart.length === 0) {
             toast.error("Your cart is empty.", { autoClose: 500, theme: 'colored' });
         } else {
-            sessionStorage.setItem('totalAmount', total); // Store total amount in session storage
-            navigate('/checkout'); // Navigate to checkout page
+            sessionStorage.setItem('totalAmount', total); 
+            navigate('/checkout'); 
         }
     };
 
@@ -100,7 +100,7 @@ const Cart = () => {
                     Shopping Cart
                 </Typography>
 
-                {/* Display for empty cart when logged in */}
+                {}
                 {isLoggedIn && cart.length === 0 && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 4, bgcolor: 'transparent', borderRadius: '12px', border: '1px solid #333', maxWidth: '500px', mx: 'auto' }}>
                         <img src={EmptyCart} alt="Empty Cart" style={{ maxWidth: '250px', height: 'auto' }} />
@@ -113,7 +113,7 @@ const Cart = () => {
                     </Box>
                 )}
 
-                {/* Display cart items and order summary when logged in and cart is not empty */}
+                {}
                 {isLoggedIn && cart.length > 0 && (
                     <>
                         <Grid container spacing={2} justifyContent="center">
@@ -129,7 +129,7 @@ const Cart = () => {
                     </>
                 )}
 
-                {/* Login Alert Dialog when not logged in */}
+                {}
                 {!isLoggedIn && (
                     <Dialog open={openAlert} keepMounted onClose={handleClose} TransitionComponent={Transition} PaperProps={{ sx: { bgcolor: '#1e1e1e', color: 'white', borderRadius: '12px', border: '1px solid #333' } }}>
                         <DialogContent sx={{ width: { xs: 280, md: 350 }, p: 4 }}>

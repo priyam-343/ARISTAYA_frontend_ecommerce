@@ -5,19 +5,19 @@ const data = [
         img: MaleWear,
         name: "Men's Wear",
         path: "men-wear",
-        position: 'top' // ADDED: Ensures the model's face is visible.
+        position: 'top' 
     },
     {
         img: FemaleWear,
         name: "Women's Wear",
         path: "women-wear",
-        position: 'top' // ADDED: Ensures the model's face is visible.
+        position: 'top' 
     },
     {
         img: ChildrenWear,
         name: "Children's Wear",
         path: "children-wear",
-        position: 'top' // ADDED: Ensures the model's face is visible.
+        position: 'top' 
     },
     {
         img: Shoes,

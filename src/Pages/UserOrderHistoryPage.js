@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Collapse, IconButton } from '@mui/material';
-import axiosInstance from '../utils/axiosInstance'; // Use axiosInstance for authenticated requests
+import axiosInstance from '../utils/axiosInstance'; 
 import { toast } from 'react-toastify';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 const PLACEHOLDER_IMAGE = "https://placehold.co/80x80/1e1e1e/FFD700?text=No+Image";
 
-// Helper function to capitalize the first letter of a string
+
 const capitalizeFirstLetter = (string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -136,7 +136,7 @@ const UserOrderHistoryPage = () => {
                                             <TableCell sx={tableCellSx}>{order._id}</TableCell>
                                             <TableCell sx={tableCellSx}>₹{order.totalAmount.toLocaleString()}</TableCell>
                                             <TableCell sx={tableCellSx}>{new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}</TableCell>
-                                            {/* CRITICAL FIX: Capitalize the status here */}
+                                            {}
                                             <TableCell sx={tableCellSx}>{capitalizeFirstLetter(order.status || 'pending')}</TableCell>
                                         </TableRow>
                                         <TableRow>

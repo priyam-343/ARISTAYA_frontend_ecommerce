@@ -18,11 +18,11 @@ const UserCartItem = ({ id }) => {
                 const { data } = await axios.get(apiUrl, {
                     headers: { 'Authorization': authToken }
                 });
-                // --- CRITICAL FIX: Access data.cartItems array ---
+                
                 setUserCart(Array.isArray(data.cartItems) ? data.cartItems : []);
             } catch (error) {
-                console.error("Error fetching user cart:", error); // Added detailed logging
-                toast.error(error.response?.data?.message || "Failed to load user cart.", { theme: 'colored' }); // Improved error message
+                console.error("Error fetching user cart:", error); 
+                toast.error(error.response?.data?.message || "Failed to load user cart.", { theme: 'colored' }); 
                 setUserCart([]);
             } finally {
                 setIsLoading(false);
@@ -33,7 +33,7 @@ const UserCartItem = ({ id }) => {
             fetchUserCart();
         } else {
             setIsLoading(false);
-            if (!authToken) { // Added warning for missing token
+            if (!authToken) { 
                 toast.warn("Authentication token missing. Please log in.", { theme: "colored" });
             }
         }
@@ -50,11 +50,11 @@ const UserCartItem = ({ id }) => {
                 setUserCart(prevCart => prevCart.filter(c => c._id !== product._id));
                 toast.success("Removed From Cart", { autoClose: 500, theme: 'colored' });
             } else {
-                // FIX: Backend returns 'message', not 'msg' for success/error
+                
                 toast.error(data.message || "Something went wrong", { autoClose: 500, theme: 'colored' });
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to remove item.", { theme: "colored" }); // Use 'message'
+            toast.error(error.response?.data?.message || "Failed to remove item.", { theme: "colored" }); 
         }
     };
 
@@ -78,13 +78,13 @@ const UserCartItem = ({ id }) => {
             ) : (
                 <Grid container spacing={2} justifyContent="center">
                     {userCart.map(prod => (
-                        // Ensure prod.productId exists (i.e., it was populated) before rendering CartCard
+                        
                         prod.productId ? (
                             <Grid item key={prod._id}>
                                 <CartCard product={prod} removeFromCart={removeCartItemByAdmin} />
                             </Grid>
                         ) : (
-                            // Fallback for unpopulated or missing product data
+                            
                             <Grid item key={`missing-cart-prod-${prod._id || Math.random()}`}>
                                 <Box sx={{
                                     p: 2, bgcolor: '#2a2a2a', borderRadius: '15px', border: '1px solid #333',

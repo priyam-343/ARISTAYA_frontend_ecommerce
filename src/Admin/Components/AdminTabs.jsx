@@ -48,11 +48,11 @@ export default function BasicTabs({ user, getUsersInfo }) {
     const [loading, setLoading] = useState(true);
     const authToken = localStorage.getItem("Authorization");
 
-    // This function fetches all products and is passed to ProductTable
-    // FIX: Removed Authorization header as per decision to make it publicly accessible.
+    
+    
     const getProductInfo = useCallback(async () => {
         try {
-            const { data } = await axios.get(process.env.REACT_APP_FETCH_PRODUCT); // NO HEADERS HERE
+            const { data } = await axios.get(process.env.REACT_APP_FETCH_PRODUCT); 
             if (data.success) {
                 setDashboardData(prevData => ({ ...prevData, products: data.products || [] }));
             } else {
@@ -62,9 +62,9 @@ export default function BasicTabs({ user, getUsersInfo }) {
             toast.error(error.response?.data?.message || "Failed to load products for table.", { theme: "colored" });
             console.error("Error fetching all products for ProductTable:", error);
         }
-    }, []); // authToken is no longer a dependency
+    }, []); 
 
-    // This function fetches all dashboard statistics and is used for the widgets and charts
+    
     const getDashboardStats = useCallback(async () => {
         setLoading(true);
         try {
@@ -76,8 +76,8 @@ export default function BasicTabs({ user, getUsersInfo }) {
                     ...prevData,
                     products: data.data.products || [], 
                     reviews: data.data.reviews || [],
-                    carts: data.data.cartItems || [], // Use the corrected backend key name
-                    wishlists: data.data.wishlistItems || [], // Use the corrected backend key name
+                    carts: data.data.cartItems || [], 
+                    wishlists: data.data.wishlistItems || [], 
                     payments: data.data.payments || [],
                 }));
             } else {
@@ -91,11 +91,11 @@ export default function BasicTabs({ user, getUsersInfo }) {
         }
     }, [authToken]);
 
-    // Use a single useEffect hook for data fetching to prevent redundant calls
+    
     useEffect(() => {
         if (authToken) {
             getDashboardStats(); 
-            // Optional: You can remove getProductInfo() here if getDashboardStats() provides all needed product data.
+            
             getProductInfo(); 
         }
     }, [authToken, getDashboardStats, getProductInfo]); 

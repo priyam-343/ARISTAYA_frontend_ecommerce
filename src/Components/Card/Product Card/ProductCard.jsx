@@ -19,7 +19,7 @@ const ProductCard = ({ prod, category }) => {
     ? prod.images[0].url
     : 'https://placehold.co/400x600/1e1e1e/ffffff?text=No+Image';
 
-  // Explicitly determine the display count for reviews
+  
   const reviewCountDisplay = prod.numOfReviews === 0 
     ? "No reviews" 
     : `${prod.numOfReviews} review${prod.numOfReviews !== 1 ? 's' : ''}`;
@@ -98,7 +98,7 @@ const ProductCard = ({ prod, category }) => {
             >
               {prod.rating || 0} out of 5
             </Typography>
-            {/* Using the calculated reviewCountDisplay */}
+            {}
             <Typography
               variant="caption"
               sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif' }}

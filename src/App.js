@@ -25,7 +25,7 @@ import SingleProduct from './Admin/Pages/SingleProduct';
 import CopyRight from './Components/CopyRight/CopyRight';
 import UserOrderHistoryPage from './Pages/UserOrderHistoryPage';
 
-// ** NEW: Importing the correct verification page component **
+
 import VerifyEmailPage from './Auth/VerifyEmailPage';
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
           <DesktopNavigation />
           <Box component="main" className='margin'>
             <Routes>
-              {/* User-Facing Routes */}
+              {}
               <Route path='/' index element={<HomePage />} />
               <Route path="/login" element={<Login />} />
               <Route path='/register' element={<Register />} />
@@ -53,12 +53,10 @@ function App() {
               <Route path='/user/reset/:id/:token' element={<AddNewPassword />} />
               <Route path='/myorders' element={<UserOrderHistoryPage />} />
 
-              {/* ** CRITICAL FIX: This route is now configured to match the email link URL **
-                  ** and use the correct component to make the POST request. **
-              */}
+              {}
               <Route path="/auth/verify-page" element={<VerifyEmailPage />} />
 
-              {/* Admin Routes */}
+              {}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path='/admin/register' element={<AdminRegister />} />
               <Route path='/admin/home' element={<AdminHomePage />} />

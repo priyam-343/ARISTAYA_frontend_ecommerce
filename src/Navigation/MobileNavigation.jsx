@@ -13,14 +13,14 @@ const MobileNavigation = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const authToken = localStorage.getItem('Authorization');
-    const isLoggedIn = !!authToken && !!loginUser._id; // ** FIX: Ensure loginUser is also set **
+    const isLoggedIn = !!authToken && !!loginUser._id; 
     const isProfilePage = location.pathname === '/update';
 
     useEffect(() => {
         const fetchNavData = async () => {
             const token = localStorage.getItem('Authorization');
             const onAdminPage = location.pathname.startsWith('/admin');
-            // ** FIX: Only fetch if a valid token and user are present and not on admin page **
+            
             if (token && isLoggedIn && !onAdminPage) {
                 try {
                     const [cartResponse, wishlistResponse] = await Promise.all([
@@ -37,7 +37,7 @@ const MobileNavigation = () => {
                     console.error("Error fetching mobile navigation data:", error.response?.data?.message || error.message);
                 }
             } else {
-                // Clear cart and wishlist on logout or no token
+                
                 setCart([]);
                 setWishlistData([]);
             }
@@ -157,8 +157,8 @@ const MobileNavigation = () => {
                     </>
                 ) : (
                     <BottomNavigationAction
-                        label="Login" // ** FIX: Explicitly label as Login for clarity **
-                        value="profile" // Using 'profile' value to highlight this button
+                        label="Login" 
+                        value="profile" 
                         icon={<AiOutlineUser size={24} />}
                         component={Link}
                         to="/login"

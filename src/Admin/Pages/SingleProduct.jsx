@@ -25,16 +25,15 @@ const SingleProduct = () => {
     const navigate = useNavigate();
 
     const [productInfo, setProductInfo] = useState({
-        name: "", description: "", price: "", images: "", mainCategory: "",
-        subCategory: "", stock: "", brand: "", rating: "", author: "",
+        name: "", description: "", price: "", originalPrice: "",
+        images: "", mainCategory: "", subCategory: "", stock: "", brand: "", rating: "", author: "",
     });
 
     const getSingleProduct = useCallback(async () => {
         setLoading(true);
         try {
-            // CRITICAL FIX: The backend now returns a standardized response { success: true, product: {...} }
             const { data } = await axios.get(`${process.env.REACT_APP_FETCH_PRODUCT}/${id}`);
-            
+
             if (data.success && data.product) {
                 const productData = data.product;
                 setProduct(productData);
@@ -42,6 +41,7 @@ const SingleProduct = () => {
                     name: productData.name || "",
                     description: productData.description || "",
                     price: productData.price || "",
+                    originalPrice: productData.originalPrice || "",
                     images: productData.images?.[0]?.url || "",
                     mainCategory: productData.mainCategory || "",
                     subCategory: productData.subCategory || "",
@@ -85,13 +85,29 @@ const SingleProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // Check if originalPrice is provided and is less than the discounted price
+            if (productInfo.originalPrice && parseFloat(productInfo.originalPrice) < parseFloat(productInfo.price)) {
+                toast.error("The original price cannot be less than the discounted price.", { theme: "colored" });
+                return;
+            }
+
             const payload = {
-                ...productInfo,
+                name: productInfo.name,
+                description: productInfo.description,
                 price: parseFloat(productInfo.price),
                 rating: parseFloat(productInfo.rating),
                 stock: parseInt(productInfo.stock),
                 images: [{ url: productInfo.images }],
+                mainCategory: productInfo.mainCategory,
+                subCategory: productInfo.subCategory,
+                brand: productInfo.brand,
+                author: productInfo.author,
             };
+
+            
+            if (productInfo.originalPrice) {
+                payload.originalPrice = parseFloat(productInfo.originalPrice);
+            }
 
             const { data } = await axios.put(`${process.env.REACT_APP_ADMIN_UPDATE_PRODUCT}/${product._id}`, { productDetails: payload }, {
                 headers: { 'Authorization': authToken }
@@ -126,7 +142,7 @@ const SingleProduct = () => {
             setOpenAlert(false);
         }
     };
-    
+
     const textFieldStyles = {
         '& .MuiInputBase-input': { color: 'white' },
         '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
@@ -194,26 +210,31 @@ const SingleProduct = () => {
                                             </FormControl>
                                         </Grid>
                                         <Grid item xs={12}><TextField label="Image URL" name='images' value={productInfo.images} onChange={handleOnChange} fullWidth required sx={textFieldStyles} /></Grid>
-                                        <Grid item xs={12} sm={4}>
-                                            <TextField label="Price" name='price' type="number" value={productInfo.price} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
+                                        
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField label="Original Price" name='originalPrice' type="number" value={productInfo.originalPrice} onChange={handleOnChange} fullWidth sx={textFieldStyles} />
                                         </Grid>
-                                        <Grid item xs={12} sm={4}>
-                                            {/* FIX: Limit Rating input from 0 to 5 */}
-                                            <TextField 
-                                                label="Rating (0-5)" 
-                                                name='rating' 
-                                                type="number" 
-                                                value={productInfo.rating} 
-                                                onChange={handleOnChange} 
-                                                fullWidth 
-                                                required 
-                                                sx={textFieldStyles} 
-                                                inputProps={{ min: 0, max: 5 }} 
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField label="Discounted Price" name='price' type="number" value={productInfo.price} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="Rating (0-5)"
+                                                name='rating'
+                                                type="number"
+                                                value={productInfo.rating}
+                                                onChange={handleOnChange}
+                                                fullWidth
+                                                required
+                                                sx={textFieldStyles}
+                                                inputProps={{ min: 0, max: 5, step: "0.1" }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={4}>
+                                        <Grid item xs={12} sm={6}>
                                             <TextField label="Stock" name='stock' type="number" value={productInfo.stock} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
                                         </Grid>
+
                                         <Grid item xs={12}><TextField label="Description" name='description' value={productInfo.description} onChange={handleOnChange} multiline rows={4} fullWidth required sx={textFieldStyles} /></Grid>
                                     </Grid>
                                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>

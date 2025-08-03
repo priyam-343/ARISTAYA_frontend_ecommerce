@@ -7,7 +7,7 @@ import BannerData from '../../Helpers/HomePageBanner';
 import PropTypes from 'prop-types';
 
 const Carousel = () => {
-    // This responsive setting restores the three-item layout on larger screens.
+    
     const responsive = {
         0: { items: 1 },
         568: { items: 2 },
@@ -20,7 +20,7 @@ const Carousel = () => {
                 className="carousel-item"
                 sx={{
                     position: 'relative',
-                    // THEME FIX: Adjusted height to create a more vertical, less square shape.
+                    
                     height: { xs: 350, sm: 450, md: 500 },
                     m: 1,
                     overflow: 'hidden',
@@ -92,7 +92,7 @@ const Carousel = () => {
 };
 
 Carousel.propTypes = {
-    // No props are passed to this component.
+    
 };
 
 export default Carousel;

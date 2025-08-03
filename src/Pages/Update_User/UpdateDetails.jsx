@@ -7,16 +7,16 @@ import { MdUpdate } from 'react-icons/md';
 import { AiFillCloseCircle, AiFillDelete, AiOutlineFileDone } from 'react-icons/ai';
 import { RiEyeFill, RiEyeOffFill, RiLockPasswordLine } from 'react-icons/ri';
 import { TiArrowBackOutline } from 'react-icons/ti';
-import { Transition } from '../../Constants/Constant'; // Assuming this constant exists
+import { Transition } from '../../Constants/Constant'; 
 import PropTypes from 'prop-types';
 
 const UpdateDetails = () => {
-    const [openAlert, setOpenAlert] = useState(false); // State for delete account confirmation dialog
-    const [loading, setLoading] = useState(true); // Loading state for fetching user data
+    const [openAlert, setOpenAlert] = useState(false); 
+    const [loading, setLoading] = useState(true); 
     const navigate = useNavigate();
-    const authToken = localStorage.getItem('Authorization'); // Get auth token
+    const authToken = localStorage.getItem('Authorization'); 
 
-    // State for user details form
+    
     const [userDetails, setUserDetails] = useState({
         firstName: '', lastName: '', phoneNumber: '', email: '',
         address: '', zipCode: '', city: '', userState: '',
@@ -38,9 +38,9 @@ const UpdateDetails = () => {
                     const { data } = await axiosInstance.get(`/api/auth/getuser`, {
                         headers: { 'Authorization': authToken }
                     });
-                    // CRITICAL FIX: Access user details from 'data.user' as per backend standardization
+                    
                     if (data.success && data.user) {
-                        setUserData(data.user); // Store full user data for provider check
+                        setUserData(data.user); 
                         setUserDetails({
                             firstName: data.user.firstName || '', lastName: data.user.lastName || '',
                             email: data.user.email || '', phoneNumber: data.user.phoneNumber || '',
@@ -50,47 +50,47 @@ const UpdateDetails = () => {
                     } else {
                         // Handle cases where success is false or user data is missing
                         toast.error(data.message || "Failed to fetch user data.", { theme: 'colored' });
-                        navigate('/login'); // Redirect if user data can't be fetched
+                        navigate('/login'); 
                     }
                 } catch (error) {
-                    // Use backend's standardized 'message' field for error toasts
+                    
                     toast.error(error.response?.data?.message || "Error fetching user data.", { theme: 'colored' });
-                    navigate('/login'); // Redirect on API error
+                    navigate('/login'); 
                 } finally {
-                    setLoading(false); // Always set loading to false
+                    setLoading(false); 
                 }
             } else {
-                navigate('/login'); // Redirect to login if no auth token
+                navigate('/login'); 
             }
         };
         getUserData();
-    }, [authToken, navigate]); // Dependencies: authToken and navigate
+    }, [authToken, navigate]); 
 
-    // Handles changes in user details form fields
+    
     const handleOnChange = (e) => {
         setUserDetails({ ...userDetails, [e.target.name]: e.target.value });
     };
 
-    // Handles changes in password reset form fields
+    
     const handlePasswordChange = (e) => {
         setPassword({ ...password, [e.target.name]: e.target.value });
     };
 
-    // Handles submission of user details update form
+    
     const handleSubmitDetails = async (e) => {
         e.preventDefault();
         try {
             const { data } = await axiosInstance.put(`/api/auth/updateuser`, userDetails, {
                 headers: { 'Authorization': authToken }
             });
-            // Backend now returns { success: true, message: "...", user: {...} }
+            
             if (data.success) {
-                toast.success(data.message || "Profile Updated Successfully", { theme: 'colored' }); // Use data.message
+                toast.success(data.message || "Profile Updated Successfully", { theme: 'colored' }); 
             } else {
                 toast.error(data.message || "Something went wrong during profile update.", { theme: 'colored' });
             }
         } catch (error) {
-            // ** UPDATED FEEDBACK LOGIC **
+            
             const errorMessage = error.response?.data?.message;
 
             if (errorMessage && errorMessage.includes('email already exists')) {
@@ -98,22 +98,22 @@ const UpdateDetails = () => {
             } else if (errorMessage && errorMessage.includes('phone number already exists')) {
                 toast.error('The phone number you entered is already in use.', { theme: 'colored' });
             } else {
-                // Fallback to the backend's message or a generic error
+                
                 toast.error(errorMessage || "Profile update failed.", { theme: 'colored' });
             }
         }
     };
 
-    // Handles submission of password reset form (for logged-in user)
+    
     const handleResetPassword = async (e) => {
         e.preventDefault();
         try {
             const { data } = await axiosInstance.post(`/api/password/reset/password`, password, {
                 headers: { 'Authorization': authToken }
             });
-            // Backend now returns { success: true, message: "..." }
+            
             if (data.success) {
-                toast.success(data.message || "Password reset successfully.", { theme: 'colored' }); // Use data.message
+                toast.success(data.message || "Password reset successfully.", { theme: 'colored' }); 
                 setPassword({ currentPassword: "", newPassword: "" }); // Clear password fields
             } else {
                 toast.error(data.message || "Password reset failed.", { theme: 'colored' });
@@ -133,22 +133,22 @@ const UpdateDetails = () => {
             });
             // Backend now returns { success: true, message: "..." }
             if (data.success) {
-                toast.success(data.message || "Account deleted successfully", { theme: 'colored' }); // Use data.message
-                localStorage.clear(); // Clear local storage
-                sessionStorage.clear(); // Clear session storage
-                navigate("/login"); // Navigate to login page
+                toast.success(data.message || "Account deleted successfully", { theme: 'colored' }); 
+                localStorage.clear(); 
+                sessionStorage.clear(); 
+                navigate("/login"); 
             } else {
                 toast.error(data.message || "Failed to delete account.", { theme: 'colored' });
             }
         } catch (error) {
-            // Use backend's standardized 'message' field for error toasts
+            
             toast.error(error.response?.data?.message || "Failed to delete account.", { theme: 'colored' });
         } finally {
-            setOpenAlert(false); // Close confirmation dialog
+            setOpenAlert(false); 
         }
     };
 
-    // Custom styles for Material-UI TextField components
+    
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
             '& fieldset': { borderColor: '#444' },
@@ -163,14 +163,14 @@ const UpdateDetails = () => {
         '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: '#cccccc' },
     };
 
-    // Common styles for section boxes
+    
     const sectionBoxSx = {
         bgcolor: '#1e1e1e', p: 4, borderRadius: '15px',
         boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
         border: '1px solid #333', width: '100%', maxWidth: '800px',
     };
 
-    // Show loading indicator while fetching user data
+    
     if (loading) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Typography variant='h4' sx={{ color: 'white' }}>Loading Profile...</Typography></Box>;
     }
@@ -179,7 +179,7 @@ const UpdateDetails = () => {
         <>
             <CssBaseline />
             <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 10, mt: 10, bgcolor: '#000000' }}>
-                {/* Personal Information Section */}
+                {}
                 <Typography variant='h4' sx={{ mb: 3, color: 'white', fontWeight: 'bold' }}>Personal Information</Typography>
                 <Box component="form" onSubmit={handleSubmitDetails} sx={sectionBoxSx}>
                     <Grid container spacing={3}>
@@ -198,7 +198,7 @@ const UpdateDetails = () => {
                     </Box>
                 </Box>
 
-                {/* Reset Password Section */}
+                {}
                 <Typography variant='h4' sx={{ mt: 7, mb: 3, color: 'white', fontWeight: 'bold' }}>Reset Password</Typography>
                 <Box component="form" onSubmit={handleResetPassword} sx={sectionBoxSx}>
                     <Grid container spacing={3}>
@@ -210,14 +210,14 @@ const UpdateDetails = () => {
                     </Box>
                 </Box>
 
-                {/* Delete Account Section */}
+                {}
                 <Typography variant='h4' sx={{ mt: 7, mb: 3, color: 'white', fontWeight: 'bold' }}>Delete Account</Typography>
                 <Box sx={{ ...sectionBoxSx, textAlign: 'center' }}>
                     <Typography sx={{ mb: 2, color: '#cccccc' }}>Once you delete your account, there is no going back. Please be certain.</Typography>
                     <Button variant='contained' endIcon={<AiFillDelete />} onClick={() => setOpenAlert(true)} sx={{ bgcolor: '#8B0000', '&:hover': { bgcolor: '#B22222' } }}>Delete My Account</Button>
                 </Box>
 
-                {/* Delete Account Confirmation Dialog */}
+                {}
                 <Dialog open={openAlert} TransitionComponent={Transition} keepMounted onClose={() => setOpenAlert(false)} PaperProps={{ sx: { bgcolor: '#1e1e1e', color: 'white', borderRadius: '12px', border: '1px solid #333' } }}>
                     <DialogContent sx={{ p: 4 }}><Typography sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif' }}>Are you sure? Your account and all data will be permanently erased.</Typography></DialogContent>
                     <DialogActions sx={{ justifyContent: 'space-evenly', pb: 3 }}>
@@ -231,7 +231,7 @@ const UpdateDetails = () => {
 };
 
 UpdateDetails.propTypes = {
-    // No props are passed to this component.
+    
 };
 
 export default UpdateDetails;

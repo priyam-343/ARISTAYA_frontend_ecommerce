@@ -17,12 +17,7 @@ import ProductCard from '../../Components/Card/Product Card/ProductCard';
 import { Transition } from '../../Constants/Constant';
 import PropTypes from 'prop-types';
 
-// Helper function to calculate original price and discount percentage
-const calculateDiscount = (price) => {
-    const originalPrice = price * 1.45;
-    const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
-    return { originalPrice, discountPercent };
-};
+
 
 const ProductDetail = () => {
     const { setCart, setWishlistData } = useContext(ContextFunction);
@@ -116,7 +111,7 @@ const ProductDetail = () => {
         }
     };
     
-    // Function to handle sharing the product (without unnecessary state)
+    
     const handleShare = async () => {
         if (!isLoggedIn) {
             setOpenAlert(true);
@@ -134,7 +129,7 @@ const ProductDetail = () => {
                 });
                 toast.success('Product shared successfully!', { theme: 'colored' });
             } else {
-                // Fallback for browsers that don't support the API
+                
                 toast.info(
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         Product link copied!
@@ -154,7 +149,7 @@ const ProductDetail = () => {
                 );
             }
         } catch (error) {
-            // Gracefully handle user cancellation without showing an error toast
+            
             if (error.name !== 'AbortError') {
                 toast.error('Failed to share product.', { theme: 'colored' });
                 console.error('Error sharing:', error);
@@ -164,8 +159,12 @@ const ProductDetail = () => {
 
     const increaseQuantity = () => product && setProductQuantity(prev => Math.min(prev + 1, product.stock));
     const decreaseQuantity = () => setProductQuantity(prev => Math.max(prev - 1, 1));
-
-    const discount = product ? calculateDiscount(product.price) : { originalPrice: 0, discountPercent: 0 };
+    
+    
+    const hasDiscount = product && product.originalPrice && product.originalPrice > product.price;
+    const discountPercent = hasDiscount
+        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+        : 0;
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#000000' }}>
@@ -207,11 +206,20 @@ const ProductDetail = () => {
                                         <Chip label={item.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} key={item} variant="outlined" sx={{ borderColor: '#444', color: '#cccccc', bgcolor: '#1e1e1e', fontFamily: 'Cooper Black, serif' }} />
                                     ))}
                                 </Box>
-                                <Chip label={`${discount.discountPercent}% off`} variant="filled" sx={{ background: '#FFD700', color: '#000', fontWeight: 'bold', fontFamily: 'Cooper Black, serif', mb: 2 }} icon={<TbDiscount2 color='black' />} />
+
+                                {}
+                                {hasDiscount && (
+                                    <Chip label={`${discountPercent}% off`} variant="filled" sx={{ background: '#FFD700', color: '#000', fontWeight: 'bold', fontFamily: 'Cooper Black, serif', mb: 2 }} icon={<TbDiscount2 color='black' />} />
+                                )}
+
                                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-                                    <Typography variant="h6" sx={{ color: '#888', textDecoration: 'line-through' }}>₹{Math.round(discount.originalPrice).toLocaleString()}</Typography>
+                                    {hasDiscount && (
+                                        <Typography variant="h6" sx={{ color: '#888', textDecoration: 'line-through' }}>₹{product.originalPrice.toLocaleString()}</Typography>
+                                    )}
                                     <Typography variant="h5" sx={{ color: '#FFD700', fontWeight: 'bold' }}>₹{product.price.toLocaleString()}</Typography>
                                 </Box>
+                                {}
+
                                 <Box sx={{ mb: 2 }}>
                                     <ButtonGroup variant="outlined" sx={{ '& .MuiButton-root': { borderColor: '#444', color: 'white' } }}>
                                         <Button onClick={increaseQuantity} disabled={productQuantity >= product.stock}>+</Button>
@@ -260,7 +268,7 @@ const ProductDetail = () => {
 };
 
 ProductDetail.propTypes = {
-    // This component does not receive props.
+    
 };
 
 export default ProductDetail;

@@ -15,7 +15,7 @@ const Loading = () => {
             display: 'flex',
             flexDirection: 'column',
         }}>
-            {/* Skeleton for the image */}
+            {}
             <Skeleton
                 variant="rectangular"
                 sx={{
@@ -24,7 +24,7 @@ const Loading = () => {
                     height: { xs: 250, sm: 300, md: 350 },
                 }}
             />
-            {/* Skeleton for the text content */}
+            {}
             <Box sx={{ pt: 2, flexGrow: 1 }}>
                 <Skeleton variant="text" sx={{ fontSize: '1.5rem', bgcolor: 'grey.900' }} />
                 <Skeleton variant="text" sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '80%' }} />

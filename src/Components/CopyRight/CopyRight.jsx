@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Typography, Link as MuiLink } from '@mui/material';
 import { AiOutlineMail, AiOutlineLink } from 'react-icons/ai';
 
-const CopyRight = () => { // Component name is kept as CopyRight
+const CopyRight = () => { 
     const linkStyles = {
         display: 'flex',
         alignItems: 'center',

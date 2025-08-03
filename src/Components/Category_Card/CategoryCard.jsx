@@ -18,7 +18,7 @@ const CategoryCard = ({ data }) => {
                     transform: 'scale(1.05)',
                 },
                 '&:hover .card-overlay-text': {
-                    color: '#FFD700', // Golden text on hover
+                    color: '#FFD700', 
                 },
             }}
         >

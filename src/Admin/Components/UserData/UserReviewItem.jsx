@@ -3,48 +3,67 @@ import { Container, Typography, Box, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
-import CommentCard from '../../../Components/Card/Comment Card/CommentCard'; // Make sure this path is correct
+import CommentCard from '../../../Components/Card/Comment Card/CommentCard';
 
 const UserReviewItem = ({ id }) => {
-    console.log("UserReviewItem component (Final Admin Version - Single Column) loaded!");
-
     const [userReviews, setUserReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const authToken = localStorage.getItem("Authorization"); // GET AUTH TOKEN INTERNALLY
-    const getUserReviewsApiUrl = process.env.REACT_APP_ADMIN_GET_USER_REVIEW; // GET API URL INTERNALLY
+    const authToken = localStorage.getItem("Authorization");
+    const getUserReviewsApiUrl = process.env.REACT_APP_ADMIN_GET_USER_REVIEW;
+    const getProductApiUrl = process.env.REACT_APP_FETCH_PRODUCT;
 
     const fetchUserReviews = React.useCallback(async () => {
         setIsLoading(true);
         try {
             if (!getUserReviewsApiUrl || !id || !authToken) {
-                console.warn("UserReviewItem: Missing required data (id, apiUrl, or authToken). Cannot fetch reviews.");
                 setIsLoading(false);
                 return;
             }
             
-            const apiUrl = `${getUserReviewsApiUrl}/${id}`;
             
-            const response = await axios.get(apiUrl, {
+            const reviewsApiUrl = `${getUserReviewsApiUrl}/${id}`;
+            const reviewsResponse = await axios.get(reviewsApiUrl, {
                 headers: { 'Authorization': authToken }
             });
 
-            const responseData = response.data;
+            const rawReviews = reviewsResponse.data.reviews || reviewsResponse.data || [];
+
             
-            if (responseData && Array.isArray(responseData)) {
-                setUserReviews(responseData);
-            } else if (responseData && responseData.reviews && Array.isArray(responseData.reviews)) {
-                setUserReviews(responseData.reviews);
-            } else {
-                console.warn("UserReviewItem: Unexpected data format received for reviews:", responseData);
-                setUserReviews([]);
-            }
+            const productsResponse = await axios.get(getProductApiUrl);
+            const allProducts = productsResponse.data.products || [];
+
+            
+            const productMap = allProducts.reduce((acc, product) => {
+                if (product && product._id) {
+                    acc[product._id] = product.name;
+                }
+                return acc;
+            }, {});
+
+            
+            const reviewsWithProductNames = rawReviews.map(review => {
+                
+                const productId = review.productId && typeof review.productId === 'object'
+                    ? review.productId._id
+                    : review.productId;
+
+                const productName = productMap[productId] || "Product Not Found";
+                
+                return {
+                    ...review,
+                    productName: productName
+                };
+            });
+            
+            setUserReviews(reviewsWithProductNames);
+
         } catch (error) {
-            console.error("Error fetching user reviews:", error);
-            toast.error(error.response?.data?.msg || "Failed to fetch user reviews.", { theme: "colored" });
+            toast.error(error.response?.data?.message || "Failed to fetch user reviews.", { theme: "colored" });
+            setUserReviews([]);
         } finally {
             setIsLoading(false);
         }
-    }, [id, getUserReviewsApiUrl, authToken]);
+    }, [id, getUserReviewsApiUrl, authToken, getProductApiUrl]);
 
     useEffect(() => {
         if (id && getUserReviewsApiUrl && authToken) {
@@ -87,9 +106,9 @@ const UserReviewItem = ({ id }) => {
                 sx={{
                     mt: 2,
                     display: "flex",
-                    flexDirection: "column", // Key change: Stack items vertically for single column
-                    alignItems: "center",   // Key change: Center items horizontally
-                    gap: 3,                  // Space between cards
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 3,
                     paddingBottom: 2,
                     marginBottom: 30,
                     width: '100%',
@@ -97,22 +116,31 @@ const UserReviewItem = ({ id }) => {
             >
                 {userReviews.map(review => (
                     review.productId ? (
-                        // This Box ensures the CommentCard has the desired responsive width and alignment
                         <Box
                             key={review._id}
                             sx={{
-                                // Responsive width to match user-side appearance
                                 width: { xs: '95%', sm: '80%', md: '700px', lg: '800px' },
-                                maxWidth: '800px', // Prevents it from getting too wide on very large screens
-                                
-                                // Apply card-like styling to this wrapper Box
+                                maxWidth: '800px',
                                 bgcolor: '#1e1e1e',
                                 borderRadius: '15px',
                                 border: '1px solid #333',
                                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                                p: 2, // Padding inside this wrapper
+                                p: 2,
                             }}
                         >
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontFamily: 'Cooper Black, serif',
+                                    mb: 1,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    color: '#FFD700'
+                                }}
+                            >
+                                Product: <span style={{ color: review.productName === 'Product Not Found' ? '#e57373' : 'white' }}>{review.productName}</span>
+                            </Typography>
                             <CommentCard
                                 userReview={review}
                                 onDeleteSuccess={deleteReviewByAdminSuccess}
@@ -120,7 +148,6 @@ const UserReviewItem = ({ id }) => {
                             />
                         </Box>
                     ) : (
-                        // Fallback Box - consistent styling with the working review boxes
                         <Box
                             key={review._id}
                             sx={{
@@ -131,10 +158,9 @@ const UserReviewItem = ({ id }) => {
                                 color: '#cccccc',
                                 fontFamily: 'Cooper Black, serif',
                                 textAlign: 'center',
-                                // Consistent responsive width
                                 width: { xs: '95%', sm: '80%', md: '700px', lg: '800px' },
                                 maxWidth: '800px',
-                                minHeight: '150px', // Retain minHeight for fallback message
+                                minHeight: '150px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'

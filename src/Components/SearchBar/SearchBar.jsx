@@ -6,8 +6,8 @@ import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 
 const SearchBar = () => {
-    const [allProducts, setAllProducts] = useState([]); // Stores all products fetched from the backend
-    const [filteredData, setFilteredData] = useState([]); // Stores products filtered by search term
+    const [allProducts, setAllProducts] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
     const [searchTerm, setSearchTerm] = useState(''); // Stores the current search input
 
     // Effect to fetch all products when the component mounts
@@ -15,22 +15,22 @@ const SearchBar = () => {
         const fetchAllProducts = async () => {
             try {
                 const { data } = await axiosInstance.get('/api/product/fetchproduct');
-                // CRITICAL FIX: Access the 'products' array from the response data
-                // Backend now returns { success: true, products: [...] }
+                
+                
                 if (data.success) {
-                    setAllProducts(data.products || []); // Set all products from the 'products' field
+                    setAllProducts(data.products || []); 
                 } else {
                     toast.error(data.message || "Search could not be initialized.", { theme: 'colored' });
                 }
             } catch (error) {
-                // Use backend's standardized 'message' field for error toasts
+                
                 toast.error(error.response?.data?.message || "Search could not be initialized.", { theme: 'colored' });
             }
         };
         fetchAllProducts();
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, []); 
 
-    // Handles changes in the search input and filters products
+    
     const handleSearch = (event) => {
         const query = event.target.value;
         setSearchTerm(query);
@@ -38,7 +38,7 @@ const SearchBar = () => {
         if (query.length > 0) {
             const newFilteredData = allProducts.filter(item => {
                 const lowerCaseQuery = query.toLowerCase();
-                // Filters products based on name, description, brand, mainCategory, or subCategory
+                
                 return (
                     item.name?.toLowerCase().includes(lowerCaseQuery) ||
                     item.description?.toLowerCase().includes(lowerCaseQuery) ||
@@ -49,11 +49,11 @@ const SearchBar = () => {
             });
             setFilteredData(newFilteredData);
         } else {
-            setFilteredData([]); // Clear filtered data if search term is empty
+            setFilteredData([]); 
         }
     };
 
-    // Custom styles for the search TextField component
+    
     const searchTextFieldSx = {
         width: { xs: '100%', sm: 500, md: 800 },
         '& .MuiOutlinedInput-root': {
@@ -71,7 +71,7 @@ const SearchBar = () => {
 
     return (
         <Container sx={{ position: 'relative', display: "flex", flexDirection: 'column', alignItems: 'center', p: 0 }}>
-            {/* Search Input Field */}
+            {}
             <TextField
                 id="search"
                 type="search"
@@ -87,27 +87,27 @@ const SearchBar = () => {
                     ),
                 }}
             />
-            {/* Search Results Dropdown */}
+            {}
             {searchTerm.length > 0 && (
                 <Paper sx={{
                     position: 'absolute',
-                    top: '55px', // Position below the search input
+                    top: '55px', 
                     width: { xs: '100%', sm: 500, md: 800 },
-                    overflowY: "auto", // Enable vertical scrolling for results
+                    overflowY: "auto", 
                     maxHeight: "300px",
                     bgcolor: '#1e1e1e',
                     borderRadius: '8px',
                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.6)',
                     border: '1px solid #333',
-                    zIndex: 1200, // Ensure it appears above other content
+                    zIndex: 1200, 
                 }}>
                     {filteredData.length === 0 ? (
-                        // Message when no products are found
+                        
                         <Typography variant="h6" sx={{ textAlign: "center", p: 3, color: '#cccccc' }}>
                             Product Not Found
                         </Typography>
                     ) : (
-                        // Map and display filtered products
+                        
                         filteredData.map(product => (
                             <Link to={`/product/${product.mainCategory}/${product._id}`} key={product._id} style={{ textDecoration: 'none' }} onClick={() => setSearchTerm('')}>
                                 <Box sx={{

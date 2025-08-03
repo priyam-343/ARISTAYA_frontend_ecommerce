@@ -13,7 +13,7 @@ const Context = ({ children }) => {
       const authToken = token || localStorage.getItem('Authorization');
       if (authToken) {
           try {
-              // ** Using REACT_APP_GET_USER_DETAILS from your .env file **
+              
               const { data } = await axiosInstance.get(process.env.REACT_APP_GET_USER_DETAILS, {
                   headers: { 'Authorization': authToken }
               });

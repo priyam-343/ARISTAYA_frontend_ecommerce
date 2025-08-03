@@ -46,7 +46,7 @@ const AddUser = ({ getUser }) => {
                 toast.error(data.error || "Failed to add user. Check response data.", { autoClose: 500, theme: 'colored' });
             }
         } catch (error) {
-            // Use the specific error message from the backend response
+            
             const errorMessage = error.response?.data?.message || error.message || "Failed to add user.";
             toast.error(errorMessage, { autoClose: 500, theme: 'colored' });
             console.error("Error adding normal user:", error); 

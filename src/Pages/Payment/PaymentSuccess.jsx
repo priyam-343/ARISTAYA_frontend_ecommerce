@@ -9,14 +9,14 @@ import { toast } from 'react-toastify';
 
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
-    const paymentId = searchParams.get('paymentId'); // Get paymentId from URL query parameters
-    const { setCart } = useContext(ContextFunction); // Get setCart from context to clear cart
+    const paymentId = searchParams.get('paymentId'); 
+    const { setCart } = useContext(ContextFunction); 
 
-    const [orderData, setOrderData] = useState(null); // State to store fetched order details
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null); // Error state for display
+    const [orderData, setOrderData] = useState(null); 
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
 
-    // Callback function to handle downloading the receipt as a PDF
+    
     const handleDownloadReceipt = useCallback(() => {
         const element = document.getElementById('pdf-receipt-content');
         if (element) {
@@ -24,16 +24,16 @@ const PaymentSuccess = () => {
                 margin: 0.5,
                 filename: `ARISTAYA_Receipt_${paymentId}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true }, // useCORS is important if images are from different origins
+                html2canvas: { scale: 2, useCORS: true }, 
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
         } else {
             toast.error("Receipt content not found for PDF generation.", { theme: 'colored' });
         }
-    }, [paymentId]); // Dependency on paymentId
+    }, [paymentId]); 
 
-    // Effect to fetch order details when component mounts or paymentId changes
+    
     useEffect(() => {
         const fetchOrderDetails = async () => {
             if (!paymentId) {
@@ -42,30 +42,30 @@ const PaymentSuccess = () => {
                 return;
             }
             try {
-                // Fetch payment details from the backend using the paymentId
+                
                 const { data } = await axiosInstance.get(`/api/payment/getpaymentdetails/${paymentId}`);
-                // CRITICAL FIX: Backend now returns { success: true, paymentDetails: {...} }
+                
                 if (data.success && data.paymentDetails) {
-                    setOrderData(data.paymentDetails); // Set order data from the 'paymentDetails' field
-                    setCart([]); // Clear cart after successful payment
+                    setOrderData(data.paymentDetails); 
+                    setCart([]); 
                 } else {
-                    // Handle cases where success is false or paymentDetails is missing
+                    
                     setError(data.message || "Failed to load order details.");
                     toast.error(data.message || "Failed to load order details.", { theme: 'colored' });
                 }
             } catch (err) {
-                // Use err.response?.data?.message for standardized backend error messages
+                
                 setError(err.response?.data?.message || "Failed to load order details due to a network error.");
                 toast.error(err.response?.data?.message || "Failed to load order details.", { theme: 'colored' });
                 console.error("Error fetching payment details:", err);
             } finally {
-                setLoading(false); // Always set loading to false
+                setLoading(false); 
             }
         };
         fetchOrderDetails();
-    }, [setCart, paymentId]); // Dependencies: setCart to clear cart, paymentId to refetch
+    }, [setCart, paymentId]); 
 
-    // Display loading state
+    
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
@@ -75,7 +75,7 @@ const PaymentSuccess = () => {
         );
     }
 
-    // Display error state
+    
     if (error) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
@@ -85,7 +85,7 @@ const PaymentSuccess = () => {
         );
     }
 
-    // Prepare product items for display and PDF
+    
     const productItems = orderData?.productData?.map((item, index) => (
         <tr key={index}>
             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{item.productId?.name} (x{item.quantity})</td>
@@ -103,7 +103,7 @@ const PaymentSuccess = () => {
                     Payment Successful <AiOutlineFileDone style={{ color: '#FFD700', verticalAlign: 'middle' }} />
                 </Typography>
 
-                {/* Main receipt content displayed on the page */}
+                {}
                 <Box id="receipt-content-display" sx={{ width: '100%', p: 3, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', color: 'white', textAlign: 'left', mb: 3 }}>
                     <Typography variant='h6' sx={{ color: '#FFD700', mb: 2, borderBottom: '1px solid #444', pb: 1 }}>Order Receipt</Typography>
                     <Typography variant='body1' sx={{ color: '#cccccc', mb: 1, wordBreak: 'break-all' }}><strong>Reference No:</strong> {paymentId}</Typography>
@@ -128,14 +128,14 @@ const PaymentSuccess = () => {
                     )}
                 </Box>
 
-                {/* Action buttons */}
+                {}
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                     <Button component={Link} to='/' variant='contained' sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' }, p: '12px 30px' }}>Back To Home</Button>
                     <Button variant='contained' onClick={handleDownloadReceipt} sx={{ bgcolor: '#FFD700', color: '#000', '&:hover': { bgcolor: '#e6c200' }, p: '12px 30px' }}>Download Receipt</Button>
                 </Box>
             </Container>
 
-            {/* Hidden content for PDF generation (html2pdf.js uses this to render the PDF) */}
+            {}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', fontSize: '12px' }}>
                 <div id="pdf-receipt-content" style={{ padding: '40px', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif', width: '7.5in', boxSizing: 'border-box' }}>
                     <h1 style={{ color: 'black', borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '20px' }}>ARISTAYA Order Receipt</h1>

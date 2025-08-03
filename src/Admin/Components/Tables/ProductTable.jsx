@@ -18,33 +18,24 @@ import { Link } from 'react-router-dom';
 import AddProduct from '../AddProduct';
 import PropTypes from 'prop-types';
 
-// --- Constants for Image Placeholders ---
-const PLACEHOLDER_NO_IMAGE = "https://placehold.co/100x100/000000/FFD700?text=No+Image";
-const PLACEHADER_IMAGE_ERROR = "https://placehold.co/100x100/000000/FFD700?text=Image+Error"; // Corrected typo here
 
-// This helper converts the new 'mainCategory' slug into a user-friendly display name.
+const PLACEHOLDER_NO_IMAGE = "https://placehold.co/100x100/000000/FFD700?text=No+Image";
+const PLACEHADER_IMAGE_ERROR = "https://placehold.co/100x100/000000/FFD700?text=Image+Error"; 
+
+
 const getDisplayCategory = (mainCategory) => {
     if (!mainCategory) return 'N/A';
     let displayName = mainCategory.replace(/-/g, ' ');
 
-    // Specific mapping for common categories
+    
     switch (displayName) {
         case 'men wear': return "Men's Wear";
         case 'women wear': return "Women's Wear";
         case 'children wear': return "Children's Wear";
-        default: return displayName.replace(/\b\w/g, l => l.toUpperCase()); // Capitalize first letter of each word
+        default: return displayName.replace(/\b\w/g, l => l.toUpperCase()); 
     }
 };
 
-/**
- * ProductTable component displays a filterable and sortable table of products.
- * It allows searching products by various fields and links to individual product detail pages.
- * It also integrates with the AddProduct component for adding new products.
- *
- * @param {object} props - The props object.
- * @param {Array<object>} props.data - An array of product objects to display.
- * @param {function} props.getProductInfo - A function to refresh product data (e.g., after adding a new product).
- */
 const ProductTable = ({ data, getProductInfo }) => {
     const [filteredData, setFilteredData] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -58,14 +49,14 @@ const ProductTable = ({ data, getProductInfo }) => {
         { id: 'rating', label: 'Rating', minWidth: 100, align: 'center' },
     ];
 
-    // Handler for search input changes.
+    
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    // Filters and sorts the data whenever the `data` prop or `searchTerm` changes.
+    
     useEffect(() => {
-        // Create a mutable copy to sort
+        
         const sortedData = [...data].sort((a, b) => a.name.localeCompare(b.name));
 
         const filtered = sortedData.filter(item => {
@@ -105,7 +96,7 @@ const ProductTable = ({ data, getProductInfo }) => {
 
     return (
         <>
-            {/* Search Input Field */}
+            {}
             <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 5, mt: 5, bgcolor: '#000000', py: 2 }}>
                 <TextField
                     id="search"
@@ -114,7 +105,7 @@ const ProductTable = ({ data, getProductInfo }) => {
                     onChange={handleSearch}
                     value={searchTerm}
                     sx={{
-                        width: { xs: '90%', sm: 500, md: 800 }, // Responsive width
+                        width: { xs: '90%', sm: 500, md: 800 }, 
                         '& .MuiInputBase-input': { color: '#ffffff', fontFamily: 'Cooper Black, serif' },
                         '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
                         '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
@@ -135,18 +126,18 @@ const ProductTable = ({ data, getProductInfo }) => {
                 />
             </Container>
 
-            {/* Add Product Component Integration */}
+            {}
             <AddProduct getProductInfo={getProductInfo} />
 
-            {/* Product Table Display */}
+            {}
             <Paper
                 elevation={6}
                 sx={{ bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333333', boxShadow: '0 8px 20px rgba(0,0,0,0.4)', overflow: "hidden", width: '100%', mt: 3 }}
             >
                 <TableContainer
                     sx={{
-                        maxHeight: '500px', // Fixed height with scrolling
-                        // Custom scrollbar styles for a themed look
+                        maxHeight: '500px', 
+                        
                         '&::-webkit-scrollbar': { height: '8px', width: '8px' },
                         '&::-webkit-scrollbar-track': { background: '#333333', borderRadius: '10px' },
                         '&::-webkit-scrollbar-thumb': { background: '#FFD700', borderRadius: '10px' },
@@ -168,7 +159,7 @@ const ProductTable = ({ data, getProductInfo }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {/* Conditional rendering: If no products found after filtering */}
+                            {}
                             {filteredData.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} sx={{ bgcolor: '#1e1e1e', borderBottom: '1px solid #333333' }}>
@@ -180,22 +171,22 @@ const ProductTable = ({ data, getProductInfo }) => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                // Map over filtered data to render product rows
+                                
                                 filteredData.map((prod) => (
                                     <TableRow key={prod._id} sx={{ '& > *': { borderBottom: 'unset !important' } }}>
                                         <TableCell component="th" scope="row" align="center" sx={{ bgcolor: '#1e1e1e', color: '#ffffff', fontFamily: 'Cooper Black, serif', borderBottom: '1px solid #333333' }}>
                                             <Link to={`/admin/home/product/${prod.mainCategory}/${prod._id}`} style={linkSx}>
-                                                {/* Truncate long names for better table display with ellipsis */}
+                                                {}
                                                 {prod.name.length > 20 ? `${prod.name.slice(0, 20)}...` : prod.name}
                                             </Link>
                                         </TableCell>
                                         <TableCell align="center" sx={{ bgcolor: '#1e1e1e', color: '#ffffff', fontFamily: 'Cooper Black, serif', borderBottom: '1px solid #333333' }}>
                                             <Link to={`/admin/home/product/${prod.mainCategory}/${prod._id}`} style={linkSx}>
                                                 <img
-                                                    src={prod?.images?.[0]?.url || PLACEHOLDER_NO_IMAGE} // Use defined placeholder constant
+                                                    src={prod?.images?.[0]?.url || PLACEHOLDER_NO_IMAGE} 
                                                     alt={prod.name || "Product Image"}
                                                     style={{ width: "100px", height: "100px", objectFit: "contain", borderRadius: '8px' }}
-                                                    onError={(e) => { e.target.onerror = null; e.target.src = PLACEHADER_IMAGE_ERROR; }} // Use defined error placeholder
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = PLACEHADER_IMAGE_ERROR; }} 
                                                 />
                                             </Link>
                                         </TableCell>
@@ -206,12 +197,12 @@ const ProductTable = ({ data, getProductInfo }) => {
                                         </TableCell>
                                         <TableCell align="center" sx={{ bgcolor: '#1e1e1e', color: '#ffffff', fontFamily: 'Cooper Black, serif', borderBottom: '1px solid #333333' }}>
                                             <Link to={`/admin/home/product/${prod.mainCategory}/${prod._id}`} style={linkSx}>
-                                                ₹{prod.price?.toLocaleString()} {/* Use toLocaleString for currency formatting */}
+                                                ₹{prod.price?.toLocaleString()} {}
                                             </Link>
                                         </TableCell>
                                         <TableCell align="center" sx={{ bgcolor: '#1e1e1e', color: '#ffffff', fontFamily: 'Cooper Black, serif', borderBottom: '1px solid #333333' }}>
                                             <Link to={`/admin/home/product/${prod.mainCategory}/${prod._id}`} style={linkSx}>
-                                                {prod.rating || 'N/A'} {/* Display N/A if rating is null/undefined */}
+                                                {prod.rating || 'N/A'} {}
                                             </Link>
                                         </TableCell>
                                     </TableRow>
@@ -225,7 +216,7 @@ const ProductTable = ({ data, getProductInfo }) => {
     );
 };
 
-// --- PropTypes for Type Checking ---
+
 ProductTable.propTypes = {
     data: PropTypes.array.isRequired,
     getProductInfo: PropTypes.func.isRequired,

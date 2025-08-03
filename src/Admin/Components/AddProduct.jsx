@@ -3,7 +3,7 @@ import {
     Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, TextField, Typography, InputLabel, MenuItem, FormControl, Select, CircularProgress
 } from '@mui/material';
 import { toast } from 'react-toastify';
-import axios from 'axios'; 
+import axios from 'axios';
 import { Transition } from '../../Constants/Constant';
 import { MdOutlineCancel, MdAddShoppingCart } from 'react-icons/md';
 import PropTypes from 'prop-types';
@@ -24,8 +24,8 @@ const AddProduct = ({ getProductInfo }) => {
     const authToken = localStorage.getItem("Authorization");
 
     const [productInfo, setProductInfo] = useState({
-        name: "", description: "", price: "", images: "", mainCategory: "",
-        subCategory: "", stock: "", brand: "", rating: "",
+        name: "", description: "", price: "", originalPrice: "",
+        images: "", mainCategory: "", subCategory: "", stock: "", brand: "", rating: "",
     });
 
     const availableSubCategories = useMemo(() => {
@@ -48,8 +48,8 @@ const AddProduct = ({ getProductInfo }) => {
     const handleClose = () => {
         setOpen(false);
         setProductInfo({
-            name: "", description: "", price: "", images: "", mainCategory: "",
-            subCategory: "", stock: "", brand: "", rating: "",
+            name: "", description: "", price: "", originalPrice: "",
+            images: "", mainCategory: "", subCategory: "", stock: "", brand: "", rating: "",
         });
     };
 
@@ -58,12 +58,17 @@ const AddProduct = ({ getProductInfo }) => {
         setLoading(true);
 
         if (!productInfo.name || !productInfo.brand || !productInfo.mainCategory ||
-            !productInfo.subCategory ||
-            !productInfo.images || productInfo.images.trim() === '' ||
-            !productInfo.price || !productInfo.rating || !productInfo.stock ||
-            !productInfo.description
+            !productInfo.subCategory || !productInfo.images || productInfo.images.trim() === '' ||
+            !productInfo.price || !productInfo.rating || !productInfo.stock || !productInfo.description
         ) {
-            toast.error("Please fill in all required fields, including Image URL.", { theme: "colored" });
+            toast.error("Please fill in all required fields.", { theme: "colored" });
+            setLoading(false);
+            return;
+        }
+
+        
+        if (productInfo.originalPrice && parseFloat(productInfo.originalPrice) < parseFloat(productInfo.price)) {
+            toast.error("The original price cannot be less than the discounted price.", { theme: "colored" });
             setLoading(false);
             return;
         }
@@ -80,6 +85,11 @@ const AddProduct = ({ getProductInfo }) => {
                 brand: productInfo.brand,
                 rating: parseFloat(productInfo.rating),
             };
+
+            
+            if (productInfo.originalPrice) {
+                payload.originalPrice = parseFloat(productInfo.originalPrice);
+            }
 
             const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_ADD_PRODUCT}`, payload, {
                 headers: { 'Authorization': authToken }
@@ -99,7 +109,7 @@ const AddProduct = ({ getProductInfo }) => {
             setLoading(false);
         }
     };
-    
+
     const textFieldStyles = {
         '& .MuiInputBase-input': { color: 'white' },
         '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
@@ -161,24 +171,28 @@ const AddProduct = ({ getProductInfo }) => {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}><TextField label="Image URL" name='images' value={productInfo.images} onChange={handleOnChange} fullWidth required sx={textFieldStyles} /></Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField label="Price" name='price' type="number" value={productInfo.price} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
+                            
+                            <Grid item xs={12} sm={6}>
+                                <TextField label="Original Price" name='originalPrice' type="number" value={productInfo.originalPrice} onChange={handleOnChange} fullWidth sx={textFieldStyles} />
                             </Grid>
-                            <Grid item xs={12} sm={4}>
-                                {/* FIX: Limit Rating input from 0 to 5 */}
-                                <TextField 
-                                    label="Rating (0-5)" 
-                                    name='rating' 
-                                    type="number" 
-                                    value={productInfo.rating} 
-                                    onChange={handleOnChange} 
-                                    fullWidth 
-                                    required 
-                                    sx={textFieldStyles} 
-                                    inputProps={{ min: 0, max: 5 }} 
+                            <Grid item xs={12} sm={6}>
+                                <TextField label="Discounted Price" name='price' type="number" value={productInfo.price} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Rating (0-5)"
+                                    name='rating'
+                                    type="number"
+                                    value={productInfo.rating}
+                                    onChange={handleOnChange}
+                                    fullWidth
+                                    required
+                                    sx={textFieldStyles}
+                                    inputProps={{ min: 0, max: 5, step: "0.1" }}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={6}>
                                 <TextField label="Stock" name='stock' type="number" value={productInfo.stock} onChange={handleOnChange} fullWidth required sx={textFieldStyles} />
                             </Grid>
                             <Grid item xs={12}><TextField label="Description" name='description' value={productInfo.description} onChange={handleOnChange} multiline rows={4} fullWidth required sx={textFieldStyles} /></Grid>

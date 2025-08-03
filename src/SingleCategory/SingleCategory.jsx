@@ -6,7 +6,7 @@ import { BiFilterAlt } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import ProductCard from '../Components/Card/Product Card/ProductCard';
 
-// The definitive "Source of Truth" for all sub-category filters.
+
 const FILTER_MAP = {
     'men-wear': ['All', 'T-Shirts', 'Jeans', 'Formal Wear', 'Accessories'],
     'women-wear': ['All', 'Dresses', 'Tops', 'Skirts', 'Accessories'],
@@ -17,10 +17,10 @@ const FILTER_MAP = {
     'precious-jewelries': ['All', 'Necklace', 'Earrings', 'Rings', 'Bracelet', 'Watches'],
 };
 
-// These are the display names for the sorting options.
+
 const SORTING_OPTIONS = ['Price Low To High', 'Price High To Low', 'High Rated', 'Low Rated'];
 
-// CRITICAL FIX: Map the display names to the backend's expected filter keys.
+
 const SORT_KEY_MAP = {
     'Price Low To High': 'pricelowtohigh',
     'Price High To Low': 'pricehightolow',
@@ -38,13 +38,13 @@ const SingleCategory = () => {
         const fetchProducts = async () => {
             setIsLoading(true);
             try {
-                // Determine the correct value to send to the backend.
-                // If it's a sort option, use the mapped key. Otherwise, use the filter option directly.
+                
+                
                 const userCategoryToSend = SORT_KEY_MAP[filterOption] || filterOption;
 
                 const response = await axiosInstance.post(`/api/product/fetchproduct/category`, {
-                    userType: mainCategory, // Corresponds to mainCategory on backend
-                    userCategory: userCategoryToSend // Now sends 'pricelowtohigh' instead of 'Price Low To High'
+                    userType: mainCategory, 
+                    userCategory: userCategoryToSend 
                 });
                 
                 if (response.data.success) {
@@ -61,14 +61,14 @@ const SingleCategory = () => {
 
         fetchProducts();
         window.scroll(0, 0);
-    }, [mainCategory, filterOption]); // Re-fetch products when category or filter changes
+    }, [mainCategory, filterOption]); 
 
-    // Handles changes in the filter/sort dropdown
+    
     const handleFilterChange = (e) => {
         setFilterOption(e.target.value);
     };
 
-    // Determine current filter options based on the main category, including sorting options
+    
     const currentFilters = FILTER_MAP[mainCategory] ? [...FILTER_MAP[mainCategory], ...SORTING_OPTIONS] : ['All', ...SORTING_OPTIONS];
     const categoryTitle = mainCategory.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
