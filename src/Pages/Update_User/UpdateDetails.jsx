@@ -26,6 +26,9 @@ const UpdateDetails = () => {
     // States for password visibility toggles
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    
+    // State to store user data from the backend, including provider info
+    const [userData, setUserData] = useState(null);
 
     // Effect to fetch user data on component mount or auth token change
     useEffect(() => {
@@ -37,6 +40,7 @@ const UpdateDetails = () => {
                     });
                     // CRITICAL FIX: Access user details from 'data.user' as per backend standardization
                     if (data.success && data.user) {
+                        setUserData(data.user); // Store full user data for provider check
                         setUserDetails({
                             firstName: data.user.firstName || '', lastName: data.user.lastName || '',
                             email: data.user.email || '', phoneNumber: data.user.phoneNumber || '',
@@ -86,8 +90,17 @@ const UpdateDetails = () => {
                 toast.error(data.message || "Something went wrong during profile update.", { theme: 'colored' });
             }
         } catch (error) {
-            // Use backend's standardized 'message' field for error toasts
-            toast.error(error.response?.data?.message || "Profile update failed.", { theme: 'colored' });
+            // ** UPDATED FEEDBACK LOGIC **
+            const errorMessage = error.response?.data?.message;
+
+            if (errorMessage && errorMessage.includes('email already exists')) {
+                toast.error('The email you entered is already registered to another account.', { theme: 'colored' });
+            } else if (errorMessage && errorMessage.includes('phone number already exists')) {
+                toast.error('The phone number you entered is already in use.', { theme: 'colored' });
+            } else {
+                // Fallback to the backend's message or a generic error
+                toast.error(errorMessage || "Profile update failed.", { theme: 'colored' });
+            }
         }
     };
 
@@ -106,7 +119,8 @@ const UpdateDetails = () => {
                 toast.error(data.message || "Password reset failed.", { theme: 'colored' });
             }
         } catch (error) {
-            // Use backend's standardized 'message' field for error toasts
+            // This toast will automatically display the specific error message from the backend,
+            // such as "This account was signed up via Google and has no password to change."
             toast.error(error.response?.data?.message || "Password reset failed.", { theme: 'colored' });
         }
     };

@@ -27,21 +27,28 @@ const AddUser = ({ getUser }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const payload = { ...credentials }; 
+            const payload = { ...credentials };
             
-            const { data } = await axiosInstance.post(process.env.REACT_APP_REGISTER, payload); 
-
+            const { data } = await axiosInstance.post(process.env.REACT_APP_REGISTER, payload);
+            
             if (data.success) {
-                getUser(); 
-                toast.success("Normal user registered successfully!", { autoClose: 500, theme: 'colored' });
+                // Check if getUser is a function before calling it
+                if (typeof getUser === 'function') {
+                    getUser(); 
+                } else {
+                    console.error("The 'getUser' prop is missing or not a function. User was registered successfully but the parent component's user list may not have been updated.");
+                }
+                
+                // ** UPDATED: The successful toast message is now as requested **
+                toast.success("Normal user registered successfully! Welcome email sent", { autoClose: 500, theme: 'colored' });
                 handleClose();
             } else {
-                // FIX: Ensure 'error' (from catch block) is handled safely
-                toast.error(data.error || "Failed to add user. Check response data.", { autoClose: 500, theme: 'colored' }); // Use data.error if backend sends it on success:false
+                toast.error(data.error || "Failed to add user. Check response data.", { autoClose: 500, theme: 'colored' });
             }
-        } catch (error) { // 'error' is defined here by the catch block
-            // FIX: Robust error message display, check error.response first, then error.message
-            toast.error(error.response?.data?.error || error.message || "Failed to add user.", { autoClose: 500, theme: 'colored' });
+        } catch (error) {
+            // Use the specific error message from the backend response
+            const errorMessage = error.response?.data?.message || error.message || "Failed to add user.";
+            toast.error(errorMessage, { autoClose: 500, theme: 'colored' });
             console.error("Error adding normal user:", error); 
         } finally {
             setLoading(false);
@@ -96,7 +103,7 @@ const AddUser = ({ getUser }) => {
 };
 
 AddUser.propTypes = {
-    getUser: PropTypes.func.isRequired,
+    getUser: PropTypes.func,
 };
 
 export default AddUser;

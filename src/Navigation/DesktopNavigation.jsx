@@ -3,108 +3,103 @@ import { AiOutlineHeart, AiOutlineShoppingCart, AiFillCloseCircle } from 'react-
 import { CgProfile } from 'react-icons/cg';
 import { FiLogOut } from 'react-icons/fi';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Badge, Button, Dialog, DialogActions, DialogContent, Typography, Box } from '@mui/material';
+import { Badge, Button, Dialog, DialogActions, DialogContent, Typography, Box, Avatar } from '@mui/material';
 import { ContextFunction } from '../Context/Context';
 import { toast } from 'react-toastify';
 import axiosInstance from '../utils/axiosInstance';
-import { Transition } from '../Constants/Constant'; // Assuming this constant exists
-import { FaShippingFast } from 'react-icons/fa'; // Import Orders icon
+import { Transition } from '../Constants/Constant';
+import { FaShippingFast } from 'react-icons/fa';
 
 const DesktopNavigation = () => {
-  const { cart, setCart, wishlistData, setWishlistData, loginUser, setLoginUser } = useContext(ContextFunction);
-  const [openAlert, setOpenAlert] = useState(false); // State for logout confirmation dialog
+  const { cart, setCart, wishlistData, setWishlistData, loginUser, setLoginUser, logout } = useContext(ContextFunction);
+  const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const authToken = localStorage.getItem('Authorization');
-  const isLoggedIn = !!authToken; // Check if user is logged in
-  const isAdmin = loginUser?.isAdmin || false; // Check if the logged-in user is an admin
-  const onAdminPage = location.pathname.startsWith('/admin'); // Check if current path is an admin page
+  const isLoggedIn = !!authToken;
+  const isAdmin = loginUser?.isAdmin || false;
+  const onAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const fetchNavData = async () => {
-      if (isLoggedIn) {
+      const token = localStorage.getItem('Authorization');
+      // ** FIX: Only fetch if a token exists and we are not on the admin page **
+      if (token && !onAdminPage) {
         try {
           const [cartResponse, wishlistResponse] = await Promise.all([
-            axiosInstance.get(process.env.REACT_APP_GET_CART, { headers: { 'Authorization': authToken } }), // Fetch cart data
-            axiosInstance.get(process.env.REACT_APP_GET_WISHLIST, { headers: { 'Authorization': authToken } }) // Fetch wishlist data
+            axiosInstance.get(process.env.REACT_APP_GET_CART, { headers: { 'Authorization': token } }),
+            axiosInstance.get(process.env.REACT_APP_GET_WISHLIST, { headers: { 'Authorization': token } })
           ]);
-          // CRITICAL FIX: Access the 'cart' array from cartResponse.data
-          // Backend now returns { success: true, cart: [...] }
           if (cartResponse.data.success) {
             setCart(cartResponse.data.cart || []);
           } else {
-            toast.error(cartResponse.data.message || "Failed to load cart data.", { theme: 'colored' });
+            // No toast for 401s here to avoid spamming the user
+            console.error(cartResponse.data.message || "Failed to load cart data.");
           }
-
-          // CRITICAL FIX: Access the 'wishlistItems' array from wishlistResponse.data
-          // Backend now returns { success: true, wishlistItems: [...] }
           if (wishlistResponse.data.success) {
             setWishlistData(wishlistResponse.data.wishlistItems || []);
           } else {
-            toast.error(wishlistResponse.data.message || "Failed to load wishlist data.", { theme: 'colored' });
+            console.error(wishlistResponse.data.message || "Failed to load wishlist data.");
           }
-
         } catch (error) {
-          // Use backend's standardized 'message' field for error toasts
-          toast.error(error.response?.data?.message || "Couldn't load navigation data.", { theme: 'colored' });
+          // Log errors but do not display toasts for expected 401s on token expiry
+          console.error("Error fetching navigation data:", error.response?.data?.message || error.message);
         }
+      } else {
+          // Clear cart and wishlist on logout or no token
+          setCart([]);
+          setWishlistData([]);
       }
     };
     fetchNavData();
-  }, [isLoggedIn, setCart, setWishlistData, authToken]); // Dependencies: login status, setters, and auth token
+  }, [authToken, onAdminPage, setCart, setWishlistData]);
 
-  // Handles user logout
   const logoutUser = () => {
-    localStorage.clear(); // Clear all local storage
-    setLoginUser({}); // Clear global login user state
-    setCart([]); // Clear global cart state
-    setWishlistData([]); // Clear global wishlist state
+    logout();
+    setLoginUser({});
     toast.success("Logout Successfully", { autoClose: 500, theme: 'colored' });
-    setOpenAlert(false); // Close logout confirmation dialog
-    navigate('/'); // Navigate to home page
+    setOpenAlert(false);
+    navigate('/');
   };
 
-  // Styles for NavLink components
   const navLinkStyles = {
-    color: '#ffffff', // Default link color
+    color: '#ffffff',
     textDecoration: 'none',
     fontFamily: 'Cooper Black, serif',
     display: 'flex',
     alignItems: 'center',
     gap: '5px',
-    transition: 'color 0.2s ease-in-out', // Smooth color transition on hover
+    transition: 'color 0.2s ease-in-out',
   };
 
-  // Styles for active NavLink components
   const activeNavLinkStyles = {
-    color: '#FFD700', // Golden color for active links
+    color: '#FFD700',
   };
 
   return (
     <>
       <Box component="nav" sx={{
-        display: { xs: 'none', md: 'flex' }, // Visible only on medium and larger screens
+        display: { xs: 'none', md: 'flex' },
         justifyContent: 'space-between',
         alignItems: 'center',
         px: 4,
         height: '80px',
-        bgcolor: '#000000', // Dark background
-        borderBottom: '1px solid #1e1e1e', // Subtle bottom border
-        position: 'fixed', // Fixed position at the top
+        bgcolor: '#000000',
+        borderBottom: '1px solid #1e1e1e',
+        position: 'fixed',
         top: 0,
         width: '100%',
-        zIndex: 1100, // High z-index to stay on top
-        boxSizing: 'border-box' // Include padding in element's total width and height
+        zIndex: 1100,
+        boxSizing: 'border-box'
       }}>
-        {/* Left side: Branding and Admin Toggle Button */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <Link to='/' style={{ textDecoration: 'none', color: '#FFD700', fontSize: '2rem', fontFamily: 'Cooper Black, serif' }}>
             ARISTAYA
           </Link>
-          {isLoggedIn && isAdmin && ( // Show Admin/User toggle only if logged in and is admin
+          {isLoggedIn && isAdmin && (
             <Button
               component={Link}
-              to={onAdminPage ? "/" : "/admin/home"} // Toggle between user and admin home
+              to={onAdminPage ? "/" : "/admin/home"}
               variant="contained"
               sx={{
                 bgcolor: '#FFD700',
@@ -119,7 +114,6 @@ const DesktopNavigation = () => {
           )}
         </Box>
 
-        {/* Right side: Main Navigation Links */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
           <NavLink to='/' style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>Home</NavLink>
           <NavLink to="/cart" style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
@@ -131,7 +125,6 @@ const DesktopNavigation = () => {
             <span style={{ marginLeft: '8px' }}>Wishlist</span>
           </NavLink>
 
-          {/* User-Facing Orders Button (visible only when logged in) */}
           {isLoggedIn && (
             <NavLink to="/myorders" style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
               <FaShippingFast size={24} />
@@ -139,13 +132,17 @@ const DesktopNavigation = () => {
             </NavLink>
           )}
 
-          {/* Conditional Login/Logout/Profile Button */}
           {isLoggedIn ? (
             <>
               <NavLink to='/update' style={({ isActive }) => ({ ...navLinkStyles, ...(isActive && activeNavLinkStyles) })}>
-                <CgProfile size={24} />
+                {loginUser?.profileImage ? (
+                  <Avatar src={loginUser.profileImage} alt="Profile" sx={{ width: 24, height: 24 }} />
+                ) : (
+                  <CgProfile size={24} />
+                )}
                 <span style={{ marginLeft: '8px' }}>Profile</span>
               </NavLink>
+
               <Button onClick={() => setOpenAlert(true)} endIcon={<FiLogOut />} sx={{ bgcolor: '#1e1e1e', color: '#FFD700', fontFamily: 'Cooper Black, serif', border: '1px solid #333', borderRadius: '8px', textTransform: 'none', '&:hover': { bgcolor: '#2a2a2a', borderColor: '#FFD700' } }}>
                 Logout
               </Button>
@@ -159,7 +156,6 @@ const DesktopNavigation = () => {
         </Box>
       </Box>
 
-      {/* Logout Confirmation Dialog */}
       <Dialog open={openAlert} TransitionComponent={Transition} keepMounted onClose={() => setOpenAlert(false)} PaperProps={{ sx: { bgcolor: '#1e1e1e', color: 'white', borderRadius: '12px', border: '1px solid #333' } }}>
         <DialogContent sx={{ p: 4 }}>
           <Typography variant='h6' sx={{ textAlign: 'center', fontFamily: 'Cooper Black, serif' }}>Do You Want To Logout?</Typography>

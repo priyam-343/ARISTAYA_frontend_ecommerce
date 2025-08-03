@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Box, CssBaseline } from '@mui/material'; 
+import { Box, CssBaseline } from '@mui/material';
 import HomePage from './Pages/Home/HomePage';
 import Login from './Auth/Login/Login';
 import Register from './Auth/Register/Register';
@@ -22,8 +22,11 @@ import AdminRegister from './Admin/Auth/Register/AdminRegister';
 import AdminHomePage from './Admin/Pages/AdminHomePage';
 import SingleUserPage from './Admin/Pages/SingleUserPage';
 import SingleProduct from './Admin/Pages/SingleProduct';
-import CopyRight from './Components/CopyRight/CopyRight'; 
-import UserOrderHistoryPage from './Pages/UserOrderHistoryPage'; // NEW: Import the new component
+import CopyRight from './Components/CopyRight/CopyRight';
+import UserOrderHistoryPage from './Pages/UserOrderHistoryPage';
+
+// ** NEW: Importing the correct verification page component **
+import VerifyEmailPage from './Auth/VerifyEmailPage';
 
 function App() {
   return (
@@ -48,8 +51,12 @@ function App() {
               <Route path='/paymentsuccess' element={<PaymentSuccess />} />
               <Route path='/forgotpassword' element={<ForgotPasswordForm />} />
               <Route path='/user/reset/:id/:token' element={<AddNewPassword />} />
-              {/* NEW: Route for User Order History */}
-              <Route path='/myorders' element={<UserOrderHistoryPage />} /> 
+              <Route path='/myorders' element={<UserOrderHistoryPage />} />
+
+              {/* ** CRITICAL FIX: This route is now configured to match the email link URL **
+                  ** and use the correct component to make the POST request. **
+              */}
+              <Route path="/auth/verify-page" element={<VerifyEmailPage />} />
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />

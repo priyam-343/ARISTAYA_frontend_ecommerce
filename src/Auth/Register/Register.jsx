@@ -13,60 +13,94 @@ const Register = () => {
     const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Redirects to home page if user is already logged in
         if (localStorage.getItem('Authorization')) {
             navigate("/");
         }
     }, [navigate]);
 
-    // Handles input changes for all form fields
     const handleOnChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
     };
 
-    // Handles the registration form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Set loading state to true during API call
+        setLoading(true);
         try {
-            // Make POST request to register endpoint
             const { data } = await axiosInstance.post(process.env.REACT_APP_REGISTER, credentials);
             if (data.success) {
-                // Show success toast notification
-                toast.success("Registered Successfully", { autoClose: 1500, theme: 'colored' });
-                // Store authentication token in local storage
-                localStorage.setItem('Authorization', data.authToken);
-                // Update global login user state with user data from response
-                setLoginUser(data.user);
-                // Navigate to the home page
-                navigate('/');
+                toast.success(data.message || "Registration successful! Please check your email to verify your account.", { autoClose: 3000, theme: 'colored' });
+                setRegistrationSuccess(true);
+                setCredentials({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "" });
             }
         } catch (error) {
-            // Show error toast notification, using backend's 'message' field for consistency
-            // The backend now sends validation errors in the 'message' field directly.
             toast.error(error.response?.data?.message || "Registration failed. Please try again.", { theme: 'colored' });
         } finally {
-            setLoading(false); // Reset loading state after API call
+            setLoading(false);
         }
     };
 
-    // Custom styles for Material-UI TextField components
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
-            '& fieldset': { borderColor: '#444' }, // Default border color
-            '&:hover fieldset': { borderColor: '#666' }, // Border color on hover
-            '&.Mui-focused fieldset': { borderColor: '#FFD700' }, // Border color when focused
-            backgroundColor: '#1a1a1a', // Background color of the input field
-            borderRadius: '8px', // Rounded corners for the input field
+            '& fieldset': { borderColor: '#444' },
+            '&:hover fieldset': { borderColor: '#666' },
+            '&.Mui-focused fieldset': { borderColor: '#FFD700' },
+            backgroundColor: '#1a1a1a',
+            borderRadius: '8px',
         },
-        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' }, // Label color
-        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' }, // Label color when focused
-        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' }, // Input text color
-        '& .MuiInputAdornment-root': { color: '#cccccc' }, // Adornment icon color
+        '& .MuiInputLabel-root': { color: '#cccccc', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#FFD700' },
+        '& .MuiInputBase-input': { color: 'white', fontFamily: 'Cooper Black, serif' },
+        '& .MuiInputAdornment-root': { color: '#cccccc' },
     };
+
+    if (registrationSuccess) {
+        return (
+            <Container
+                component="main"
+                maxWidth="xs"
+                sx={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '100vh',
+                    paddingTop: '120px',
+                    paddingBottom: '60px',
+                    boxSizing: 'border-box'
+                }}
+            >
+                <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+                    <h1 style={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', marginBottom: '16px' }}>
+                        Success!
+                    </h1>
+                    <p style={{ color: '#cccccc', fontFamily: 'Cooper Black, serif', fontSize: '1rem', lineHeight: '1.5' }}>
+                        Please check your email to verify your account and complete your registration.
+                        You will receive an email with a "WELCOME" link.
+                    </p>
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate('/login')}
+                        sx={{
+                            mt: 3,
+                            bgcolor: '#FFD700',
+                            color: '#1a1a1a',
+                            borderRadius: '8px',
+                            p: 1.5,
+                            '&:hover': { bgcolor: '#e6c200' },
+                            fontFamily: 'Cooper Black, serif'
+                        }}
+                    >
+                        Go to Login
+                    </Button>
+                </Paper>
+            </Container>
+        );
+    }
 
     return (
         <Container
@@ -79,13 +113,12 @@ const Register = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '100vh',
-                paddingTop: '120px', // Added extra space at the top
+                paddingTop: '120px',
                 paddingBottom: '60px',
                 boxSizing: 'border-box'
             }}
         >
             <CssBaseline />
-            {/* Admin Register Button - Links to a hypothetical admin registration page */}
             <Box sx={{ position: 'absolute', top: 100, right: 20, zIndex: 1000, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#cccccc' }}>Admin?</Typography>
                 <Link to="/admin/register" style={{ textDecoration: 'none' }}>
@@ -95,7 +128,7 @@ const Register = () => {
             
             <Paper elevation={6} sx={{ p: 4, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
                 <Avatar sx={{ m: 'auto', bgcolor: '#FFD700' }}><MdLockOutline sx={{ color: '#1a1a1a' }} /></Avatar>
-                <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700' }}>Sign Up</Typography>
+                <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3, color: '#FFD700', fontFamily: 'Cooper Black, serif' }}>Sign Up</Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}><TextField name="firstName" required fullWidth id="firstName" label="First Name" value={credentials.firstName} onChange={handleOnChange} autoFocus sx={textFieldSx} /></Grid>
@@ -113,19 +146,16 @@ const Register = () => {
                             }}
                             sx={textFieldSx}
                         /></Grid>
-                        <Grid item xs={12}><FormControlLabel
-                            control={<Checkbox value="allowExtraEmails" sx={{ color: '#444', '&.Mui-checked': { color: '#FFD700' } }} />}
-                            label={<Typography sx={{ color: '#cccccc', fontSize: '0.9rem' }}>I want to receive inspiration and updates via email.</Typography>}
-                        /></Grid>
+                        {/* The "I want to receive inspiration and updates via email." checkbox has been removed */}
                     </Grid>
                     <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
                         {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Typography variant="body2" sx={{ color: '#cccccc' }}>
+                            <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif' }}>
                                 Already have an account?{' '}
-                                <Link to="/login" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' } }}>Sign in</Typography></Link>
+                                <Link to="/login" style={{ textDecoration: 'none' }}><Typography component="span" sx={{ color: '#FFD700', '&:hover': { textDecoration: 'underline' }, fontFamily: 'Cooper Black, serif' }}>Sign in</Typography></Link>
                             </Typography>
                         </Grid>
                     </Grid>

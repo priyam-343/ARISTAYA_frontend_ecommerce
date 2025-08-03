@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography, CircularProgress, Paper, Box, Container, Checkbox, FormControlLabel } from '@mui/material';
+import { Avatar, Button, CssBaseline, Grid, InputAdornment, TextField, Typography, CircularProgress, Paper, Box, Container } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -22,15 +22,21 @@ const AdminLogin = () => {
         e.preventDefault();
         setLoading(true);
         try {
+            // Updated to use the new .env variable for the API endpoint
             const { data } = await axiosInstance.post(process.env.REACT_APP_ADMIN_LOGIN, credentials);
+            
             if (data.success) {
+                // The success message now confirms a successful login to an approved account
                 toast.success("Admin Login Successful!", { autoClose: 1500, theme: 'colored' });
                 localStorage.setItem('Authorization', data.authToken);
                 setLoginUser(data.user);
                 navigate('/admin/home');
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Login failed. Please check credentials and admin key.", { theme: 'colored' });
+            // This is the key change. The backend now sends a specific message
+            // for pending approval, which will be displayed to the user.
+            const errorMessage = error.response?.data?.message || "Login failed. Please check credentials and admin key.";
+            toast.error(errorMessage, { theme: 'colored' });
         } finally {
             setLoading(false);
         }
@@ -87,12 +93,9 @@ const AdminLogin = () => {
                             sx={textFieldSx}
                         />
                         <TextField margin="normal" required fullWidth name='key' label="Admin Secret Key" type="password" value={credentials.key} onChange={handleOnChange} sx={textFieldSx} />
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-                            <FormControlLabel
-                                control={<Checkbox value="remember" sx={{ color: '#444', '&.Mui-checked': { color: '#FFD700' } }} />}
-                                label={<Typography sx={{ color: '#cccccc' }}>Remember me</Typography>}
-                            />
-                        </Box>
+                        
+                        {/* DEFUNCT RADIO BUTTON REMOVED */}
+                        
                         <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
                             {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign In'}
                         </Button>

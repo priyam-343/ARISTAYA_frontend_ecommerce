@@ -8,6 +8,7 @@ import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
 import { ContextFunction } from '../../../Context/Context';
 
 const AdminRegister = () => {
+    // Context is now only used for the toast messages, not setting login state on register
     const { setLoginUser } = useContext(ContextFunction);
     const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "", key: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -22,14 +23,23 @@ const AdminRegister = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const { data } = await axiosInstance.post(process.env.REACT_APP_ADMIN_REGISTER, credentials);
+            // CRITICAL FIX: The API endpoint path has been corrected to match the backend's `index.js`.
+            // It should be '/api/admin/register'
+            const { data } = await axiosInstance.post('/api/admin/register', credentials);
+            
             if (data.success) {
-                toast.success("Admin Registered Successfully!", { autoClose: 1500, theme: 'colored' });
-                localStorage.setItem('Authorization', data.authToken);
-                setLoginUser(data.user);
-                navigate('/admin/home');
+                // The new success message from the backend is more descriptive.
+                // We'll display this message and then redirect.
+                toast.success(data.message, { autoClose: 3500, theme: 'colored' });
+                
+                // CRITICAL FIX: The old code that automatically logged the user in has been removed.
+                // We now redirect to the login page after a delay to reflect the new approval flow.
+                setTimeout(() => {
+                    navigate('/admin/login');
+                }, 3500);
             }
         } catch (error) {
+            // Error handling remains the same, but the backend now sends more specific messages.
             toast.error(error.response?.data?.message || "Registration failed. Please check your details and admin key.", { theme: 'colored' });
         } finally {
             setLoading(false);
@@ -56,12 +66,10 @@ const AdminRegister = () => {
             flexDirection: 'column',
             minHeight: '100vh',
             bgcolor: '#000000',
-            // CRITICAL FIX: Added padding to push content down and allow scrolling
             paddingTop: '120px',
             paddingBottom: '60px'
         }}>
             <CssBaseline />
-            {/* "Not an Admin?" button with adjusted top position */}
             <Box sx={{ position: 'absolute', top: 100, right: 30, zIndex: 1000, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#cccccc' }}>Not an Admin?</Typography>
                 <Link to="/register" style={{ textDecoration: 'none' }}>
@@ -93,7 +101,8 @@ const AdminRegister = () => {
                             <Grid item xs={12}><TextField required fullWidth name='key' label="Admin Secret Key" type="password" value={credentials.key} onChange={handleOnChange} sx={textFieldSx} /></Grid>
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: '#FFD700', color: '#1a1a1a', borderRadius: '8px', p: 1.5, '&:hover': { bgcolor: '#e6c200' } }}>
-                            {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'Sign Up'}
+                            {/* UPDATED: Change button text to reflect the new approval process */}
+                            {loading ? <CircularProgress size={24} sx={{ color: '#1a1a1a' }} /> : 'REQUEST APPROVAL'}
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
