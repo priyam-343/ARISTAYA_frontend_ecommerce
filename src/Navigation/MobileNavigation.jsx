@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BottomNavigation, BottomNavigationAction, Box, Badge, Avatar } from '@mui/material';
+import {
+    BottomNavigation, BottomNavigationAction, Box, Badge, Avatar,
+    Menu, MenuItem, Typography, ListItemIcon
+} from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BsCartFill } from 'react-icons/bs';
-import { AiFillHeart, AiOutlineUser, AiOutlineLogout, AiOutlineHome } from 'react-icons/ai';
+import { AiFillHeart, AiOutlineUser, AiOutlineLogout, AiOutlineHome, AiOutlineEdit } from 'react-icons/ai';
 import { ContextFunction } from '../Context/Context';
 import { toast } from 'react-toastify';
 import axiosInstance from '../utils/axiosInstance';
@@ -13,8 +16,11 @@ const MobileNavigation = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const authToken = localStorage.getItem('Authorization');
-    const isLoggedIn = !!authToken && !!loginUser._id; 
-    const isProfilePage = location.pathname === '/update';
+    const isLoggedIn = !!authToken && !!loginUser._id;
+    
+    // NEW: State for the profile menu
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openMenu = Boolean(anchorEl);
 
     useEffect(() => {
         const fetchNavData = async () => {
@@ -37,7 +43,6 @@ const MobileNavigation = () => {
                     console.error("Error fetching mobile navigation data:", error.response?.data?.message || error.message);
                 }
             } else {
-                
                 setCart([]);
                 setWishlistData([]);
             }
@@ -46,9 +51,37 @@ const MobileNavigation = () => {
     }, [authToken, isLoggedIn, location.pathname, setCart, setWishlistData]);
 
     const logoutUser = () => {
+        handleMenuClose();
         logout();
         toast.success("Logout Successfully", { autoClose: 500, theme: 'colored' });
         navigate('/');
+    };
+
+    // NEW: Handlers for the profile menu
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleProfileClick = () => {
+        handleMenuClose();
+        navigate('/update');
+    };
+
+    const handleOrdersClick = () => {
+        handleMenuClose();
+        navigate('/myorders');
+    };
+
+    const handleProfileNavigation = (event) => {
+        if (isLoggedIn) {
+            handleMenuOpen(event);
+        } else {
+            navigate('/login');
+        }
     };
 
     const getCurrentValue = () => {
@@ -56,8 +89,8 @@ const MobileNavigation = () => {
         if (pathname === '/') return 'home';
         if (pathname === '/cart') return 'cart';
         if (pathname === '/wishlist') return 'wishlist';
-        if (pathname === '/myorders') return 'orders';
-        if (pathname === '/login' || pathname === '/update') return 'profile';
+        if (pathname === '/myorders' || pathname === '/update') return 'profile';
+        if (pathname === '/login') return 'login';
         return false;
     };
 
@@ -126,46 +159,52 @@ const MobileNavigation = () => {
                     to="/wishlist"
                     sx={navActionStyles}
                 />
-                {isLoggedIn && (
-                    <BottomNavigationAction
-                        label="Orders"
-                        value="orders"
-                        icon={<FaShippingFast size={24} />}
-                        component={Link}
-                        to="/myorders"
-                        sx={navActionStyles}
-                    />
-                )}
-
-                {isLoggedIn ? (
-                    <>
-                        <BottomNavigationAction
-                            label="Profile"
-                            value="profile"
-                            icon={profileIcon}
-                            component={Link}
-                            to="/update"
-                            sx={navActionStyles}
-                        />
-                        <BottomNavigationAction
-                            label="Logout"
-                            value="logout"
-                            icon={<AiOutlineLogout size={24} />}
-                            onClick={logoutUser}
-                            sx={navActionStyles}
-                        />
-                    </>
-                ) : (
-                    <BottomNavigationAction
-                        label="Login" 
-                        value="profile" 
-                        icon={<AiOutlineUser size={24} />}
-                        component={Link}
-                        to="/login"
-                        sx={navActionStyles}
-                    />
-                )}
+                
+                {/* NEW: Single button for Profile/Login */}
+                <BottomNavigationAction
+                    label={isLoggedIn ? "Profile" : "Login"}
+                    value={isLoggedIn ? "profile" : "login"}
+                    icon={profileIcon}
+                    onClick={handleProfileNavigation}
+                    sx={navActionStyles}
+                />
             </BottomNavigation>
+            
+            {/* NEW: Profile menu for logged-in users */}
+            {isLoggedIn && (
+                <Menu
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    onClose={handleMenuClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'profile-button',
+                    }}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    PaperProps={{
+                        sx: {
+                            bgcolor: '#1a1a1a',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            minWidth: 180,
+                            mt: '-65px',
+                        },
+                    }}
+                >
+                    <MenuItem onClick={handleProfileClick} sx={{ color: 'white' }}>
+                        <ListItemIcon><AiOutlineEdit size={24} style={{ color: '#FFD700' }} /></ListItemIcon>
+                        <Typography sx={{ fontFamily: 'Cooper Black, serif' }}>My Profile</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleOrdersClick} sx={{ color: 'white' }}>
+                        <ListItemIcon><FaShippingFast size={24} style={{ color: '#FFD700' }} /></ListItemIcon>
+                        <Typography sx={{ fontFamily: 'Cooper Black, serif' }}>My Orders</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={logoutUser} sx={{ color: 'white' }}>
+                        <ListItemIcon><AiOutlineLogout size={24} style={{ color: '#FFD700' }} /></ListItemIcon>
+                        <Typography sx={{ fontFamily: 'Cooper Black, serif' }}>Logout</Typography>
+                    </MenuItem>
+                </Menu>
+            )}
         </Box>
     );
 };

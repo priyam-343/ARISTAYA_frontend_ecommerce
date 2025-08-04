@@ -24,7 +24,10 @@ const UserOrderItem = ({ id }) => {
 
                 
                 if (isMounted) {
-                    setOrders(Array.isArray(data.payments) ? data.payments : []); 
+                    const allPayments = Array.isArray(data.payments) ? data.payments : [];
+                    // FIX: Filter to show only completed orders
+                    const completedOrders = allPayments.filter(order => order.status === 'completed');
+                    setOrders(completedOrders); 
                 }
             } catch (error) {
                 console.error("Error fetching user orders:", error);

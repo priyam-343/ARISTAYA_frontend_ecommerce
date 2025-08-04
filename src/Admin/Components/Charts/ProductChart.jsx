@@ -133,7 +133,9 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
 
     
     
-    const groupedPaymentData = paymentData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    const groupedPaymentData = paymentData
+        .filter(item => item.status === 'completed') // <-- THIS IS THE FIX
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
         .reduce((acc, item) => {
             // CRITICAL FIX: We now get the year, month, and day from the local Date object,
             // avoiding the use of .toISOString() which converts to UTC.

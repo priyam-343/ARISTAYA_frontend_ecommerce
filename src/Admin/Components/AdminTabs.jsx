@@ -48,8 +48,7 @@ export default function BasicTabs({ user, getUsersInfo }) {
     const [loading, setLoading] = useState(true);
     const authToken = localStorage.getItem("Authorization");
 
-    
-    
+    // This function fetches all products for the Products Table
     const getProductInfo = useCallback(async () => {
         try {
             const { data } = await axios.get(process.env.REACT_APP_FETCH_PRODUCT); 
@@ -64,7 +63,7 @@ export default function BasicTabs({ user, getUsersInfo }) {
         }
     }, []); 
 
-    
+    // This function fetches all data needed for the charts and widgets
     const getDashboardStats = useCallback(async () => {
         setLoading(true);
         try {
@@ -95,16 +94,25 @@ export default function BasicTabs({ user, getUsersInfo }) {
     useEffect(() => {
         if (authToken) {
             getDashboardStats(); 
-            
-            getProductInfo(); 
+            // getProductInfo() is already called within getDashboardStats in the AdminHomePage fix.
+            // But if you are using this component independently, you might need it here.
+            // However, the dashboardStats API seems to return products, so this might be redundant.
         }
-    }, [authToken, getDashboardStats, getProductInfo]); 
+    }, [authToken, getDashboardStats]); 
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    const totalRevenue = dashboardData.payments.reduce((acc, curr) => (acc + curr.totalAmount), 0);
+    // FIX: Filter payments to only include completed transactions
+    const completedPayments = dashboardData.payments.filter(payment => payment.status === 'completed');
+
+    // FIX: Calculate revenue from the filtered payments array
+    const totalRevenue = completedPayments.reduce((acc, curr) => (acc + curr.totalAmount), 0);
+    
+    // FIX: Calculate the number of orders from the filtered payments array
+    const totalOrders = completedPayments.length;
+    
     const isSmallScreen = useMediaQuery('(max-width:600px)');
 
     const tabStyles = {
@@ -137,7 +145,7 @@ export default function BasicTabs({ user, getUsersInfo }) {
                             <Widget numbers={Array.isArray(user) ? user.length : 0} heading='Users' color='#4CAF50' icon={<CgProfile />} />
                         </Grid>
                         <Grid item xs={12} sm={6} lg={3}>
-                            <Widget numbers={dashboardData.payments.length} heading='Orders' color='#E53935' icon={<FaShippingFast />} />
+                            <Widget numbers={totalOrders} heading='Orders' color='#E53935' icon={<FaShippingFast />} />
                         </Grid>
                     </Grid>
 

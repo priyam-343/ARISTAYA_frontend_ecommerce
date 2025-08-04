@@ -20,8 +20,11 @@ const OrderTable = ({ orders }) => {
     
     const [openOrderId, setOpenOrderId] = useState("");
 
-    // Sort orders by creation date in descending order (newest first)
-    const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // FIX 1: Filter orders to show only 'completed' ones
+    const completedOrders = orders.filter(order => order.status === 'completed');
+
+    // Sort the completed orders by creation date in descending order (newest first)
+    const sortedOrders = [...completedOrders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // Placeholder image for products that might not have an image URL
     const PLACEHOLDER_IMAGE = "https://placehold.co/100x100";
@@ -64,8 +67,6 @@ const OrderTable = ({ orders }) => {
                 <Typography variant="body1" sx={{ color: '#cccccc' }}>
                     There are no orders to display in the dashboard.
                 </Typography>
-                {}
-                {}
             </Box>
         );
     }
@@ -95,6 +96,8 @@ const OrderTable = ({ orders }) => {
                             <TableCell sx={tableHeadCellSx}>Phone Number</TableCell>
                             <TableCell sx={tableHeadCellSx}>Total Amount</TableCell>
                             <TableCell sx={tableHeadCellSx}>Order Date</TableCell>
+                            {/* NEW: Add a column for Status if you want to show it in the main table */}
+                            {/* <TableCell sx={tableHeadCellSx}>Status</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -137,6 +140,8 @@ const OrderTable = ({ orders }) => {
                                             {new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}
                                         </Link>
                                     </TableCell>
+                                    {/* NEW: Display Status in main table if desired */}
+                                    {/* <TableCell sx={tableCellSx}>{order.status}</TableCell> */}
                                 </TableRow>
 
                                 {}
@@ -147,8 +152,17 @@ const OrderTable = ({ orders }) => {
                                                 <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 2 }}>
                                                     Order Details
                                                 </Typography>
+                                                {/* NEW: Display Razorpay Order ID and Status */}
+                                                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
+                                                    <strong>Razorpay Order ID:</strong> {order.razorpay_order_id || 'N/A'}
+                                                </Typography>
                                                 <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
-                                                    {}
+                                                    <strong>Status:</strong> {order.status?.toUpperCase() || 'N/A'}
+                                                    {order.status === 'failed' && order.failedReason && (
+                                                        <span style={{ color: '#ff8080' }}> ({order.failedReason})</span>
+                                                    )}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
                                                     {`Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || ''}, ${order.userData?.userState || ''} - ${order.userData?.zipCode || ''}`}
                                                 </Typography>
 

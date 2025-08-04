@@ -33,7 +33,9 @@ const UserOrderHistoryPage = () => {
                     headers: { 'Authorization': authToken }
                 });
                 if (data.success) {
-                    setOrders(data.orders || []);
+                    // FIX: Filter to show only completed orders to the user
+                    const completedOrders = data.orders.filter(order => order.status === 'completed');
+                    setOrders(completedOrders || []);
                 } else {
                     toast.error(data.message || "Failed to load your order history.", { theme: "colored" });
                     setOrders([]);
@@ -97,7 +99,7 @@ const UserOrderHistoryPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={tableHeadCellSx} />
-                                <TableCell sx={tableHeadCellSx}>Order ID</TableCell>
+                                <TableCell sx={tableHeadCellSx}>Razorpay Order ID</TableCell>
                                 <TableCell sx={tableHeadCellSx}>Total Amount</TableCell>
                                 <TableCell sx={tableHeadCellSx}>Order Date</TableCell>
                                 <TableCell sx={tableHeadCellSx}>Status</TableCell>
@@ -133,10 +135,10 @@ const UserOrderHistoryPage = () => {
                                                     />
                                                 </IconButton>
                                             </TableCell>
-                                            <TableCell sx={tableCellSx}>{order._id}</TableCell>
+                                            {/* FIX: Display the Razorpay Order ID */}
+                                            <TableCell sx={tableCellSx}>{order.razorpay_order_id || 'N/A'}</TableCell>
                                             <TableCell sx={tableCellSx}>₹{order.totalAmount.toLocaleString()}</TableCell>
                                             <TableCell sx={tableCellSx}>{new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}</TableCell>
-                                            {}
                                             <TableCell sx={tableCellSx}>{capitalizeFirstLetter(order.status || 'pending')}</TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -144,6 +146,10 @@ const UserOrderHistoryPage = () => {
                                                 <Collapse in={openOrderId === order._id} timeout="auto" unmountOnExit>
                                                     <Box sx={{ m: 1, p: 2, bgcolor: '#2a2a2a', borderRadius: '8px', border: '1px solid #444' }}>
                                                         <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 2 }}>Order Details</Typography>
+                                                        {/* NEW: Display the Razorpay Payment ID */}
+                                                        <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
+                                                            <strong>Razorpay Payment ID:</strong> {order.razorpay_payment_id || 'N/A'}
+                                                        </Typography>
                                                         <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
                                                             {`Shipping Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || 'N/A'}, ${order.userData?.userState || 'N/A'} - ${order.userData?.zipCode || 'N/A'}`}
                                                         </Typography>

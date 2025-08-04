@@ -73,7 +73,7 @@ const PaymentFailure = () => {
                     )}
                     
                     {/* General explanatory message */}
-                    <Typography variant='body1' sx={{ color: '#white', mb: 3 }}>
+                    <Typography variant='body1' sx={{ color: 'white', mb: 3 }}> {/* FIXED: Changed '#white' to 'white' */}
                         Unfortunately, your payment could not be processed. Please try again or contact support if the issue persists.
                     </Typography>
 
