@@ -7,10 +7,11 @@ import Register from './Auth/Register/Register';
 import Cart from './Pages/Cart/Cart';
 import ProductDetail from './Pages/Detail/ProductDetail';
 import SingleCategory from './SingleCategory/SingleCategory';
-import MobileNavigation from './Navigation/MobileNavigation';
+import MobileNavigation from './Navigation/MobileNavigation'; 
 import DesktopNavigation from './Navigation/DesktopNavigation';
 import Wishlist from './Pages/WhisList/Wishlist';
 import PaymentSuccess from './Pages/Payment/PaymentSuccess';
+import PaymentFailure from './Pages/Payment/PaymentFailure'; // Import the new PaymentFailure component
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CheckoutForm from './Components/Checkout/CheckoutForm';
@@ -38,7 +39,7 @@ function App() {
           <DesktopNavigation />
           <Box component="main" className='margin'>
             <Routes>
-              {}
+              {/* Public Routes */}
               <Route path='/' index element={<HomePage />} />
               <Route path="/login" element={<Login />} />
               <Route path='/register' element={<Register />} />
@@ -49,14 +50,15 @@ function App() {
               <Route path='/checkout' element={<CheckoutForm />} />
               <Route path='/update' element={<UpdateDetails />} />
               <Route path='/paymentsuccess' element={<PaymentSuccess />} />
+              <Route path='/paymentfailure' element={<PaymentFailure />} /> {/* NEW: Route for Payment Failure */}
               <Route path='/forgotpassword' element={<ForgotPasswordForm />} />
               <Route path='/user/reset/:id/:token' element={<AddNewPassword />} />
               <Route path='/myorders' element={<UserOrderHistoryPage />} />
 
-              {}
+              {/* Email Verification Route */}
               <Route path="/auth/verify-page" element={<VerifyEmailPage />} />
 
-              {}
+              {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path='/admin/register' element={<AdminRegister />} />
               <Route path='/admin/home' element={<AdminHomePage />} />
