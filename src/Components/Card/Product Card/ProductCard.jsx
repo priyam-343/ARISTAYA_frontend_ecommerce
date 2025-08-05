@@ -18,7 +18,6 @@ const ProductCard = ({ prod, category }) => {
   const imageUrl = prod.images && prod.images.length > 0
     ? prod.images[0].url
     : 'https://placehold.co/400x600/1e1e1e/ffffff?text=No+Image';
-
   
   const reviewCountDisplay = prod.numOfReviews === 0 
     ? "No reviews" 
@@ -27,9 +26,10 @@ const ProductCard = ({ prod, category }) => {
   return (
     <Card
       sx={{
-        width: { xs: '90%', sm: 280, md: 300 },
-        minHeight: { xs: 450, sm: 500, md: 550 },
-        m: 2,
+        // UPDATED: Set a fixed width for mobile screens to make the card feel less big.
+        width: { xs: 280, sm: 280, md: 300 },
+        minHeight: { xs: 400, sm: 500, md: 550 },
+        m: { xs: 1, sm: 2 },
         borderRadius: '12px',
         boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
         backgroundColor: '#1e1e1e',
@@ -60,25 +60,33 @@ const ProductCard = ({ prod, category }) => {
             gutterBottom
             variant="h6"
             component="div"
-            noWrap
             sx={{
               color: 'white',
               fontFamily: 'Cooper Black, serif',
               textAlign: 'center',
               fontSize: { xs: '1rem', md: '1.1rem' },
-              mb: 1
+              mb: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
             }}
           >
             {prod.name}
           </Typography>
           <Typography
             variant="body2"
-            noWrap
             sx={{
               color: '#cccccc',
               fontFamily: 'Cooper Black, serif',
               textAlign: 'center',
-              mb: 1
+              mb: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
             }}
           >
             {prod.description}
@@ -98,7 +106,6 @@ const ProductCard = ({ prod, category }) => {
             >
               {prod.rating || 0} out of 5
             </Typography>
-            {}
             <Typography
               variant="caption"
               sx={{ color: '#cccccc', fontFamily: 'Cooper Black, serif' }}

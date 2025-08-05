@@ -9,9 +9,10 @@ import ProductDetail from './Pages/Detail/ProductDetail';
 import SingleCategory from './SingleCategory/SingleCategory';
 import MobileNavigation from './Navigation/MobileNavigation'; 
 import DesktopNavigation from './Navigation/DesktopNavigation';
+import MobileHeader from './Navigation/MobileHeader'; // <-- Import the new component
 import Wishlist from './Pages/WhisList/Wishlist';
 import PaymentSuccess from './Pages/Payment/PaymentSuccess';
-import PaymentFailure from './Pages/Payment/PaymentFailure'; // Import the new PaymentFailure component
+import PaymentFailure from './Pages/Payment/PaymentFailure';
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CheckoutForm from './Components/Checkout/CheckoutForm';
@@ -25,8 +26,6 @@ import SingleUserPage from './Admin/Pages/SingleUserPage';
 import SingleProduct from './Admin/Pages/SingleProduct';
 import CopyRight from './Components/CopyRight/CopyRight';
 import UserOrderHistoryPage from './Pages/UserOrderHistoryPage';
-
-
 import VerifyEmailPage from './Auth/VerifyEmailPage';
 
 function App() {
@@ -36,8 +35,18 @@ function App() {
       <Router>
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: '#000000' }}>
           <CssBaseline />
+          
           <DesktopNavigation />
-          <Box component="main" className='margin'>
+          <MobileHeader /> {/* <-- Added the new MobileHeader component */}
+          
+          <Box 
+            component="main" 
+            className='margin' 
+            sx={{
+              // Responsive padding to prevent content from hiding behind fixed headers
+              paddingTop: { xs: '60px', md: '80px' },
+            }}
+          >
             <Routes>
               {/* Public Routes */}
               <Route path='/' index element={<HomePage />} />
@@ -50,7 +59,7 @@ function App() {
               <Route path='/checkout' element={<CheckoutForm />} />
               <Route path='/update' element={<UpdateDetails />} />
               <Route path='/paymentsuccess' element={<PaymentSuccess />} />
-              <Route path='/paymentfailure' element={<PaymentFailure />} /> {/* NEW: Route for Payment Failure */}
+              <Route path='/paymentfailure' element={<PaymentFailure />} />
               <Route path='/forgotpassword' element={<ForgotPasswordForm />} />
               <Route path='/user/reset/:id/:token' element={<AddNewPassword />} />
               <Route path='/myorders' element={<UserOrderHistoryPage />} />

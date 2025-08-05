@@ -26,6 +26,7 @@ const CopyRight = () => {
                 backgroundColor: '#000000',
                 borderTop: '1px solid #1e1e1e',
                 boxShadow: '0 -4px 15px rgba(0, 0, 0, 0.6)',
+                marginBottom: { xs: '60px', md: '0px' },
             }}
         >
             <Container maxWidth="lg">

@@ -119,7 +119,7 @@ const Register = () => {
             }}
         >
             <CssBaseline />
-            <Box sx={{ position: 'absolute', top: 100, right: 20, zIndex: 1000, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+            <Box sx={{ position: 'absolute', top: 100, right: 20, zIndex: 1000, display: { xs: 'flex', md: 'flex' }, alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#cccccc' }}>Admin?</Typography>
                 <Link to="/admin/register" style={{ textDecoration: 'none' }}>
                     <Button variant="contained" sx={{ borderRadius: '8px', bgcolor: '#FFD700', color: '#1a1a1a', '&:hover': { bgcolor: '#e6c200' }, fontFamily: 'Cooper Black, serif' }}>REGISTER</Button>

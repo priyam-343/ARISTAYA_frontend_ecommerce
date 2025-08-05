@@ -207,7 +207,6 @@ const ProductDetail = () => {
                                     ))}
                                 </Box>
 
-                                {}
                                 {hasDiscount && (
                                     <Chip label={`${discountPercent}% off`} variant="filled" sx={{ background: '#FFD700', color: '#000', fontWeight: 'bold', fontFamily: 'Cooper Black, serif', mb: 2 }} icon={<TbDiscount2 color='black' />} />
                                 )}
@@ -218,7 +217,6 @@ const ProductDetail = () => {
                                     )}
                                     <Typography variant="h5" sx={{ color: '#FFD700', fontWeight: 'bold' }}>₹{product.price.toLocaleString()}</Typography>
                                 </Box>
-                                {}
 
                                 <Box sx={{ mb: 2 }}>
                                     <ButtonGroup variant="outlined" sx={{ '& .MuiButton-root': { borderColor: '#444', color: 'white' } }}>
@@ -257,9 +255,21 @@ const ProductDetail = () => {
                 {product && <ProductReview product={product} onReviewChange={fetchProductData} isLoggedIn={isLoggedIn} authToken={authToken} setOpenAlert={setOpenAlert} />}
 
                 <Typography variant='h5' sx={{ mt: 10, mb: 5, fontWeight: 'bold', textAlign: 'center', color: 'white' }}>Similar Products</Typography>
-                <Box sx={{ display: 'flex', overflowX: 'auto', pb: 2, mb: 5, justifyContent: { xs: 'flex-start', md: 'center' } }}>
+                {/* UPDATED SECTION: Added a Box wrapper with a minWidth and gap */}
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        overflowX: 'auto', 
+                        pb: 2, 
+                        mb: 5, 
+                        gap: 4, // <--- This is the correct property for spacing
+                        justifyContent: { xs: 'flex-start', md: 'center' } 
+                    }}
+                >
                     {similarProduct.filter(p => p._id !== id).map(p => (
-                        <ProductCard prod={p} category={mainCategory} key={p._id} />
+                        <Box key={p._id} sx={{ minWidth: 250, mr: 2 }}> 
+                            <ProductCard prod={p} category={mainCategory} />
+                        </Box>
                     ))}
                 </Box>
             </Container>
