@@ -9,14 +9,13 @@ import { toast } from 'react-toastify';
 
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
-    const paymentId = searchParams.get('paymentId'); 
-    const { setCart } = useContext(ContextFunction); 
+    const paymentId = searchParams.get('paymentId');
+    const { setCart } = useContext(ContextFunction);
 
-    const [orderData, setOrderData] = useState(null); 
-    const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null); 
+    const [orderData, setOrderData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    
     const handleDownloadReceipt = useCallback(() => {
         const element = document.getElementById('pdf-receipt-content');
         if (element) {
@@ -24,16 +23,15 @@ const PaymentSuccess = () => {
                 margin: 0.5,
                 filename: `ARISTAYA_Receipt_${paymentId}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true }, 
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
         } else {
             toast.error("Receipt content not found for PDF generation.", { theme: 'colored' });
         }
-    }, [paymentId]); 
+    }, [paymentId]);
 
-    
     useEffect(() => {
         const fetchOrderDetails = async () => {
             if (!paymentId) {
@@ -42,30 +40,25 @@ const PaymentSuccess = () => {
                 return;
             }
             try {
-                
                 const { data } = await axiosInstance.get(`/api/payment/getpaymentdetails/${paymentId}`);
                 
                 if (data.success && data.paymentDetails) {
-                    setOrderData(data.paymentDetails); 
-                    setCart([]); 
+                    setOrderData(data.paymentDetails);
+                    setCart([]);
                 } else {
-                    
                     setError(data.message || "Failed to load order details.");
                     toast.error(data.message || "Failed to load order details.", { theme: 'colored' });
                 }
             } catch (err) {
-                
                 setError(err.response?.data?.message || "Failed to load order details due to a network error.");
                 toast.error(err.response?.data?.message || "Failed to load order details.", { theme: 'colored' });
-                console.error("Error fetching payment details:", err);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
         fetchOrderDetails();
-    }, [setCart, paymentId]); 
+    }, [setCart, paymentId]);
 
-    
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
@@ -75,7 +68,6 @@ const PaymentSuccess = () => {
         );
     }
 
-    
     if (error) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
@@ -85,16 +77,18 @@ const PaymentSuccess = () => {
         );
     }
 
-    
+    const calculatedSubtotal = orderData?.productData?.reduce((acc, curr) => acc + (curr.productId?.price * curr.quantity), 0) || 0;
+    const shippingCost = orderData?.shippingCoast || 0;
+    // UPDATED: Simply display "₹0" if shipping is free, otherwise format the cost
+    const shippingDisplay = `₹${shippingCost.toLocaleString()}`;
+
     const productItems = orderData?.productData?.map((item, index) => (
         <tr key={index}>
             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{item.productId?.name} (x{item.quantity})</td>
             <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{(item.productId?.price * item.quantity)?.toLocaleString()}</td>
         </tr>
     )) || [];
-
-    const subtotal = orderData?.totalAmount - (orderData?.shippingCoast || 0);
-
+    
     return (
         <>
             <CssBaseline />
@@ -103,11 +97,18 @@ const PaymentSuccess = () => {
                     Payment Successful <AiOutlineFileDone style={{ color: '#FFD700', verticalAlign: 'middle' }} />
                 </Typography>
 
-                {}
                 <Box id="receipt-content-display" sx={{ width: '100%', p: 3, bgcolor: '#1e1e1e', borderRadius: '15px', border: '1px solid #333', color: 'white', textAlign: 'left', mb: 3 }}>
                     <Typography variant='h6' sx={{ color: '#FFD700', mb: 2, borderBottom: '1px solid #444', pb: 1 }}>Order Receipt</Typography>
-                    <Typography variant='body1' sx={{ color: '#cccccc', mb: 1, wordBreak: 'break-all' }}><strong>Reference No:</strong> {paymentId}</Typography>
+                    
+                    <Typography variant='body1' sx={{ color: '#cccccc', mb: 1, wordBreak: 'break-all' }}>
+                        <strong>Razorpay Order ID:</strong> {orderData?.razorpay_order_id}
+                    </Typography>
+                    <Typography variant='body1' sx={{ color: '#cccccc', mb: 1, wordBreak: 'break-all' }}>
+                        <strong>Razorpay Payment ID:</strong> {orderData?.razorpay_payment_id}
+                    </Typography>
+                    
                     <Typography variant='body1' sx={{ color: 'white', mb: 2 }}>Thank you for your purchase! An email with your order details has been sent.</Typography>
+                    
                     {orderData && (
                         <>
                             <Box sx={{ mt: 2, borderTop: '1px solid #444', pt: 2 }}>
@@ -118,6 +119,21 @@ const PaymentSuccess = () => {
                                     </Box>
                                 ))}
                             </Box>
+                            
+                            <Box sx={{ borderTop: '1px solid #444', pt: 1, mt: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="body1">Subtotal:</Typography>
+                                    <Typography variant="body1">₹{calculatedSubtotal.toLocaleString()}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="body1">Shipping:</Typography>
+                                    {/* UPDATED: Displaying "₹0" directly for free shipping */}
+                                    <Typography variant="body1" sx={{ color: shippingCost === 0 ? '#00FF00' : 'white' }}>
+                                        {shippingDisplay}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, borderTop: '1px solid #444', pt: 1 }}>
                                 <Typography variant="body1">Total:</Typography>
                                 <Typography variant="h6" sx={{ color: '#FFD700', fontWeight: 'bold' }}>
@@ -128,18 +144,17 @@ const PaymentSuccess = () => {
                     )}
                 </Box>
 
-                {}
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                     <Button component={Link} to='/' variant='contained' sx={{ bgcolor: '#333', '&:hover': { bgcolor: '#444' }, p: '12px 30px' }}>Back To Home</Button>
                     <Button variant='contained' onClick={handleDownloadReceipt} sx={{ bgcolor: '#FFD700', color: '#000', '&:hover': { bgcolor: '#e6c200' }, p: '12px 30px' }}>Download Receipt</Button>
                 </Box>
             </Container>
 
-            {}
             <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', fontSize: '12px' }}>
                 <div id="pdf-receipt-content" style={{ padding: '40px', backgroundColor: 'white', color: 'black', fontFamily: 'Arial, sans-serif', width: '7.5in', boxSizing: 'border-box' }}>
                     <h1 style={{ color: 'black', borderBottom: '2px solid black', paddingBottom: '10px', marginBottom: '20px' }}>ARISTAYA Order Receipt</h1>
-                    <p><strong>Reference No:</strong> {paymentId}</p>
+                    <p><strong>Razorpay Order ID:</strong> {orderData?.razorpay_order_id}</p>
+                    <p><strong>Razorpay Payment ID:</strong> {orderData?.razorpay_payment_id}</p>
                     <p>Thank you for your purchase! An email with your order details has been sent.</p>
                     <hr style={{ margin: '20px 0' }}/>
                     {orderData && (
@@ -156,15 +171,18 @@ const PaymentSuccess = () => {
                                     {productItems}
                                     <tr style={{ fontWeight: 'bold' }}>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>Subtotal:</td>
-                                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{subtotal.toLocaleString()}</td>
+                                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{calculatedSubtotal.toLocaleString()}</td>
                                     </tr>
                                     <tr style={{ fontWeight: 'bold' }}>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>Shipping:</td>
-                                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{orderData.shippingCoast || 0}</td>
+                                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>
+                                            {/* UPDATED: Displaying "₹0" directly for free shipping in PDF */}
+                                            {shippingDisplay}
+                                        </td>
                                     </tr>
                                     <tr style={{ fontWeight: 'bold', fontSize: '14px' }}>
                                         <td style={{ padding: '8px', textAlign: 'right' }}>Total:</td>
-                                        <td style={{ padding: '8px', textAlign: 'right' }}>₹{orderData.totalAmount.toLocaleString()}</td>
+                                        <td style={{ padding: '8px', textAlign: 'right' }}>₹{orderData?.totalAmount?.toLocaleString()}</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { ContextFunction } from '../../Context/Context';
 import { Button, Typography, Dialog, DialogActions, DialogContent, Container, CssBaseline, Box, Grid } from '@mui/material';
 import axiosInstance from '../../utils/axiosInstance';
@@ -13,19 +13,49 @@ import { Transition } from '../../Constants/Constant';
 const Cart = () => {
     const { cart, setCart } = useContext(ContextFunction);
     const [total, setTotal] = useState(0); 
+    const [subtotal, setSubtotal] = useState(0); 
     const [openAlert, setOpenAlert] = useState(false); 
-    const shippingCost = 100; 
+    const [isFreeShippingEligible, setIsFreeShippingEligible] = useState(false); 
+    const hasShownToast = useRef(false);
 
     const navigate = useNavigate();
     const authToken = localStorage.getItem('Authorization');
     const isLoggedIn = !!authToken; 
+    const shippingCharge = 100;
 
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userRes = await axiosInstance.get(process.env.REACT_APP_GET_USER_DETAILS, {
+                    headers: { 'Authorization': authToken }
+                });
+                if (userRes.data.success) {
+                    const isEligible = userRes.data.user.isFreeShippingEligible;
+                    setIsFreeShippingEligible(isEligible);
+                    // UPDATED: Now also checking if the cart has items before showing the toast
+                    if (isEligible && !hasShownToast.current && cart.length > 0) {
+                        toast.success("Congratulations! You have been granted a free shipping offer!", {
+                            theme: 'colored',
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        hasShownToast.current = true;
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch user details:", error);
+            }
+        };
+
         const fetchCartData = async () => {
             if (isLoggedIn) {
                 try {
                     const cartRes = await axiosInstance.get(process.env.REACT_APP_GET_CART, { headers: { 'Authorization': authToken } });
-                    
                     
                     if (cartRes.data.success) {
                         setCart(cartRes.data.cart || []); 
@@ -33,7 +63,6 @@ const Cart = () => {
                         toast.error(cartRes.data.message || "Failed to load cart data.", { theme: 'colored' });
                     }
                 } catch (error) {
-                    
                     toast.error(error.response?.data?.message || "Failed to load cart data.", { theme: 'colored' });
                 }
             } else {
@@ -41,21 +70,31 @@ const Cart = () => {
             }
         };
 
-        fetchCartData();
+        if (isLoggedIn) {
+            fetchUserData();
+            fetchCartData();
+        } else {
+            setOpenAlert(true);
+        }
+
         window.scrollTo(0, 0); 
-    }, [isLoggedIn, setCart, authToken]); 
+    }, [isLoggedIn, setCart, authToken, cart.length]); // UPDATED: Added cart.length to dependency array
 
     
     useEffect(() => {
         if (Array.isArray(cart)) {
-            const subtotal = cart.reduce((acc, curr) => {
+            const calculatedSubtotal = cart.reduce((acc, curr) => {
                 const price = curr.productId?.price || 0;
                 const quantity = curr.quantity || 0;
                 return acc + (price * quantity);
             }, 0);
-            setTotal(subtotal + shippingCost);
+
+            const calculatedShippingCost = isFreeShippingEligible ? 0 : shippingCharge;
+            
+            setSubtotal(calculatedSubtotal);
+            setTotal(calculatedSubtotal + calculatedShippingCost);
         }
-    }, [cart, shippingCost]);
+    }, [cart, isFreeShippingEligible]);
 
     
     const handleClose = () => {
@@ -87,7 +126,6 @@ const Cart = () => {
         if (cart.length === 0) {
             toast.error("Your cart is empty.", { autoClose: 500, theme: 'colored' });
         } else {
-            sessionStorage.setItem('totalAmount', total); 
             navigate('/checkout'); 
         }
     };
@@ -124,7 +162,12 @@ const Cart = () => {
                             ))}
                         </Grid>
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
-                            <OrderSummary proceedToCheckout={proceedToCheckout} total={total} shippingCost={shippingCost} />
+                            <OrderSummary
+                                proceedToCheckout={proceedToCheckout}
+                                subtotal={subtotal} 
+                                total={total}
+                                shippingCost={isFreeShippingEligible ? 0 : shippingCharge} 
+                            />
                         </Box>
                     </>
                 )}

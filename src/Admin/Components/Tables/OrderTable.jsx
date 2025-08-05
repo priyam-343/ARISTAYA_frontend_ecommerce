@@ -20,7 +20,7 @@ const OrderTable = ({ orders }) => {
     
     const [openOrderId, setOpenOrderId] = useState("");
 
-    // FIX 1: Filter orders to show only 'completed' ones
+    // Filter orders to show only 'completed' ones
     const completedOrders = orders.filter(order => order.status === 'completed');
 
     // Sort the completed orders by creation date in descending order (newest first)
@@ -96,128 +96,137 @@ const OrderTable = ({ orders }) => {
                             <TableCell sx={tableHeadCellSx}>Phone Number</TableCell>
                             <TableCell sx={tableHeadCellSx}>Total Amount</TableCell>
                             <TableCell sx={tableHeadCellSx}>Order Date</TableCell>
-                            {/* NEW: Add a column for Status if you want to show it in the main table */}
-                            {/* <TableCell sx={tableHeadCellSx}>Status</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {sortedOrders.map((order) => (
-                            <React.Fragment key={order._id}>
-                                {}
-                                <TableRow sx={{ '& > *': { borderBottom: 'unset !important' } }}> {}
-                                    <TableCell sx={tableCellSx}>
-                                        <IconButton
-                                            aria-label="expand row"
-                                            size="small"
-                                            onClick={() => setOpenOrderId(openOrderId === order._id ? "" : order._id)}
-                                            sx={{ color: 'white' }}
-                                        >
-                                            <MdKeyboardArrowDown
-                                                style={{
-                                                    transform: openOrderId === order._id ? 'rotate(180deg)' : 'rotate(0deg)',
-                                                    transition: 'transform 0.3s' // Smooth rotation animation
-                                                }}
-                                            />
-                                        </IconButton>
-                                    </TableCell>
-                                    {/* Use optional chaining and default values for robustness */}
-                                    <TableCell component="th" scope="row" sx={tableCellSx}>
-                                        <Link to={`/admin/home/user/${order.user}`} style={linkSx}>
-                                            {`${order.userData?.firstName || 'Deleted'} ${order.userData?.lastName || 'User'}`}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell sx={tableCellSx}>
-                                        <Link to={`/admin/home/user/${order.user}`} style={linkSx}>{order.userData?.userEmail || 'N/A'}</Link>
-                                    </TableCell>
-                                    <TableCell sx={tableCellSx}>
-                                        <Link to={`/admin/home/user/${order.user}`} style={linkSx}>{order.userData?.phoneNumber || 'N/A'}</Link>
-                                    </TableCell>
-                                    <TableCell sx={tableCellSx}>
-                                        <Link to={`/admin/home/user/${order.user}`} style={linkSx}>₹{order.totalAmount?.toLocaleString() || '0'}</Link>
-                                    </TableCell>
-                                    <TableCell sx={tableCellSx}>
-                                        <Link to={`/admin/home/user/${order.user}`} style={linkSx}>
-                                            {new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}
-                                        </Link>
-                                    </TableCell>
-                                    {/* NEW: Display Status in main table if desired */}
-                                    {/* <TableCell sx={tableCellSx}>{order.status}</TableCell> */}
-                                </TableRow>
+                        {sortedOrders.map((order) => {
+                            // NEW: Dynamically calculate subtotal and shipping for consistency
+                            const subtotal = order.productData.reduce((acc, curr) => 
+                                acc + ((curr.productId?.price || 0) * (curr.quantity || 0)), 0
+                            );
+                            const displayedShippingCost = (order.totalAmount || 0) - subtotal;
 
-                                {}
-                                <TableRow>
-                                    <TableCell style={{ padding: 0, borderBottom: 'none' }} colSpan={6}>
-                                        <Collapse in={openOrderId === order._id} timeout="auto" unmountOnExit>
-                                            <Box sx={{ m: 1, p: 2, bgcolor: '#2a2a2a', borderRadius: '8px', border: '1px solid #444' }}>
-                                                <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 2 }}>
-                                                    Order Details
-                                                </Typography>
-                                                {/* NEW: Display Razorpay Order ID and Status */}
-                                                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
-                                                    <strong>Razorpay Order ID:</strong> {order.razorpay_order_id || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
-                                                    <strong>Status:</strong> {order.status?.toUpperCase() || 'N/A'}
-                                                    {order.status === 'failed' && order.failedReason && (
-                                                        <span style={{ color: '#ff8080' }}> ({order.failedReason})</span>
-                                                    )}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
-                                                    {`Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || ''}, ${order.userData?.userState || ''} - ${order.userData?.zipCode || ''}`}
-                                                </Typography>
+                            return (
+                                <React.Fragment key={order._id}>
+                                    <TableRow sx={{ '& > *': { borderBottom: 'unset !important' } }}>
+                                        <TableCell sx={tableCellSx}>
+                                            <IconButton
+                                                aria-label="expand row"
+                                                size="small"
+                                                onClick={() => setOpenOrderId(openOrderId === order._id ? "" : order._id)}
+                                                sx={{ color: 'white' }}
+                                            >
+                                                <MdKeyboardArrowDown
+                                                    style={{
+                                                        transform: openOrderId === order._id ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                        transition: 'transform 0.3s'
+                                                    }}
+                                                />
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell component="th" scope="row" sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${order.user}`} style={linkSx}>
+                                                {`${order.userData?.firstName || 'Deleted'} ${order.userData?.lastName || 'User'}`}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${order.user}`} style={linkSx}>{order.userData?.userEmail || 'N/A'}</Link>
+                                        </TableCell>
+                                        <TableCell sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${order.user}`} style={linkSx}>{order.userData?.phoneNumber || 'N/A'}</Link>
+                                        </TableCell>
+                                        <TableCell sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${order.user}`} style={linkSx}>₹{order.totalAmount?.toLocaleString() || '0'}</Link>
+                                        </TableCell>
+                                        <TableCell sx={tableCellSx}>
+                                            <Link to={`/admin/home/user/${order.user}`} style={linkSx}>
+                                                {new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
 
-                                                {}
-                                                {!Array.isArray(order.productData) || order.productData.length === 0 ? (
-                                                    <Typography variant="body2" sx={{ color: '#cccccc', mt: 2, fontStyle: 'italic' }}>
-                                                        No product details available for this order.
+                                    <TableRow>
+                                        <TableCell style={{ padding: 0, borderBottom: 'none' }} colSpan={6}>
+                                            <Collapse in={openOrderId === order._id} timeout="auto" unmountOnExit>
+                                                <Box sx={{ m: 1, p: 2, bgcolor: '#2a2a2a', borderRadius: '8px', border: '1px solid #444' }}>
+                                                    <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 2 }}>
+                                                        Order Details
                                                     </Typography>
-                                                ) : (
-                                                    <Table size="small" aria-label="purchases">
-                                                        <TableHead>
-                                                            <TableRow>
-                                                                <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Product</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Image</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Price</TableCell>
-                                                                <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Quantity</TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {order.productData.map(product => {
-                                                                
-                                                                const p = product.productId; 
-                                                                const imageUrl = p?.images?.[0]?.url || PLACEHOLDER_IMAGE;
-                                                                return (
-                                                                    <TableRow key={product._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                                        <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>
-                                                                            <Link to={`/admin/home/product/${p?.mainCategory || 'unknown'}/${p?._id || ''}`} style={linkSx}>
-                                                                                {p?.name || 'Unknown Product'}
-                                                                            </Link>
-                                                                        </TableCell>
-                                                                        <TableCell>
-                                                                            <Link to={`/admin/home/product/${p?.mainCategory || 'unknown'}/${p?._id || ''}`}>
-                                                                                <img
-                                                                                    src={imageUrl}
-                                                                                    alt={p?.name || 'Product Image'}
-                                                                                    style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: '8px' }}
-                                                                                    
-                                                                                    onError={(e) => { e.target.onerror = null; e.target.src = PLACEHOLDER_IMAGE; }}
-                                                                                />
-                                                                            </Link>
-                                                                        </TableCell>
-                                                                        <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>₹{p?.price?.toLocaleString() || '0'}</TableCell>
-                                                                        <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>{product.quantity || '0'}</TableCell>
-                                                                    </TableRow>
-                                                                );
-                                                            })}
-                                                        </TableBody>
-                                                    </Table>
-                                                )}
-                                            </Box>
-                                        </Collapse>
-                                    </TableCell>
-                                </TableRow>
-                            </React.Fragment>
-                        ))}
+                                                    
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                                        <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
+                                                            <strong>Razorpay Order ID:</strong> {order.razorpay_order_id || 'N/A'}
+                                                        </Typography>
+                                                        <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
+                                                            <strong>Status:</strong> <span style={{ color: '#32CD32' }}>{order.status?.toUpperCase() || 'N/A'}</span>
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
+                                                        <strong>Razorpay Payment ID:</strong> {order.razorpay_payment_id || 'N/A'}
+                                                    </Typography>
+
+                                                    {/* UPDATED: Display dynamic shipping charge */}
+                                                    <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
+                                                        <strong>Shipping Charge:</strong> ₹{displayedShippingCost.toLocaleString() || '0'}
+                                                    </Typography>
+                                                    
+                                                    <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
+                                                        {`Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || ''}, ${order.userData?.userState || ''} - ${order.userData?.zipCode || ''}`}
+                                                    </Typography>
+
+                                                    
+                                                    {!Array.isArray(order.productData) || order.productData.length === 0 ? (
+                                                        <Typography variant="body2" sx={{ color: '#cccccc', mt: 2, fontStyle: 'italic' }}>
+                                                            No product details available for this order.
+                                                        </Typography>
+                                                    ) : (
+                                                        <Table size="small" aria-label="purchases">
+                                                            <TableHead>
+                                                                <TableRow>
+                                                                    <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Product</TableCell>
+                                                                    <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Image</TableCell>
+                                                                    <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Price</TableCell>
+                                                                    <TableCell sx={{ color: "white", fontWeight: 'bold', fontFamily: 'inherit', borderBottom: '1px solid #555' }}>Quantity</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {order.productData.map(product => {
+                                                                    
+                                                                    const p = product.productId; 
+                                                                    const imageUrl = p?.images?.[0]?.url || PLACEHOLDER_IMAGE;
+                                                                    return (
+                                                                        <TableRow key={product._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                                            <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>
+                                                                                <Link to={`/admin/home/product/${p?.mainCategory || 'unknown'}/${p?._id || ''}`} style={linkSx}>
+                                                                                    {p?.name || 'Unknown Product'}
+                                                                                </Link>
+                                                                            </TableCell>
+                                                                            <TableCell>
+                                                                                <Link to={`/admin/home/product/${p?.mainCategory || 'unknown'}/${p?._id || ''}`}>
+                                                                                    <img
+                                                                                        src={imageUrl}
+                                                                                        alt={p?.name || 'Product Image'}
+                                                                                        style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: '8px' }}
+                                                                                        
+                                                                                        onError={(e) => { e.target.onerror = null; e.target.src = PLACEHOLDER_IMAGE; }}
+                                                                                    />
+                                                                                </Link>
+                                                                            </TableCell>
+                                                                            <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>₹{p?.price?.toLocaleString() || '0'}</TableCell>
+                                                                            <TableCell sx={{ color: 'white', fontFamily: 'inherit' }}>{product.quantity || '0'}</TableCell>
+                                                                        </TableRow>
+                                                                    );
+                                                                })}
+                                                            </TableBody>
+                                                        </Table>
+                                                    )}
+                                                </Box>
+                                            </Collapse>
+                                        </TableCell>
+                                    </TableRow>
+                                </React.Fragment>
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

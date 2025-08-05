@@ -3,12 +3,11 @@ import { Box, Button, Card, CardActions, CardContent, Grid, Typography } from '@
 import { IoBagCheckOutline } from 'react-icons/io5';
 import PropTypes from 'prop-types';
 
-const OrderSummary = ({ proceedToCheckout, total, shippingCost }) => {
+const OrderSummary = ({ proceedToCheckout, total, subtotal, shippingCost }) => {
     return (
         <Card
             sx={{
                 width: '100%',
-                
                 maxWidth: { xs: '100%', md: 400 },
                 bgcolor: '#1e1e1e',
                 color: 'white',
@@ -40,7 +39,7 @@ const OrderSummary = ({ proceedToCheckout, total, shippingCost }) => {
                     </Grid>
                     <Grid item xs={6} sx={{ textAlign: 'right' }}>
                         <Typography variant="h6" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold' }}>
-                            ₹{(total - shippingCost).toLocaleString()}
+                            ₹{subtotal.toLocaleString()}
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -49,9 +48,20 @@ const OrderSummary = ({ proceedToCheckout, total, shippingCost }) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                        <Typography variant="h6" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold' }}>
-                            ₹{shippingCost.toLocaleString()}
-                        </Typography>
+                        {shippingCost === 0 ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                <Typography variant="h6" sx={{ color: '#00FF00', fontFamily: 'Cooper Black, serif', fontWeight: 'bold', mr: 1 }}>
+                                    Free!
+                                </Typography>
+                                <Typography variant="h6" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold', textDecoration: 'line-through' }}>
+                                    ₹100
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Typography variant="h6" sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold' }}>
+                                ₹{shippingCost.toLocaleString()}
+                            </Typography>
+                        )}
                     </Grid>
                     <Grid item xs={6}>
                         <Typography variant="body1" sx={{ fontFamily: 'Cooper Black, serif', mt: 1 }}>
@@ -98,6 +108,7 @@ const OrderSummary = ({ proceedToCheckout, total, shippingCost }) => {
 OrderSummary.propTypes = {
     proceedToCheckout: PropTypes.func.isRequired,
     total: PropTypes.number.isRequired,
+    subtotal: PropTypes.number.isRequired,
     shippingCost: PropTypes.number.isRequired,
 };
 

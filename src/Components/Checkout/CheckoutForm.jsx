@@ -18,6 +18,7 @@ const CheckoutForm = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const authToken = localStorage.getItem('Authorization');
+    // REMOVED: No longer relying on sessionStorage for amount
     const totalAmount = sessionStorage.getItem('totalAmount');
 
     const [userDetails, setUserDetails] = useState({
@@ -72,9 +73,8 @@ const CheckoutForm = () => {
         if (!cart || cart.length === 0) {
             return toast.error("Your cart is empty.", { theme: "colored" });
         }
-        if (!totalAmount || isNaN(Number(totalAmount)) || Number(totalAmount) <= 0) {
-            return toast.error("Invalid total amount. Please ensure your cart has items.", { theme: "colored" });
-        }
+        // REMOVED: Client-side amount validation, as the backend is now the source of truth
+        // if (!totalAmount || isNaN(Number(totalAmount)) || Number(totalAmount) <= 0) { ... }
 
         try {
             const userId = loginUser?._id;
@@ -86,8 +86,8 @@ const CheckoutForm = () => {
 
             // Fetch Razorpay key and create the order on the backend
             const { data: { key } } = await axiosInstance.get(process.env.REACT_APP_GET_KEY);
+            // UPDATED: Now sending only cart details and letting the backend calculate the amount
             const { data: checkoutData } = await axiosInstance.post(process.env.REACT_APP_GET_CHECKOUT, {
-                amount: Number(totalAmount),
                 userId: userId,
                 productDetails: JSON.stringify(cart),
                 userDetails: JSON.stringify(userDetails),
@@ -103,9 +103,6 @@ const CheckoutForm = () => {
                 image: profile,
                 order_id: checkoutData.order.id,
 
-                // REMOVED the unreliable callback_url. 
-                // The backend webhook will now handle all status updates.
-
                 prefill: {
                     name: `${userDetails.firstName} ${userDetails.lastName}`,
                     email: userDetails.userEmail,
@@ -113,7 +110,6 @@ const CheckoutForm = () => {
                 },
                 theme: { "color": "#FFD700" },
 
-                // NEW: Use the handler function for successful payments
                 handler: function(response) {
                     console.log("Payment successful from handler:", response);
                     navigate(`/paymentsuccess?paymentId=${response.razorpay_payment_id}`);
@@ -122,9 +118,6 @@ const CheckoutForm = () => {
             
             const razor = new window.Razorpay(options);
 
-            // NEW: Add a listener for payment failures for better user experience
-            // This is triggered if the payment fails while the modal is open.
-            // The backend webhook will handle the database update regardless.
             razor.on('payment.failed', function(response){
                 console.error("Payment failed from front-end event:", response.error);
                 toast.error(`Payment failed: ${response.error.description || 'Please try again.'}`, { theme: 'colored' });
@@ -132,7 +125,6 @@ const CheckoutForm = () => {
                 const orderId = response.error?.metadata?.order_id || checkoutData.order.id;
                 const reason = response.error?.description || "Payment was cancelled or failed.";
                 
-                // Redirect to a failure page with relevant info
                 navigate(`/paymentfailure?orderId=${orderId}&reason=${encodeURIComponent(reason)}`);
             });
 

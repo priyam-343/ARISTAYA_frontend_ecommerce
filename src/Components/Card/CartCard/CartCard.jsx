@@ -18,6 +18,11 @@ const CartCard = ({ product, removeFromCart }) => {
     };
 
     const imageUrl = getImageUrl();
+    
+    // NEW: Calculate the total price for this product
+    const productPrice = product?.productId?.price || 0;
+    const quantity = product?.quantity || 0;
+    const productTotal = productPrice * quantity;
 
     return (
         <Card
@@ -62,14 +67,14 @@ const CartCard = ({ product, removeFromCart }) => {
                         variant="body2"
                         sx={{ textAlign: "center", color: '#cccccc', fontFamily: 'Cooper Black, serif', mb: 1 }}
                     >
-                        Qty: {product?.quantity}
+                        Item Cost: {quantity} x ₹{productPrice.toLocaleString()}
                     </Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 1, mb: 1 }}>
                         <Typography
                             variant="h6"
                             sx={{ color: '#FFD700', fontFamily: 'Cooper Black, serif', fontWeight: 'bold' }}
                         >
-                            ₹{product?.productId?.price ? product.productId.price.toLocaleString() : '0'}
+                            ₹{productTotal.toLocaleString()}
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
