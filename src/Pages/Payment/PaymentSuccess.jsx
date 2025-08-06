@@ -79,11 +79,12 @@ const PaymentSuccess = () => {
 
     const calculatedSubtotal = orderData?.productData?.reduce((acc, curr) => acc + (curr.productId?.price * curr.quantity), 0) || 0;
     const shippingCost = orderData?.shippingCoast || 0;
+    // UPDATED: Simply display "₹0" if shipping is free, otherwise format the cost
     const shippingDisplay = `₹${shippingCost.toLocaleString()}`;
 
     const productItems = orderData?.productData?.map((item, index) => (
         <tr key={index}>
-            <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{item.productId?.name} (x{item.quantity})</td>
+            <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{item.productId?.name} (₹{item.productId?.price?.toLocaleString()}) (x{item.quantity})</td>
             <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{(item.productId?.price * item.quantity)?.toLocaleString()}</td>
         </tr>
     )) || [];
@@ -113,10 +114,7 @@ const PaymentSuccess = () => {
                             <Box sx={{ mt: 2, borderTop: '1px solid #444', pt: 2 }}>
                                 {orderData.productData?.map((item, index) => (
                                     <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                        {/* UPDATED: Display individual item price */}
-                                        <Typography variant="body2">
-                                            {item.productId?.name} (₹{item.productId?.price?.toLocaleString()}) (x{item.quantity})
-                                        </Typography>
+                                        <Typography variant="body2">{item.productId?.name} (₹{item.productId?.price?.toLocaleString()}) (x{item.quantity})</Typography>
                                         <Typography variant="body2">₹{(item.productId?.price * item.quantity)?.toLocaleString()}</Typography>
                                     </Box>
                                 ))}
@@ -129,6 +127,7 @@ const PaymentSuccess = () => {
                                 </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                     <Typography variant="body1">Shipping:</Typography>
+                                    {/* UPDATED: Displaying "₹0" directly for free shipping */}
                                     <Typography variant="body1" sx={{ color: shippingCost === 0 ? '#00FF00' : 'white' }}>
                                         {shippingDisplay}
                                     </Typography>
@@ -169,15 +168,7 @@ const PaymentSuccess = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {orderData.productData?.map((item, index) => (
-                                        <tr key={index}>
-                                            {/* UPDATED: Display individual item price in PDF */}
-                                            <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
-                                                {item.productId?.name} (₹{item.productId?.price?.toLocaleString()}) (x{item.quantity})
-                                            </td>
-                                            <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{(item.productId?.price * item.quantity)?.toLocaleString()}</td>
-                                        </tr>
-                                    ))}
+                                    {productItems}
                                     <tr style={{ fontWeight: 'bold' }}>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>Subtotal:</td>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>₹{calculatedSubtotal.toLocaleString()}</td>
@@ -185,7 +176,8 @@ const PaymentSuccess = () => {
                                     <tr style={{ fontWeight: 'bold' }}>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>Shipping:</td>
                                         <td style={{ padding: '8px', borderBottom: '1px solid #ddd', textAlign: 'right' }}>
-                                            {shippingCost === 0 ? "Free!" : `₹${shippingCost.toLocaleString()}`}
+                                            {/* UPDATED: Displaying "₹0" directly for free shipping in PDF */}
+                                            {shippingDisplay}
                                         </td>
                                     </tr>
                                     <tr style={{ fontWeight: 'bold', fontSize: '14px' }}>
