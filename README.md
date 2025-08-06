@@ -2,23 +2,33 @@ ARISTAYA E-commerce Frontend
 This is the frontend application for the ARISTAYA E-commerce Platform.
 
 Features
-User Authentication & Authorization (JWT)
+The ARISTAYA platform comes with a powerful set of features to provide a seamless user and admin experience:
 
-Admin Dashboard (Product, Order, User management & statistics)
+User Authentication & Authorization: Secure user and admin logins with JWT.
 
-Payment Gateway Integration
+Email Verification: New users are verified once via email using Firebase.
 
-Mail Service Integration
+Google Sign-In: Easy login and registration using a Google account.
 
-Forgot & Reset Password functionality
+Admin Dashboard: A centralized hub for all site management, including:
 
-Product Listing & Search
+Product Management: Add, modify, and delete products.
 
-Product Details & Reviews
+User Management: View and manage user profiles, including their order, cart, wishlist, and review history.
 
-Cart Management
+Admin Approval: A secure process where new admin requests must be approved by a super-admin.
 
-Order History
+Analytics: Visualize revenue trends, cart performance, and user engagement with a variety of graphs and charts.
+
+Dynamic Pricing & Offers: Provides user-specific free shipping offers controlled by the admin panel.
+
+Payment Gateway Integration: Seamless checkout process integrated with Razorpay and its webhook system.
+
+Order & Cart Management: View and manage your personal cart, wishlist, and a comprehensive order history page.
+
+Product Details: Detailed product pages with a review system.
+
+Forgot & Reset Password: Securely reset your password via email.
 
 Tech Stack
 ReactJS
@@ -31,29 +41,32 @@ React-router-dom
 
 Backend Counterpart
 This frontend consumes APIs from the ARISTAYA E-commerce Backend.
-
 Backend Repository: https://github.com/priyam-343/ARISTAYA_backend_ecommerce.git
 
 How to Run Locally
-1. Prerequisites
+Prerequisites
 Node.js & npm (or Yarn)
 
-Running ARISTAYA Backend instance
+A running ARISTAYA Backend instance
 
-2. Installation
+Installation
 Clone this repository:
 
 git clone https://github.com/priyam-343/ARISTAYA_frontend_ecommerce.git
+
+
+Navigate into the project directory:
+
 cd ARISTAYA_frontend_ecommerce
+
 
 Install dependencies:
 
 npm install
 
-3. Environment Variables
-Create a .env file in the project root.
 
-.env Example (copy this to your .env file and replace YOUR_BACKEND_URL):
+Environment Variables
+Create a .env file in the project root and add the following variables.
 
 REACT_APP_BACKEND_URL=YOUR_BACKEND_URL
 REACT_APP_PRODUCT_TYPE=YOUR_BACKEND_URL/api/product/fetchproduct/type
@@ -86,7 +99,7 @@ REACT_APP_DELETE_WISHLIST=YOUR_BACKEND_URL/api/wishlist/deletewishlist
 REACT_APP_RESET_PASSWORD=YOUR_BACKEND_URL/api/password/reset/password
 REACT_APP_ADMIN_ADD_PRODUCT=YOUR_BACKEND_URL/api/admin/addproduct
 REACT_APP_ADMIN_GET_ALL_USERS=YOUR_BACKEND_URL/api/admin/getusers
-REACT_APP_ADMIN_GET_SINGLE_USER=YOUR_BACKEND_URL/api/admin/geteuser
+REACT_APP_ADMIN_GET_SINGLE_USER=YOUR_BACKEND_URL/api/admin/getuser
 REACT_APP_ADMIN_GET_USER_CART=YOUR_BACKEND_URL/api/admin/getcart
 REACT_APP_ADMIN_GET_USER_WISHLIST=YOUR_BACKEND_URL/api/admin/getwishlist
 REACT_APP_ADMIN_GET_USER_REVIEW=YOUR_BACKEND_URL/api/admin/getreview
@@ -95,14 +108,20 @@ REACT_APP_ADMIN_GET_CHART_DATA=YOUR_BACKEND_URL/api/admin/chartdata
 REACT_APP_ADMIN_UPDATE_PRODUCT=YOUR_BACKEND_URL/api/admin/updateproduct
 REACT_APP_ADMIN_DELETE_USER_CART_ITEM=YOUR_BACKEND_URL/api/admin/usercart
 REACT_APP_ADMIN_DELETE_USER_WISHLIST_ITEM=YOUR_BACKEND_URL/api/admin/userwishlist
-REACT_APP_ADMIN_DELETE_REVIEW=YOUR_BACKEND_URL/api/admin/review
+REACT_APP_ADMIN_DELETE_PRODUCT=YOUR_BACKEND_URL/api/admin/deleteproduct
+REACT_APP_ADMIN_DELETE_USER=YOUR_BACKEND_URL/api/admin/deleteuser
+REACT_APP_ADMIN_USER_TOGGLE_SHIPPING=YOUR_BACKEND_URL/api/admin/user
+REACT_APP_FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
+REACT_APP_FIREBASE_AUTH_DOMAIN="YOUR_FIREBASE_AUTH_DOMAIN"
+REACT_APP_FIREBASE_PROJECT_ID="YOUR_FIREBASE_PROJECT_ID"
+REACT_APP_FIREBASE_STORAGE_BUCKET="YOUR_FIREBASE_STORAGE_BUCKET"
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID="YOUR_FIREBASE_MESSAGING_SENDER_ID"
+REACT_APP_FIREBASE_APP_ID="YOUR_FIREBASE_APP_ID"
+REACT_APP_FIREBASE_MEASUREMENT_ID="YOUR_FIREBASE_MEASUREMENT_ID"
 
-4. Run Application
+Run Application
 npm start
 
-Application runs on http://localhost:3000.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for more information.
+The application will run on http://localhost:3000.
 
 Developed by Priyam Kumar
