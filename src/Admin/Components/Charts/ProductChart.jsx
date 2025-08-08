@@ -154,15 +154,19 @@ const ProductChart = ({ products, review, cart, wishlist, paymentData }) => {
             return acc;
         }, []);
 
+    // --- MODIFICATION STARTS HERE ---
+    // Create a new array with only the last 7 days of data
+    const dailyRevenueDataLast7Days = groupedPaymentData.slice(-7);
+    // --- MODIFICATION ENDS HERE ---
 
     return (
         <Container sx={{ mt: 5, p: 0 }}>
             <Grid container spacing={4}>
                 {}
                 <Grid item xs={12}>
-                    <ChartPaper title="Daily Revenue Trend">
+                    <ChartPaper title="Daily Revenue Trend (Last 7 Days)">
                         <ResponsiveContainer>
-                            <AreaChart data={groupedPaymentData}>
+                            <AreaChart data={dailyRevenueDataLast7Days}>
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8}/>
