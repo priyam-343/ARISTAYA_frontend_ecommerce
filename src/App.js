@@ -21,10 +21,8 @@ import AdminRegister from './Admin/Auth/Register/AdminRegister';
 import AdminHomePage from './Admin/Pages/AdminHomePage';
 import SingleUserPage from './Admin/Pages/SingleUserPage';
 import SingleProduct from './Admin/Pages/SingleProduct';
-
-
-
-
+import { SpeedInsights } from '@vercel/speed-insights/react'; // Import Vercel Speed Insights
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -58,8 +56,8 @@ function App() {
         </div>
         <MobileNavigation />
       </Router >
-
-
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }
