@@ -27,6 +27,7 @@ import SingleProduct from './Admin/Pages/SingleProduct';
 import CopyRight from './Components/CopyRight/CopyRight';
 import UserOrderHistoryPage from './Pages/UserOrderHistoryPage';
 import VerifyEmailPage from './Auth/VerifyEmailPage';
+import { SpeedInsights } from '@vercel/speed-insights/react'; // Import Vercel Speed Insights
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
           <CopyRight />
         </Box>
       </Router>
+      <SpeedInsights />
     </>
   );
 }
