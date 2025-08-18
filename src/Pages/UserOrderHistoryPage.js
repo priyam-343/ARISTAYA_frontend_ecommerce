@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Collapse, IconButton } from '@mui/material';
+import React, { useEffect, useState, useContext } from 'react';
+import { Container, Box, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Collapse, IconButton, Button } from '@mui/material';
 import axiosInstance from '../utils/axiosInstance'; 
 import { toast } from 'react-toastify';
-import { MdKeyboardArrowDown } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { MdKeyboardArrowDown, MdRestartAlt } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { ContextFunction } from '../Context/Context';
 
 const PLACEHOLDER_IMAGE = "https://placehold.co/80x80/1e1e1e/FFD700?text=No+Image";
 
@@ -17,7 +18,9 @@ const UserOrderHistoryPage = () => {
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [openOrderId, setOpenOrderId] = useState("");
+    const { setCart } = useContext(ContextFunction);
     const authToken = localStorage.getItem("Authorization");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserOrders = async () => {
@@ -33,7 +36,6 @@ const UserOrderHistoryPage = () => {
                     headers: { 'Authorization': authToken }
                 });
                 if (data.success) {
-                    // REMOVED: Filter to show all orders, not just 'completed' ones
                     setOrders(data.orders || []);
                 } else {
                     toast.error(data.message || "Failed to load your order history.", { theme: "colored" });
@@ -51,6 +53,31 @@ const UserOrderHistoryPage = () => {
         fetchUserOrders();
         window.scroll(0, 0);
     }, [authToken]);
+
+    const handleReorder = async (orderId) => {
+        if (!authToken) {
+            toast.warn("Please log in to reorder.", { theme: "colored" });
+            return;
+        }
+
+        try {
+            const apiUrl = process.env.REACT_APP_REORDER_API || '/api/payment/reorder';
+            const response = await axiosInstance.post(apiUrl, { orderId }, {
+                headers: { 'Authorization': authToken }
+            });
+
+            if (response.data.success) {
+                toast.success(response.data.message || "Ordered items have been added to your cart.", { theme: "colored" });
+                navigate("/cart");
+            } else {
+                toast.error(response.data.message || "Failed to reorder.", { theme: "colored" });
+            }
+        } catch (error) {
+            console.error("Reorder failed:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
+            toast.error(errorMessage, { theme: "colored" });
+        }
+    };
 
     const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -77,15 +104,14 @@ const UserOrderHistoryPage = () => {
         fontWeight: 'bold',
     };
 
-    // Helper function to get color based on status
     const getStatusColor = (status) => {
         switch (status) {
             case 'completed':
-                return '#32CD32'; // Green
+                return '#32CD32';
             case 'pending':
-                return '#FFD700'; // Dim Yellow (Golden)
+                return '#FFD700';
             case 'failed':
-                return '#FF4500'; // Red
+                return '#FF4500';
             default:
                 return '#cccccc';
         }
@@ -131,7 +157,6 @@ const UserOrderHistoryPage = () => {
                                 </TableRow>
                             ) : (
                                 sortedOrders.map((order) => {
-                                    // NEW: Dynamically calculate subtotal and shipping for consistency
                                     const subtotal = order.productData.reduce((acc, curr) => 
                                         acc + ((curr.productId?.price || 0) * (curr.quantity || 0)), 0
                                     );
@@ -158,7 +183,6 @@ const UserOrderHistoryPage = () => {
                                                 <TableCell sx={tableCellSx}>{order.razorpay_order_id || 'N/A'}</TableCell>
                                                 <TableCell sx={tableCellSx}>₹{order.totalAmount?.toLocaleString() || '0'}</TableCell>
                                                 <TableCell sx={tableCellSx}>{new Date(order.createdAt).toLocaleDateString('en-us', { year: "numeric", month: "short", day: "numeric" })}</TableCell>
-                                                {/* UPDATED: Add colored status based on order status */}
                                                 <TableCell sx={{ ...tableCellSx, color: getStatusColor(order.status) }}>
                                                     {capitalizeFirstLetter(order.status || 'pending')}
                                                 </TableCell>
@@ -167,7 +191,24 @@ const UserOrderHistoryPage = () => {
                                                 <TableCell style={{ padding: 0, borderBottom: 'none' }} colSpan={5}>
                                                     <Collapse in={openOrderId === order._id} timeout="auto" unmountOnExit>
                                                         <Box sx={{ m: 1, p: 2, bgcolor: '#2a2a2a', borderRadius: '8px', border: '1px solid #444' }}>
-                                                            <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 2 }}>Order Details</Typography>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                                <Typography variant="h6" gutterBottom sx={{ color: '#FFD700', fontFamily: 'inherit', mb: 0 }}>Order Details</Typography>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        bgcolor: '#FFD700',
+                                                                        color: '#1e1e1e',
+                                                                        fontFamily: 'Cooper Black, serif',
+                                                                        '&:hover': { bgcolor: '#e6c200' },
+                                                                        textTransform: 'uppercase'
+                                                                    }}
+                                                                    onClick={() => handleReorder(order._id)}
+                                                                    startIcon={<MdRestartAlt />}
+                                                                >
+                                                                    REORDER
+                                                                </Button>
+                                                            </Box>
                                                             
                                                             <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 1 }}>
                                                                 <strong>Razorpay Payment ID:</strong> {order.razorpay_payment_id || 'N/A'}
