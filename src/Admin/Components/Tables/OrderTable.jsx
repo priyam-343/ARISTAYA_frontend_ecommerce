@@ -171,7 +171,7 @@ const OrderTable = ({ orders }) => {
                                                     </Typography>
                                                     
                                                     <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'inherit', mb: 2 }}>
-                                                        {`Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || ''}, ${order.userData?.userState || ''} - ${order.userData?.zipCode || ''}`}
+                                                        {`Shipping Address: ${order.userData?.address || 'N/A'}, ${order.userData?.city || ''}, ${order.userData?.userState || ''} - ${order.userData?.zipCode || ''}`}
                                                     </Typography>
 
                                                     
