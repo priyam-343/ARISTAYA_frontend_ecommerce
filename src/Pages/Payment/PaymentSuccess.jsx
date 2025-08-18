@@ -192,6 +192,8 @@ const PaymentSuccess = () => {
                                     <p>{orderData.userData.firstName} {orderData.userData.lastName}<br />
                                        {orderData.userData.address}<br />
                                        {orderData.userData.city} - {orderData.userData.zipCode}</p>
+                                       <p><strong>Phone:</strong> {orderData.userData.phoneNumber || 'N/A'}</p>
+                                       <p><strong>Email:</strong> {orderData.userData.userEmail || 'N/A'}</p>
                                 </div>
                             )}
                         </>
